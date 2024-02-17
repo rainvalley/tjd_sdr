@@ -1,0 +1,1055 @@
+#-----------------------------------------------------------
+# Vivado v2022.2 (64-bit)
+# SW Build 3671981 on Fri Oct 14 04:59:54 MDT 2022
+# IP Build 3669848 on Fri Oct 14 08:30:02 MDT 2022
+# Start of session at: Wed Feb  7 20:08:02 2024
+# Process ID: 4117
+# Current directory: /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_axi_ad9361_0_synth_1
+# Command line: vivado -log system_axi_ad9361_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source system_axi_ad9361_0.tcl
+# Log file: /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_axi_ad9361_0_synth_1/system_axi_ad9361_0.vds
+# Journal file: /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_axi_ad9361_0_synth_1/vivado.jou
+# Running On: ubuntu, OS: Linux, CPU Frequency: 3792.876 MHz, CPU Physical cores: 16, Host memory: 16723 MB
+#-----------------------------------------------------------
+source system_axi_ad9361_0.tcl -notrace
+create_project: Time (s): cpu = 00:00:03 ; elapsed = 00:00:06 . Memory (MB): peak = 1332.180 ; gain = 0.023 ; free physical = 9372 ; free virtual = 15085
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/raincorn/pluto/plutosdr-fw/hdl/library'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/tools/Xilinx/Vivado/2022.2/data/ip'.
+INFO: [IP_Flow 19-6924] IPCACHE: Running cache check for IP inst: system_axi_ad9361_0
+Command: synth_design -top system_axi_ad9361_0 -part xc7z010clg400-1 -incremental_mode off -mode out_of_context
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010'
+INFO: [Device 21-403] Loading part xc7z010clg400-1
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 4232
+INFO: [Synth 8-11241] undeclared symbol 'REGCCE', assumed default net type 'wire' [/tools/Xilinx/Vivado/2022.2/data/verilog/src/unimacro/BRAM_SINGLE_MACRO.v:2170]
+INFO: [Synth 8-11241] undeclared symbol 'dac_sync', assumed default net type 'wire' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:380]
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:02 ; elapsed = 00:00:22 . Memory (MB): peak = 1948.230 ; gain = 369.801 ; free physical = 2963 ; free virtual = 8714
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1166.115; parent = 1036.589; children = 152.812
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 2957.746; parent = 1958.141; children = 999.605
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'system_axi_ad9361_0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/synth/system_axi_ad9361_0.v:53]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_cmos_if' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/xilinx/axi_ad9361_cmos_if.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_data_in' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_in.v:38]
+INFO: [Synth 8-6157] synthesizing module 'IBUF' [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:71326]
+INFO: [Synth 8-6155] done synthesizing module 'IBUF' (0#1) [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:71326]
+INFO: [Synth 8-6157] synthesizing module 'IDELAYE2' [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:73445]
+INFO: [Synth 8-6155] done synthesizing module 'IDELAYE2' (0#1) [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:73445]
+INFO: [Synth 8-6157] synthesizing module 'IDDR' [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:73310]
+INFO: [Synth 8-6155] done synthesizing module 'IDDR' (0#1) [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:73310]
+INFO: [Synth 8-6155] done synthesizing module 'ad_data_in' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_in.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_data_out' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_out.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ODDR' [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:94268]
+INFO: [Synth 8-6155] done synthesizing module 'ODDR' (0#1) [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:94268]
+INFO: [Synth 8-6157] synthesizing module 'OBUF' [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:90662]
+INFO: [Synth 8-6155] done synthesizing module 'OBUF' (0#1) [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:90662]
+INFO: [Synth 8-6155] done synthesizing module 'ad_data_out' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_out.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_data_clk' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_clk.v:38]
+INFO: [Synth 8-6157] synthesizing module 'IBUFG' [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:71820]
+INFO: [Synth 8-6155] done synthesizing module 'IBUFG' (0#1) [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:71820]
+INFO: [Synth 8-6157] synthesizing module 'BUFG' [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:1082]
+INFO: [Synth 8-6155] done synthesizing module 'BUFG' (0#1) [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:1082]
+INFO: [Synth 8-6155] done synthesizing module 'ad_data_clk' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_clk.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_data_in__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_in.v:38]
+INFO: [Synth 8-6157] synthesizing module 'IDELAYCTRL' [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:73432]
+INFO: [Synth 8-6155] done synthesizing module 'IDELAYCTRL' (0#1) [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:73432]
+INFO: [Synth 8-6155] done synthesizing module 'ad_data_in__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_in.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_cmos_if' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/xilinx/axi_ad9361_cmos_if.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_tdd_if' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tdd_if.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_tdd_if' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tdd_if.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_tdd' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tdd.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_tdd_cntrl' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_tdd_cntrl.v:37]
+INFO: [Synth 8-6157] synthesizing module 'up_xfer_cntrl' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_xfer_cntrl' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_xfer_cntrl__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_xfer_cntrl__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_xfer_status' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_status.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_xfer_status' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_status.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_tdd_cntrl' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_tdd_cntrl.v:37]
+INFO: [Synth 8-6157] synthesizing module 'ad_tdd_control' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_tdd_control.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_addsub' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_addsub.v:42]
+INFO: [Synth 8-6155] done synthesizing module 'ad_addsub' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_addsub.v:42]
+INFO: [Synth 8-6155] done synthesizing module 'ad_tdd_control' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_tdd_control.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_tdd' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tdd.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_rx' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_rx_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_rx_pnmon' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_pnmon.v:39]
+INFO: [Synth 8-6157] synthesizing module 'ad_pnmon' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_pnmon.v:39]
+INFO: [Synth 8-6155] done synthesizing module 'ad_pnmon' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_pnmon.v:39]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_rx_pnmon' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_pnmon.v:39]
+INFO: [Synth 8-6157] synthesizing module 'ad_datafmt' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_datafmt.v:39]
+INFO: [Synth 8-6155] done synthesizing module 'ad_datafmt' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_datafmt.v:39]
+INFO: [Synth 8-6157] synthesizing module 'ad_dcfilter' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_dcfilter.v:39]
+INFO: [Synth 8-6157] synthesizing module 'DSP48E1' [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:37448]
+INFO: [Synth 8-6155] done synthesizing module 'DSP48E1' (0#1) [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:37448]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dcfilter' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_dcfilter.v:39]
+INFO: [Synth 8-6157] synthesizing module 'ad_iqcor' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_iqcor.v:43]
+INFO: [Synth 8-6157] synthesizing module 'ad_mul' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_mul.v:38]
+INFO: [Synth 8-6157] synthesizing module 'xil_internal_svlib_MULT_MACRO' [/tools/Xilinx/Vivado/2022.2/data/verilog/src/unimacro/MULT_MACRO.v:24]
+INFO: [Synth 8-6157] synthesizing module 'DSP48E' [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:37331]
+INFO: [Synth 8-6155] done synthesizing module 'DSP48E' (0#1) [/tools/Xilinx/Vivado/2022.2/scripts/rt/data/unisim_comp.v:37331]
+INFO: [Synth 8-6155] done synthesizing module 'xil_internal_svlib_MULT_MACRO' (0#1) [/tools/Xilinx/Vivado/2022.2/data/verilog/src/unimacro/MULT_MACRO.v:24]
+INFO: [Synth 8-6155] done synthesizing module 'ad_mul' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_mul.v:38]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_iqcor.v:140]
+INFO: [Synth 8-6157] synthesizing module 'ad_mul__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_mul.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_mul__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_mul.v:38]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_iqcor.v:127]
+INFO: [Synth 8-6155] done synthesizing module 'ad_iqcor' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_iqcor.v:43]
+INFO: [Synth 8-6157] synthesizing module 'up_adc_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_adc_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_xfer_cntrl__parameterized1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_xfer_cntrl__parameterized1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_xfer_status__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_status.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_xfer_status__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_status.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_adc_channel' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_adc_channel.v:38]
+WARNING: [Synth 8-7071] port 'adc_softspan' of module 'up_adc_channel' is unconnected for instance 'i_up_adc_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+WARNING: [Synth 8-7071] port 'up_adc_crc_err' of module 'up_adc_channel' is unconnected for instance 'i_up_adc_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+WARNING: [Synth 8-7023] instance 'i_up_adc_channel' of module 'up_adc_channel' has 49 connections declared, but only 47 given [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_rx_channel' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_rx_channel__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_rx_pnmon__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_pnmon.v:39]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_rx_pnmon__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_pnmon.v:39]
+INFO: [Synth 8-6157] synthesizing module 'ad_iqcor__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_iqcor.v:43]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_iqcor.v:140]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_iqcor.v:127]
+INFO: [Synth 8-6155] done synthesizing module 'ad_iqcor__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_iqcor.v:43]
+INFO: [Synth 8-6157] synthesizing module 'up_adc_channel__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_adc_channel.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_adc_channel__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_adc_channel.v:38]
+WARNING: [Synth 8-7071] port 'adc_softspan' of module 'up_adc_channel' is unconnected for instance 'i_up_adc_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+WARNING: [Synth 8-7071] port 'up_adc_crc_err' of module 'up_adc_channel' is unconnected for instance 'i_up_adc_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+WARNING: [Synth 8-7023] instance 'i_up_adc_channel' of module 'up_adc_channel' has 49 connections declared, but only 47 given [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_rx_channel__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_rx_channel__parameterized1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_rx_pnmon__parameterized1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_pnmon.v:39]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_rx_pnmon__parameterized1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_pnmon.v:39]
+INFO: [Synth 8-6157] synthesizing module 'up_adc_channel__parameterized1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_adc_channel.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_adc_channel__parameterized1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_adc_channel.v:38]
+WARNING: [Synth 8-7071] port 'adc_softspan' of module 'up_adc_channel' is unconnected for instance 'i_up_adc_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+WARNING: [Synth 8-7071] port 'up_adc_crc_err' of module 'up_adc_channel' is unconnected for instance 'i_up_adc_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+WARNING: [Synth 8-7023] instance 'i_up_adc_channel' of module 'up_adc_channel' has 49 connections declared, but only 47 given [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_rx_channel__parameterized1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_rx_channel__parameterized2' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_rx_pnmon__parameterized2' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_pnmon.v:39]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_rx_pnmon__parameterized2' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_pnmon.v:39]
+INFO: [Synth 8-6157] synthesizing module 'up_adc_channel__parameterized2' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_adc_channel.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_adc_channel__parameterized2' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_adc_channel.v:38]
+WARNING: [Synth 8-7071] port 'adc_softspan' of module 'up_adc_channel' is unconnected for instance 'i_up_adc_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+WARNING: [Synth 8-7071] port 'up_adc_crc_err' of module 'up_adc_channel' is unconnected for instance 'i_up_adc_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+WARNING: [Synth 8-7023] instance 'i_up_adc_channel' of module 'up_adc_channel' has 49 connections declared, but only 47 given [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:189]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_rx_channel__parameterized2' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_adc_common' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_adc_common.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_rst' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_rst.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_rst' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_rst.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_xfer_cntrl__parameterized2' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_xfer_cntrl__parameterized2' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_xfer_status__parameterized1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_status.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_xfer_status__parameterized1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_status.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_clock_mon' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_clock_mon.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_clock_mon' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_clock_mon.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_adc_common' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_adc_common.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_delay_cntrl' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_delay_cntrl.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_delay_cntrl' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_delay_cntrl.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_rx' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_rx.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_tx' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_tx_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds.v:39]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_2' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_2.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_1.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_sine_cordic' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_sine_cordic.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:79]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:80]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized2' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized2' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized3' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized3' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized4' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized4' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized5' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized5' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized6' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized6' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized7' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized7' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized8' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized8' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized9' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized9' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_dds_cordic_pipe__parameterized10' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_cordic_pipe__parameterized10' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_cordic_pipe.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_sine_cordic' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_sine_cordic.v:38]
+INFO: [Synth 8-6157] synthesizing module 'ad_mul__parameterized1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_mul.v:38]
+INFO: [Synth 8-6157] synthesizing module 'xil_internal_svlib_MULT_MACRO__parameterized0' [/tools/Xilinx/Vivado/2022.2/data/verilog/src/unimacro/MULT_MACRO.v:24]
+INFO: [Synth 8-6155] done synthesizing module 'xil_internal_svlib_MULT_MACRO__parameterized0' (0#1) [/tools/Xilinx/Vivado/2022.2/data/verilog/src/unimacro/MULT_MACRO.v:24]
+INFO: [Synth 8-6155] done synthesizing module 'ad_mul__parameterized1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_mul.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_1.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds_2' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds_2.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'ad_dds' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_dds.v:39]
+INFO: [Synth 8-6157] synthesizing module 'up_dac_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_xfer_cntrl__parameterized3' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_xfer_cntrl__parameterized3' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+WARNING: [Synth 8-689] width (176) of port connection 'd_data_cntrl' does not match port width (177) of module 'up_xfer_cntrl__parameterized3' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:429]
+INFO: [Synth 8-6155] done synthesizing module 'up_dac_channel' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:38]
+WARNING: [Synth 8-7071] port 'dac_mask_enable' of module 'up_dac_channel' is unconnected for instance 'i_up_dac_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+WARNING: [Synth 8-7071] port 'dac_src_chan_sel' of module 'up_dac_channel' is unconnected for instance 'i_up_dac_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+WARNING: [Synth 8-7023] instance 'i_up_dac_channel' of module 'up_dac_channel' has 41 connections declared, but only 39 given [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_tx_channel' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_tx_channel__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_dac_channel__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:38]
+WARNING: [Synth 8-689] width (176) of port connection 'd_data_cntrl' does not match port width (177) of module 'up_xfer_cntrl__parameterized3' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:429]
+INFO: [Synth 8-6155] done synthesizing module 'up_dac_channel__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:38]
+WARNING: [Synth 8-7071] port 'dac_mask_enable' of module 'up_dac_channel' is unconnected for instance 'i_up_dac_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+WARNING: [Synth 8-7071] port 'dac_src_chan_sel' of module 'up_dac_channel' is unconnected for instance 'i_up_dac_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+WARNING: [Synth 8-7023] instance 'i_up_dac_channel' of module 'up_dac_channel' has 41 connections declared, but only 39 given [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_tx_channel__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_tx_channel__parameterized1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_dac_channel__parameterized1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:38]
+WARNING: [Synth 8-689] width (176) of port connection 'd_data_cntrl' does not match port width (177) of module 'up_xfer_cntrl__parameterized3' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:429]
+INFO: [Synth 8-6155] done synthesizing module 'up_dac_channel__parameterized1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:38]
+WARNING: [Synth 8-7071] port 'dac_mask_enable' of module 'up_dac_channel' is unconnected for instance 'i_up_dac_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+WARNING: [Synth 8-7071] port 'dac_src_chan_sel' of module 'up_dac_channel' is unconnected for instance 'i_up_dac_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+WARNING: [Synth 8-7023] instance 'i_up_dac_channel' of module 'up_dac_channel' has 41 connections declared, but only 39 given [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_tx_channel__parameterized1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_ad9361_tx_channel__parameterized2' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_dac_channel__parameterized2' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:38]
+WARNING: [Synth 8-689] width (176) of port connection 'd_data_cntrl' does not match port width (177) of module 'up_xfer_cntrl__parameterized3' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:429]
+INFO: [Synth 8-6155] done synthesizing module 'up_dac_channel__parameterized2' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_channel.v:38]
+WARNING: [Synth 8-7071] port 'dac_mask_enable' of module 'up_dac_channel' is unconnected for instance 'i_up_dac_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+WARNING: [Synth 8-7071] port 'dac_src_chan_sel' of module 'up_dac_channel' is unconnected for instance 'i_up_dac_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+WARNING: [Synth 8-7023] instance 'i_up_dac_channel' of module 'up_dac_channel' has 41 connections declared, but only 39 given [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:354]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_tx_channel__parameterized2' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx_channel.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_dac_common' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_common.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_xfer_cntrl__parameterized4' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_xfer_cntrl__parameterized4' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_cntrl.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_xfer_status__parameterized2' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_status.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_xfer_status__parameterized2' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_xfer_status.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_dac_common' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_dac_common.v:38]
+WARNING: [Synth 8-7071] port 'dac_symb_op' of module 'up_dac_common' is unconnected for instance 'i_up_dac_common' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:374]
+WARNING: [Synth 8-7071] port 'dac_symb_8_16b' of module 'up_dac_common' is unconnected for instance 'i_up_dac_common' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:374]
+WARNING: [Synth 8-7071] port 'dac_ext_sync_arm' of module 'up_dac_common' is unconnected for instance 'i_up_dac_common' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:374]
+WARNING: [Synth 8-7071] port 'dac_ext_sync_disarm' of module 'up_dac_common' is unconnected for instance 'i_up_dac_common' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:374]
+WARNING: [Synth 8-7071] port 'dac_ext_sync_manual_req' of module 'up_dac_common' is unconnected for instance 'i_up_dac_common' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:374]
+WARNING: [Synth 8-7071] port 'up_dac_r1_mode' of module 'up_dac_common' is unconnected for instance 'i_up_dac_common' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:374]
+WARNING: [Synth 8-7023] instance 'i_up_dac_common' of module 'up_dac_common' has 48 connections declared, but only 42 given [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:374]
+INFO: [Synth 8-6157] synthesizing module 'up_delay_cntrl__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_delay_cntrl.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_delay_cntrl__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_delay_cntrl.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361_tx' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:38]
+INFO: [Synth 8-6157] synthesizing module 'up_axi' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_axi.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_axi' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_axi.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'axi_ad9361' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'system_axi_ad9361_0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/synth/system_axi_ad9361_0.v:53]
+WARNING: [Synth 8-6014] Unused sequential element en_vtc_reg was removed.  [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_in.v:141]
+WARNING: [Synth 8-6014] Unused sequential element en_vtc_reg was removed.  [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_out.v:139]
+WARNING: [Synth 8-6014] Unused sequential element en_vtc_reg was removed.  [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/xilinx/common/ad_data_in.v:141]
+WARNING: [Synth 8-3936] Found unconnected internal register 'out_d2_reg' and it is trimmed from '25' to '24' bits. [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_addsub.v:99]
+WARNING: [Synth 8-3936] Found unconnected internal register 'g_loop[0].p1_data_p_reg' and it is trimmed from '34' to '30' bits. [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_iqcor.v:176]
+WARNING: [Synth 8-3936] Found unconnected internal register 'g_loop[0].p1_data_p_reg' and it is trimmed from '34' to '30' bits. [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/ad_iqcor.v:176]
+WARNING: [Synth 8-6014] Unused sequential element dac_valid_q0_int_reg was removed.  [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:190]
+WARNING: [Synth 8-6014] Unused sequential element dac_valid_q1_int_reg was removed.  [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/519b/axi_ad9361_tx.v:192]
+WARNING: [Synth 8-7129] Port up_axi_awaddr[1] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_awaddr[0] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_wstrb[3] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_wstrb[2] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_wstrb[1] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_wstrb[0] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_araddr[1] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_araddr[0] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port delay_clk in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port delay_locked in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[79] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[78] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[77] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[76] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[75] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[74] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[73] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[72] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[71] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[70] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[69] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[68] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[67] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[66] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[65] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[64] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[63] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[62] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[61] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[60] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[59] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[58] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[57] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[56] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[55] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[54] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[53] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[52] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[51] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[50] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[49] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[48] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[47] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[46] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[45] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[44] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[43] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[42] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[41] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[40] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[39] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[38] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[37] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[36] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[35] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[34] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[33] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[32] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[31] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[30] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[29] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[28] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[27] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[26] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[25] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[24] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[23] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[22] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[21] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[20] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[19] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[18] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[17] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[16] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[15] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[14] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[13] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[12] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[11] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[10] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[9] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[8] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[7] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[6] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[5] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[4] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[3] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[2] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[1] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_drdata[0] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_rstn in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_clk in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_wreq in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_waddr[13] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_waddr[12] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_waddr[11] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_waddr[10] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_waddr[9] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_waddr[8] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_waddr[7] in module up_delay_cntrl__parameterized0 is either unconnected or has no load
+INFO: [Common 17-14] Message 'Synth 8-7129' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:29 . Memory (MB): peak = 2071.105 ; gain = 492.676 ; free physical = 3268 ; free virtual = 9042
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1166.115; parent = 1036.589; children = 152.812
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3070.715; parent = 2071.109; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:05 ; elapsed = 00:00:29 . Memory (MB): peak = 2088.918 ; gain = 510.488 ; free physical = 3344 ; free virtual = 9119
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1166.115; parent = 1036.589; children = 152.812
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3088.527; parent = 2088.922; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:05 ; elapsed = 00:00:29 . Memory (MB): peak = 2088.918 ; gain = 510.488 ; free physical = 3360 ; free virtual = 9135
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1166.115; parent = 1036.589; children = 152.812
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3088.527; parent = 2088.922; children = 999.605
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00.19 ; elapsed = 00:00:00.28 . Memory (MB): peak = 2094.855 ; gain = 0.000 ; free physical = 3038 ; free virtual = 8815
+INFO: [Netlist 29-17] Analyzing 71 Unisim elements for replacement
+WARNING: [Netlist 29-432] The IBUFG primitive 'inst/i_dev_if/i_clk/i_rx_clk_ibuf' has been retargeted to an IBUF primitive only. No BUFG will be added. If a global buffer is intended, please instantiate an available global clock primitive from the current architecture.
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc] for cell 'inst'
+Finished Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc] for cell 'inst'
+Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc] for cell 'inst'
+Finished Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc] for cell 'inst'
+Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc] for cell 'inst'
+Finished Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc] for cell 'inst'
+Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc] for cell 'inst'
+Finished Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc] for cell 'inst'
+Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/axi_ad9361_constr.xdc] for cell 'inst'
+Finished Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/axi_ad9361_constr.xdc] for cell 'inst'
+Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_axi_ad9361_0_synth_1/dont_touch.xdc]
+Finished Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_axi_ad9361_0_synth_1/dont_touch.xdc]
+Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/system_axi_ad9361_0_pps_constr.xdc] for cell 'inst'
+Finished Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/system_axi_ad9361_0_pps_constr.xdc] for cell 'inst'
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2244.668 ; gain = 0.000 ; free physical = 3042 ; free virtual = 8820
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 25 instances were transformed.
+  DSP48E => DSP48E1: 24 instances
+  IBUFG => IBUF: 1 instance 
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00.46 ; elapsed = 00:00:00.24 . Memory (MB): peak = 2244.668 ; gain = 0.000 ; free physical = 3166 ; free virtual = 8945
+INFO: [Designutils 20-5008] Incremental synthesis strategy off
+INFO: [Synth 8-11241] undeclared symbol 'REGCCE', assumed default net type 'wire' [/tools/Xilinx/Vivado/2022.2/data/verilog/src/unimacro/BRAM_SINGLE_MACRO.v:2170]
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:13 ; elapsed = 00:00:40 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 2628 ; free virtual = 8451
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1166.115; parent = 1036.589; children = 152.812
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z010clg400-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:13 ; elapsed = 00:00:40 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 2624 ; free virtual = 8446
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1166.115; parent = 1036.589; children = 152.812
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_cntrl/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_cntrl/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_cntrl/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_cntrl/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_cntrl/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_cntrl/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_cntrl/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_control/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_control/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_control/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_control/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_control/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_control/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_1/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_1/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_1/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_1/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_1/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_1/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_2/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_2/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_2/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_2/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_2/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_2/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_1/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_1/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_1/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_1/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_1/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_1/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_2/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_2/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_2/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_2/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_2/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_2/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_0/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_0/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_0/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_0/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_0/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_0/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_1/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_1/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_1/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_1/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_1/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_1/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_2/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_2/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_2/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_2/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_2/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_2/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_3/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_3/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_3/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_3/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_3/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_3/i_up_dac_channel/i_xfer_cntrl/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_cntrl/up_xfer_state_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_cntrl/up_xfer_state_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_cntrl/up_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_cntrl/up_xfer_state_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_cntrl/up_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_cntrl/up_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_cntrl/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_cntrl/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_cntrl/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_cntrl/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_control/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_control/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_control/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_1/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_1/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_1/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_2/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_2/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_rx_2/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_1/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_1/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_1/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_2/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_2/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_counter_values_tx_2/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_0/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_0/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_0/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_1/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_1/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_1/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_2/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_2/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_2/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_3/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_3/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_tx_channel_3/i_up_dac_channel/i_xfer_cntrl/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_cntrl/d_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_cntrl/d_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_cntrl/d_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_cntrl_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_delay_cntrl/i_delay_rst_reg/rst_async_d1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_delay_cntrl/i_delay_rst_reg/rst_async_d2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_core_rst_reg/rst_async_d1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_core_rst_reg/rst_async_d2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_mmcm_rst_reg/rst_async_d1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_mmcm_rst_reg/rst_async_d2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_core_rst_reg/rst_async_d1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_core_rst_reg/rst_async_d2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_mmcm_rst_reg/rst_async_d1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_mmcm_rst_reg/rst_async_d2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_delay_cntrl/i_delay_rst_reg/rst_sync_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 5).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_core_rst_reg/rst_sync_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 5).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_mmcm_rst_reg/rst_sync_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 5).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_core_rst_reg/rst_sync_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 5).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_mmcm_rst_reg/rst_sync_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/ad_rst_constr.xdc, line 5).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_status/d_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_status/d_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_status/d_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_status/d_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_status/d_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_status/d_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_status/d_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_status/d_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_status/d_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_status/d_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_status/d_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_status/d_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_status/d_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_status/d_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_status/d_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_status/d_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_status/d_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_status/d_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_status/d_xfer_state_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_status/d_xfer_state_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_status/d_xfer_state_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m3_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_0/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m3_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_1/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m3_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_2/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m3_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_rx_channel_3/i_up_adc_channel/i_xfer_status/up_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_status/up_xfer_toggle_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_status/up_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_status/up_xfer_toggle_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_status/up_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_status/up_xfer_toggle_m3_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_xfer_status/up_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_status/up_xfer_toggle_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_status/up_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_status/up_xfer_toggle_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_status/up_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_status/up_xfer_toggle_m3_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_up_tdd_cntrl/i_xfer_tdd_status/up_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_status/up_xfer_toggle_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_status/up_xfer_toggle_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_status/up_xfer_toggle_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_status/up_xfer_toggle_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_status/up_xfer_toggle_m3_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_xfer_status/up_xfer_toggle_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_xfer_status_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_count_running_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_count_running_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_count_running_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_count_running_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_count_running_m3_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_count_running_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_count_running_m1_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_count_running_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_count_running_m2_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_count_running_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_count_running_m3_i. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_count_running_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/d_count_run_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/d_count_run_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/d_count_run_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/d_count_run_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/d_count_run_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/d_count_run_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 3).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_rx/i_up_adc_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_tx/i_up_dac_common/i_clock_mon/up_d_count_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/xilinx/common/up_clock_mon_constr.xdc, line 4).
+Applied set_property ASYNC_REG = true for inst/i_dev_if/enable_up_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/axi_ad9361_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_dev_if/enable_up_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/axi_ad9361_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_dev_if/txnrx_up_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/axi_ad9361_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_dev_if/txnrx_up_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/axi_ad9361_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_tdd_control/tdd_sync_d1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/axi_ad9361_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_tdd_control/tdd_sync_d2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/axi_ad9361_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_tdd/i_tdd_control/tdd_sync_d3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_axi_ad9361_0/axi_ad9361_constr.xdc, line 2).
+Applied set_property KEEP_HIERARCHY = SOFT for inst. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_axi_ad9361_0_synth_1/dont_touch.xdc, line 9).
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:13 ; elapsed = 00:00:41 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 2551 ; free virtual = 8373
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1166.115; parent = 1036.589; children = 152.812
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:16 ; elapsed = 00:00:45 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 3146 ; free virtual = 8974
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1166.115; parent = 1036.589; children = 152.812
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   30 Bit       Adders := 8     
+	   2 Input   24 Bit       Adders := 22    
+	   2 Input   16 Bit       Adders := 28    
+	   3 Input   16 Bit       Adders := 4     
+	   3 Input   14 Bit       Adders := 192   
+	   2 Input   14 Bit       Adders := 8     
+	   3 Input   13 Bit       Adders := 96    
+	   2 Input    6 Bit       Adders := 24    
+	   2 Input    5 Bit       Adders := 2     
+	   2 Input    4 Bit       Adders := 4     
++---XORs : 
+	   2 Input     14 Bit         XORs := 192   
+	   2 Input     13 Bit         XORs := 96    
+	   2 Input      1 Bit         XORs := 209   
+	   3 Input      1 Bit         XORs := 24    
+	   4 Input      1 Bit         XORs := 12    
+	   6 Input      1 Bit         XORs := 6     
+	   5 Input      1 Bit         XORs := 6     
+	   7 Input      1 Bit         XORs := 10    
++---XORs : 
+	               12 Bit    Wide XORs := 4     
+	                2 Bit    Wide XORs := 4     
++---Registers : 
+	              177 Bit    Registers := 8     
+	              144 Bit    Registers := 8     
+	              122 Bit    Registers := 2     
+	               81 Bit    Registers := 8     
+	               65 Bit    Registers := 1     
+	               63 Bit    Registers := 2     
+	               48 Bit    Registers := 10    
+	               44 Bit    Registers := 12    
+	               36 Bit    Registers := 3     
+	               35 Bit    Registers := 2     
+	               32 Bit    Registers := 28    
+	               30 Bit    Registers := 8     
+	               24 Bit    Registers := 167   
+	               17 Bit    Registers := 24    
+	               16 Bit    Registers := 221   
+	               14 Bit    Registers := 242   
+	               13 Bit    Registers := 105   
+	               12 Bit    Registers := 33    
+	                8 Bit    Registers := 35    
+	                6 Bit    Registers := 24    
+	                5 Bit    Registers := 4     
+	                4 Bit    Registers := 28    
+	                3 Bit    Registers := 7     
+	                2 Bit    Registers := 9     
+	                1 Bit    Registers := 611   
++---Muxes : 
+	   2 Input   65 Bit        Muxes := 5     
+	   7 Input   48 Bit        Muxes := 2     
+	   2 Input   44 Bit        Muxes := 4     
+	   2 Input   36 Bit        Muxes := 1     
+	   2 Input   32 Bit        Muxes := 11    
+	  27 Input   32 Bit        Muxes := 1     
+	  30 Input   32 Bit        Muxes := 1     
+	   2 Input   24 Bit        Muxes := 12    
+	   2 Input   20 Bit        Muxes := 1     
+	   2 Input   16 Bit        Muxes := 44    
+	   2 Input   15 Bit        Muxes := 1     
+	   3 Input   14 Bit        Muxes := 8     
+	   3 Input   13 Bit        Muxes := 16    
+	   4 Input   12 Bit        Muxes := 2     
+	   2 Input   12 Bit        Muxes := 8     
+	   5 Input   12 Bit        Muxes := 4     
+	   2 Input   11 Bit        Muxes := 1     
+	   2 Input    9 Bit        Muxes := 1     
+	   2 Input    8 Bit        Muxes := 1     
+	   2 Input    6 Bit        Muxes := 2     
+	   2 Input    5 Bit        Muxes := 17    
+	   3 Input    4 Bit        Muxes := 12    
+	   5 Input    3 Bit        Muxes := 4     
+	   2 Input    3 Bit        Muxes := 1     
+	   2 Input    2 Bit        Muxes := 1     
+	   4 Input    2 Bit        Muxes := 1     
+	   7 Input    1 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 87    
+	   3 Input    1 Bit        Muxes := 17    
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 80 (col length:40)
+BRAMs: 120 (col length: RAMB18 40 RAMB36 20)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:50 ; elapsed = 00:01:30 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 2545 ; free virtual = 8423
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1268.425; parent = 1125.412; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:56 ; elapsed = 00:01:37 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 2382 ; free virtual = 8260
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1349.354; parent = 1218.797; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:57 ; elapsed = 00:01:38 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 2463 ; free virtual = 8343
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1361.705; parent = 1229.995; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:01:05 ; elapsed = 00:01:48 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 7658 ; free virtual = 13520
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1412.034; parent = 1266.960; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:01:10 ; elapsed = 00:01:53 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 7494 ; free virtual = 13385
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1412.034; parent = 1266.960; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:01:10 ; elapsed = 00:01:54 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 7475 ; free virtual = 13366
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1412.034; parent = 1266.960; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:13 ; elapsed = 00:01:57 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 6862 ; free virtual = 12757
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1412.034; parent = 1266.960; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:01:13 ; elapsed = 00:01:57 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 6825 ; free virtual = 12719
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1412.034; parent = 1266.960; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:14 ; elapsed = 00:01:58 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 6460 ; free virtual = 12356
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1412.034; parent = 1267.195; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:01:14 ; elapsed = 00:01:58 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 6352 ; free virtual = 12243
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1412.034; parent = 1267.195; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Static Shift Register Report:
++------------+------------------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+|Module Name | RTL Name                                                   | Length | Width | Reset Signal | Pull out first Reg | Pull out last Reg | SRL16E | SRLC32E | 
++------------+------------------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+|axi_ad9361  | i_tx/i_tx_channel_0/i_dds/dac_dds_data_reg[10]             | 4      | 11    | NO           | YES                | YES               | 11     | 0       | 
+|axi_ad9361  | i_tx/i_tx_channel_0/i_ad_iqcor/g_loop[0].p1_data_i_reg[15] | 4      | 13    | NO           | NO                 | YES               | 13     | 0       | 
+|axi_ad9361  | i_tx/i_tx_channel_1/i_dds/dac_dds_data_reg[10]             | 4      | 11    | NO           | YES                | YES               | 11     | 0       | 
+|axi_ad9361  | i_tx/i_tx_channel_1/i_ad_iqcor/g_loop[0].p1_data_q_reg[15] | 4      | 12    | NO           | NO                 | YES               | 12     | 0       | 
+|axi_ad9361  | i_tx/i_tx_channel_2/i_dds/dac_dds_data_reg[10]             | 4      | 11    | NO           | YES                | YES               | 11     | 0       | 
+|axi_ad9361  | i_tx/i_tx_channel_2/i_ad_iqcor/g_loop[0].p1_data_i_reg[15] | 4      | 12    | NO           | NO                 | YES               | 12     | 0       | 
+|axi_ad9361  | i_tx/i_tx_channel_3/i_dds/dac_dds_data_reg[10]             | 4      | 11    | NO           | YES                | YES               | 11     | 0       | 
+|axi_ad9361  | i_tx/i_tx_channel_3/i_ad_iqcor/g_loop[0].p1_data_q_reg[15] | 4      | 12    | NO           | NO                 | YES               | 12     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_tx_dp_on_2_comp/out_reg[23]          | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_tx_dp_on_1_comp/out_reg[23]          | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_tx_dp_off_1_comp/out_reg[23]         | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_tx_dp_off_2_comp/out_reg[23]         | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_vco_rx_on_2_comp/out_reg[23]         | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_vco_rx_on_1_comp/out_reg[23]         | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_vco_rx_off_1_comp/out_reg[23]        | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_vco_rx_off_2_comp/out_reg[23]        | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_vco_tx_on_2_comp/out_reg[23]         | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_vco_tx_on_1_comp/out_reg[23]         | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_vco_tx_off_1_comp/out_reg[23]        | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_vco_tx_off_2_comp/out_reg[23]        | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_rx_on_2_comp/out_reg[23]             | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_rx_on_1_comp/out_reg[23]             | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_rx_off_1_comp/out_reg[23]            | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_rx_off_2_comp/out_reg[23]            | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_tx_on_2_comp/out_reg[23]             | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_tx_on_1_comp/out_reg[23]             | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_tx_off_1_comp/out_reg[23]            | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_tdd/i_tdd_control/i_tx_off_2_comp/out_reg[23]            | 4      | 24    | NO           | NO                 | YES               | 24     | 0       | 
+|axi_ad9361  | i_rx/i_rx_channel_0/i_ad_iqcor/g_loop[0].p1_data_i_reg[15] | 4      | 16    | NO           | NO                 | YES               | 16     | 0       | 
+|axi_ad9361  | i_rx/i_rx_channel_1/i_ad_iqcor/g_loop[0].p1_data_q_reg[15] | 4      | 16    | NO           | NO                 | YES               | 16     | 0       | 
+|axi_ad9361  | i_rx/i_rx_channel_2/i_ad_iqcor/g_loop[0].p1_data_i_reg[15] | 4      | 16    | NO           | NO                 | YES               | 16     | 0       | 
+|axi_ad9361  | i_rx/i_rx_channel_3/i_ad_iqcor/g_loop[0].p1_data_q_reg[15] | 4      | 16    | NO           | NO                 | YES               | 16     | 0       | 
+|axi_ad9361  | i_rx/i_rx_channel_0/i_ad_iqcor/g_loop[0].valid_int_reg     | 7      | 1     | NO           | NO                 | NO                | 1      | 0       | 
++------------+------------------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+DSP Final Report (the ' indicates corresponding REG is set)
++----------------+---------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name     | DSP Mapping         | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++----------------+---------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|ad_dcfilter_174 | (C'+((D-A')'*B')')' | 30     | 18     | 48     | 25     | 48     | 1    | 1    | 1    | 1    | 1     | 1    | 1    | 
+|ad_dcfilter_166 | (C'+((D-A')'*B')')' | 30     | 18     | 48     | 25     | 48     | 1    | 1    | 1    | 1    | 1     | 1    | 1    | 
+|ad_dcfilter_158 | (C'+((D-A')'*B')')' | 30     | 18     | 48     | 25     | 48     | 1    | 1    | 1    | 1    | 1     | 1    | 1    | 
+|ad_dcfilter     | (C'+((D-A')'*B')')' | 30     | 18     | 48     | 25     | 48     | 1    | 1    | 1    | 1    | 1     | 1    | 1    | 
++----------------+---------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+
+Report BlackBoxes: 
++------+--------------+----------+
+|      |BlackBox name |Instances |
++------+--------------+----------+
+|1     |DSP48E        |        24|
++------+--------------+----------+
+
+Report Cell Usage: 
++------+-----------+------+
+|      |Cell       |Count |
++------+-----------+------+
+|1     |DSP48E     |    24|
+|25    |BUFG       |     1|
+|26    |CARRY4     |  1527|
+|27    |DSP48E1    |     4|
+|28    |IDDR       |    13|
+|29    |IDELAYCTRL |     1|
+|30    |IDELAYE2   |    13|
+|31    |LUT1       |  1789|
+|32    |LUT2       |  1509|
+|33    |LUT3       |  4634|
+|34    |LUT4       |   460|
+|35    |LUT5       |   520|
+|36    |LUT6       |  1687|
+|37    |MUXF7      |    46|
+|38    |MUXF8      |     4|
+|39    |ODDR       |    16|
+|40    |SRL16E     |   638|
+|41    |FDCE       |  3829|
+|42    |FDPE       |    10|
+|43    |FDRE       | 10976|
+|44    |FDSE       |   137|
+|45    |IBUF       |    13|
+|46    |IBUFG      |     1|
+|47    |OBUF       |    16|
++------+-----------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:01:14 ; elapsed = 00:01:58 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 6264 ; free virtual = 12155
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1412.034; parent = 1267.567; children = 161.639
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3212.262; parent = 2212.656; children = 999.605
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 41 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:01:11 ; elapsed = 00:01:53 . Memory (MB): peak = 2244.668 ; gain = 510.488 ; free physical = 6569 ; free virtual = 12459
+Synthesis Optimization Complete : Time (s): cpu = 00:01:15 ; elapsed = 00:01:59 . Memory (MB): peak = 2244.668 ; gain = 666.238 ; free physical = 7102 ; free virtual = 12993
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.41 ; elapsed = 00:00:00.41 . Memory (MB): peak = 2244.668 ; gain = 0.000 ; free physical = 6184 ; free virtual = 12075
+INFO: [Netlist 29-17] Analyzing 1648 Unisim elements for replacement
+WARNING: [Netlist 29-432] The IBUFG primitive 'inst/i_dev_if/i_clk/i_rx_clk_ibuf' has been retargeted to an IBUF primitive only. No BUFG will be added. If a global buffer is intended, please instantiate an available global clock primitive from the current architecture.
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2244.668 ; gain = 0.000 ; free physical = 4918 ; free virtual = 10810
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 25 instances were transformed.
+  DSP48E => DSP48E1: 24 instances
+  IBUFG => IBUF: 1 instance 
+
+Synth Design complete, checksum: c9be264d
+INFO: [Common 17-83] Releasing license: Synthesis
+199 Infos, 152 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:01:24 ; elapsed = 00:02:18 . Memory (MB): peak = 2244.668 ; gain = 912.488 ; free physical = 5006 ; free virtual = 10898
+INFO: [Common 17-1381] The checkpoint '/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_axi_ad9361_0_synth_1/system_axi_ad9361_0.dcp' has been generated.
+INFO: [Coretcl 2-1648] Added synthesis output to IP cache for IP system_axi_ad9361_0, cache-ID = 17416005385c89ce
+INFO: [Coretcl 2-1174] Renamed 297 cell refs.
+INFO: [Common 17-1381] The checkpoint '/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_axi_ad9361_0_synth_1/system_axi_ad9361_0.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file system_axi_ad9361_0_utilization_synth.rpt -pb system_axi_ad9361_0_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Wed Feb  7 20:10:47 2024...

@@ -1,0 +1,26 @@
+#-----------------------------------------------------------
+# Vivado v2022.2 (64-bit)
+# SW Build 3671981 on Fri Oct 14 04:59:54 MDT 2022
+# IP Build 3669848 on Fri Oct 14 08:30:02 MDT 2022
+# Start of session at: Wed Feb  7 20:10:17 2024
+# Process ID: 6249
+# Current directory: /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_cdc_sync_active_1_synth_1
+# Command line: vivado -log system_cdc_sync_active_1.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source system_cdc_sync_active_1.tcl
+# Log file: /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_cdc_sync_active_1_synth_1/system_cdc_sync_active_1.vds
+# Journal file: /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_cdc_sync_active_1_synth_1/vivado.jou
+# Running On: ubuntu, OS: Linux, CPU Frequency: 3792.876 MHz, CPU Physical cores: 16, Host memory: 16723 MB
+#-----------------------------------------------------------
+source system_cdc_sync_active_1.tcl -notrace
+create_project: Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 1323.305 ; gain = 0.023 ; free physical = 7367 ; free virtual = 13259
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/raincorn/pluto/plutosdr-fw/hdl/library'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/tools/Xilinx/Vivado/2022.2/data/ip'.
+INFO: [IP_Flow 19-6924] IPCACHE: Running cache check for IP inst: system_cdc_sync_active_1
+INFO: [IP_Flow 19-6922] IPCACHE: Exporting cached entry e7188f83ae5db2f6 to dir: /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_cdc_sync_active_1_synth_1
+INFO: [IP_Flow 19-6928] IPCACHE: copied cached file /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.cache/ip/2022.2/e/7/e7188f83ae5db2f6/system_cdc_sync_active_0_sim_netlist.vhdl to /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_cdc_sync_active_1_synth_1/system_cdc_sync_active_1_sim_netlist.vhdl.
+INFO: [IP_Flow 19-6928] IPCACHE: copied cached file /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.cache/ip/2022.2/e/7/e7188f83ae5db2f6/system_cdc_sync_active_0_stub.vhdl to /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_cdc_sync_active_1_synth_1/system_cdc_sync_active_1_stub.vhdl.
+INFO: [IP_Flow 19-6928] IPCACHE: copied cached file /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.cache/ip/2022.2/e/7/e7188f83ae5db2f6/system_cdc_sync_active_0.dcp to /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_cdc_sync_active_1_synth_1/system_cdc_sync_active_1.dcp.
+INFO: [IP_Flow 19-6928] IPCACHE: copied cached file /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.cache/ip/2022.2/e/7/e7188f83ae5db2f6/system_cdc_sync_active_0_sim_netlist.v to /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_cdc_sync_active_1_synth_1/system_cdc_sync_active_1_sim_netlist.v.
+INFO: [IP_Flow 19-6928] IPCACHE: copied cached file /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.cache/ip/2022.2/e/7/e7188f83ae5db2f6/system_cdc_sync_active_0_stub.v to /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_cdc_sync_active_1_synth_1/system_cdc_sync_active_1_stub.v.
+INFO: [IP_Flow 19-4838] Using cached IP synthesis design for IP system_cdc_sync_active_1, cache-ID = e7188f83ae5db2f6.
+INFO: [Common 17-206] Exiting Vivado at Wed Feb  7 20:10:27 2024...

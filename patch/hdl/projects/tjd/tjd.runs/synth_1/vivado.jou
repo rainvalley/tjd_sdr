@@ -1,0 +1,13 @@
+#-----------------------------------------------------------
+# Vivado v2022.2 (64-bit)
+# SW Build 3671981 on Fri Oct 14 04:59:54 MDT 2022
+# IP Build 3669848 on Fri Oct 14 08:30:02 MDT 2022
+# Start of session at: Wed Feb 14 13:25:02 2024
+# Process ID: 1477533
+# Current directory: /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/synth_1
+# Command line: vivado -log system_top.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source system_top.tcl
+# Log file: /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/synth_1/system_top.vds
+# Journal file: /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/synth_1/vivado.jou
+# Running On: ubuntu, OS: Linux, CPU Frequency: 3792.876 MHz, CPU Physical cores: 16, Host memory: 8280 MB
+#-----------------------------------------------------------
+source system_top.tcl -notrace

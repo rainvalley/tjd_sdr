@@ -1,0 +1,135 @@
+verilog xil_defaultlib --include "/tools/Xilinx/Vivado/2022.2/data/xilinx_vip/include" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/a40c" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ec67/hdl" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ee60/hdl" \
+"../../../bd/system/ip/system_cdc_sync_active_0/sim/system_cdc_sync_active_0.v" \
+"../../../bd/system/ip/system_logic_and_0_0/sim/system_logic_and_0_0.v" \
+"../../../bd/system/ip/system_logic_and_1_0/sim/system_logic_and_1_0.v" \
+"../../../bd/system/ip/system_out_mux_0_0/sim/system_out_mux_0_0.v" \
+"../../../bd/system/ip/system_out_mux_1_0/sim/system_out_mux_1_0.v" \
+"../../../bd/system/ip/system_rate_gen_0/sim/system_rate_gen_0.v" \
+"../../../bd/system/ip/system_cdc_sync_active_1/sim/system_cdc_sync_active_1.v" \
+"../../../bd/system/ip/system_out_mux_0_1/sim/system_out_mux_0_1.v" \
+"../../../bd/system/ip/system_out_mux_1_1/sim/system_out_mux_1_1.v" \
+"../../../bd/system/ip/system_tdd_ch_slice_0_0/sim/system_tdd_ch_slice_0_0.v" \
+"../../../bd/system/ip/system_tdd_ch_slice_1_0/sim/system_tdd_ch_slice_1_0.v" \
+"../../../bd/system/ip/system_tdd_ch_slice_2_0/sim/system_tdd_ch_slice_2_0.v" \
+"../../../bd/system/ipshared/util_cdc/sync_bits.v" \
+"../../../bd/system/ipshared/util_cdc/sync_data.v" \
+"../../../bd/system/ipshared/util_cdc/sync_event.v" \
+"../../../bd/system/ipshared/common/up_axi.v" \
+
+sv xil_defaultlib --include "/tools/Xilinx/Vivado/2022.2/data/xilinx_vip/include" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/a40c" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ec67/hdl" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ee60/hdl" \
+"../../../bd/system/ipshared/3c1a/axi_tdd_pkg.sv" \
+"../../../bd/system/ipshared/3c1a/axi_tdd_channel.sv" \
+"../../../bd/system/ipshared/3c1a/axi_tdd_counter.sv" \
+"../../../bd/system/ipshared/3c1a/axi_tdd_regmap.sv" \
+"../../../bd/system/ipshared/3c1a/axi_tdd_sync_gen.sv" \
+"../../../bd/system/ipshared/3c1a/axi_tdd.sv" \
+"../../../bd/system/ip/system_tdd_core_0/sim/system_tdd_core_0.sv" \
+
+verilog xil_defaultlib --include "/tools/Xilinx/Vivado/2022.2/data/xilinx_vip/include" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/a40c" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ec67/hdl" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ee60/hdl" \
+"../../../bd/system/ip/system_GND_1_0/sim/system_GND_1_0.v" \
+"../../../bd/system/ip/system_GND_32_0/sim/system_GND_32_0.v" \
+"../../../bd/system/ip/system_VCC_1_0/sim/system_VCC_1_0.v" \
+"../../../bd/system/ipshared/common/ad_addsub.v" \
+"../../../bd/system/ipshared/xilinx/common/ad_data_clk.v" \
+"../../../bd/system/ipshared/xilinx/common/ad_data_in.v" \
+"../../../bd/system/ipshared/xilinx/common/ad_data_out.v" \
+"../../../bd/system/ipshared/common/ad_datafmt.v" \
+"../../../bd/system/ipshared/xilinx/common/ad_dcfilter.v" \
+"../../../bd/system/ipshared/common/ad_dds.v" \
+"../../../bd/system/ipshared/common/ad_dds_1.v" \
+"../../../bd/system/ipshared/common/ad_dds_2.v" \
+"../../../bd/system/ipshared/common/ad_dds_cordic_pipe.v" \
+"../../../bd/system/ipshared/common/ad_dds_sine.v" \
+"../../../bd/system/ipshared/common/ad_dds_sine_cordic.v" \
+"../../../bd/system/ipshared/common/ad_iqcor.v" \
+"../../../bd/system/ipshared/xilinx/common/ad_mul.v" \
+"../../../bd/system/ipshared/common/ad_pnmon.v" \
+"../../../bd/system/ipshared/common/ad_pps_receiver.v" \
+"../../../bd/system/ipshared/common/ad_rst.v" \
+"../../../bd/system/ipshared/common/ad_tdd_control.v" \
+"../../../bd/system/ipshared/519b/xilinx/axi_ad9361_cmos_if.v" \
+"../../../bd/system/ipshared/519b/xilinx/axi_ad9361_lvds_if.v" \
+"../../../bd/system/ipshared/519b/axi_ad9361_rx.v" \
+"../../../bd/system/ipshared/519b/axi_ad9361_rx_channel.v" \
+"../../../bd/system/ipshared/519b/axi_ad9361_rx_pnmon.v" \
+"../../../bd/system/ipshared/519b/axi_ad9361_tdd.v" \
+"../../../bd/system/ipshared/519b/axi_ad9361_tdd_if.v" \
+"../../../bd/system/ipshared/519b/axi_ad9361_tx.v" \
+"../../../bd/system/ipshared/519b/axi_ad9361_tx_channel.v" \
+"../../../bd/system/ipshared/common/up_adc_channel.v" \
+"../../../bd/system/ipshared/common/up_adc_common.v" \
+"../../../bd/system/ipshared/common/up_clock_mon.v" \
+"../../../bd/system/ipshared/common/up_dac_channel.v" \
+"../../../bd/system/ipshared/common/up_dac_common.v" \
+"../../../bd/system/ipshared/common/up_delay_cntrl.v" \
+"../../../bd/system/ipshared/common/up_tdd_cntrl.v" \
+"../../../bd/system/ipshared/common/up_xfer_cntrl.v" \
+"../../../bd/system/ipshared/common/up_xfer_status.v" \
+"../../../bd/system/ipshared/519b/axi_ad9361.v" \
+"../../../bd/system/ip/system_axi_ad9361_0/sim/system_axi_ad9361_0.v" \
+"../../../bd/system/ipshared/5013/sync_gray.v" \
+"../../../bd/system/ipshared/common/ad_mem.v" \
+"../../../bd/system/ipshared/8e37/util_axis_fifo_address_generator.v" \
+"../../../bd/system/ipshared/8e37/util_axis_fifo.v" \
+
+sv xil_defaultlib --include "/tools/Xilinx/Vivado/2022.2/data/xilinx_vip/include" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/a40c" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ec67/hdl" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ee60/hdl" \
+"../../../bd/system/ip/system_axi_ad9361_adc_dma_0/sim/system_axi_ad9361_adc_dma_0_pkg.sv" \
+
+verilog xil_defaultlib --include "/tools/Xilinx/Vivado/2022.2/data/xilinx_vip/include" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/a40c" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ec67/hdl" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ee60/hdl" \
+"../../../bd/system/ipshared/common/ad_mem_asym.v" \
+"../../../bd/system/ipshared/a40c/address_generator.v" \
+"../../../bd/system/ipshared/a40c/axi_dmac_burst_memory.v" \
+"../../../bd/system/ipshared/a40c/axi_dmac_regmap.v" \
+"../../../bd/system/ipshared/a40c/axi_dmac_regmap_request.v" \
+"../../../bd/system/ipshared/a40c/axi_dmac_reset_manager.v" \
+"../../../bd/system/ipshared/a40c/axi_dmac_resize_dest.v" \
+"../../../bd/system/ipshared/a40c/axi_dmac_resize_src.v" \
+"../../../bd/system/ipshared/a40c/axi_dmac_response_manager.v" \
+"../../../bd/system/ipshared/a40c/axi_dmac_transfer.v" \
+"../../../bd/system/ipshared/a40c/axi_register_slice.v" \
+"../../../bd/system/ipshared/a40c/data_mover.v" \
+"../../../bd/system/ipshared/a40c/dest_axi_mm.v" \
+"../../../bd/system/ipshared/a40c/dest_axi_stream.v" \
+"../../../bd/system/ipshared/a40c/dest_fifo_inf.v" \
+"../../../bd/system/ipshared/a40c/dmac_2d_transfer.v" \
+"../../../bd/system/ipshared/a40c/request_arb.v" \
+"../../../bd/system/ipshared/a40c/request_generator.v" \
+"../../../bd/system/ipshared/a40c/response_generator.v" \
+"../../../bd/system/ipshared/a40c/response_handler.v" \
+"../../../bd/system/ipshared/a40c/splitter.v" \
+"../../../bd/system/ipshared/a40c/src_axi_mm.v" \
+"../../../bd/system/ipshared/a40c/src_axi_stream.v" \
+"../../../bd/system/ipshared/a40c/src_fifo_inf.v" \
+"../../../bd/system/ipshared/a40c/axi_dmac.v" \
+"../../../bd/system/ip/system_axi_ad9361_adc_dma_0/sim/system_axi_ad9361_adc_dma_0.v" \
+
+sv xil_defaultlib --include "/tools/Xilinx/Vivado/2022.2/data/xilinx_vip/include" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/a40c" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ec67/hdl" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ee60/hdl" \
+"../../../bd/system/ip/system_axi_ad9361_dac_dma_0/sim/system_axi_ad9361_dac_dma_0_pkg.sv" \
+
+verilog xil_defaultlib --include "/tools/Xilinx/Vivado/2022.2/data/xilinx_vip/include" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/a40c" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ec67/hdl" --include "../../../../tjd.gen/sources_1/bd/system/ipshared/ee60/hdl" \
+"../../../bd/system/ip/system_axi_ad9361_dac_dma_0/sim/system_axi_ad9361_dac_dma_0.v" \
+"../../../bd/system/ip/system_xbar_0/sim/system_xbar_0.v" \
+"../../../bd/system/common/ad_perfect_shuffle.v" \
+"../../../bd/system/ipshared/util_pack_common/pack_ctrl.v" \
+"../../../bd/system/ipshared/util_pack_common/pack_interconnect.v" \
+"../../../bd/system/ipshared/util_pack_common/pack_network.v" \
+"../../../bd/system/ipshared/util_pack_common/pack_shell.v" \
+"../../../bd/system/ipshared/3c20/util_cpack2_impl.v" \
+"../../../bd/system/ipshared/3c20/util_cpack2.v" \
+"../../../bd/system/ip/system_cpack_0/sim/system_cpack_0.v" \
+"../../../bd/system/ip/system_decim_slice_0/sim/system_decim_slice_0.v" \
+"../../../bd/system/ip/system_interp_slice_0/sim/system_interp_slice_0.v" \
+"../../../bd/system/ip/system_logic_inv_0/sim/system_logic_inv_0.v" \
+"../../../bd/system/ip/system_logic_or_0/sim/system_logic_or_0.v" \
+"../../../bd/system/ip/system_logic_or_1_0/sim/system_logic_or_1_0.v" \
+"../../../bd/system/ip/system_sys_concat_intc_0/sim/system_sys_concat_intc_0.v" \
+"../../../bd/system/ip/system_sys_ps7_0/sim/system_sys_ps7_0.v" \
+"../../../bd/system/ipshared/85da/util_upack2_impl.v" \
+"../../../bd/system/ipshared/85da/util_upack2.v" \
+"../../../bd/system/ip/system_tx_upack_0/sim/system_tx_upack_0.v" \
+"../../../bd/system/sim/system.v" \
+"../../../bd/system/ip/system_auto_pc_0/sim/system_auto_pc_0.v" \
+
+verilog xil_defaultlib "glbl.v"
+
+nosort

@@ -1,0 +1,5339 @@
+diff --git a/board/tjd/S10mdev b/board/tjd/S10mdev
+new file mode 100644
+index 0000000000..aea3d7d9ea
+--- /dev/null
++++ b/board/tjd/S10mdev
+@@ -0,0 +1,24 @@
++#!/bin/sh
++#
++# Start mdev....
++#
++
++case "$1" in
++  start)
++	echo -n "Starting mdev: "
++	echo /sbin/mdev >/proc/sys/kernel/hotplug
++	/sbin/mdev -s
++	# coldplug modules
++	# find /sys/ -name modalias -print0 | xargs -0 sort -u -z | xargs -0 modprobe -abq
++	[ $? = 0 ] && echo "OK" || echo "FAIL"
++	;;
++  stop)
++	;;
++  restart|reload)
++	;;
++  *)
++	echo "Usage: $0 {start|stop|restart}"
++	exit 1
++esac
++
++exit $?
+diff --git a/board/tjd/S15watchdog b/board/tjd/S15watchdog
+new file mode 100644
+index 0000000000..fdb9860917
+--- /dev/null
++++ b/board/tjd/S15watchdog
+@@ -0,0 +1,21 @@
++#!/bin/sh
++#
++# Start watchdog
++#
++
++case "$1" in
++ start)
++	echo -n "Starting watchdog: "
++	watchdog -t 5 -T 10 /dev/watchdog
++	[ $? = 0 ] && echo "OK" || echo "FAIL"
++	;;
++  stop)
++	;;
++  restart|reload)
++	;;
++  *)
++	echo "Usage: $0 {start|stop|restart}"
++	exit 1
++esac
++
++exit $?
+diff --git a/board/tjd/S20urandom b/board/tjd/S20urandom
+new file mode 100644
+index 0000000000..94551f87ca
+--- /dev/null
++++ b/board/tjd/S20urandom
+@@ -0,0 +1,29 @@
++#! /bin/sh
++#
++# urandom	This script saves the random seed between reboots.
++#		It is called from the boot, halt and reboot scripts.
++#
++# Version:	@(#)urandom  1.33  22-Jun-1998  miquels@cistron.nl
++#
++
++[ -c /dev/urandom ] || exit 0
++#. /etc/default/rcS
++
++case "$1" in
++	start|"")
++		echo -n "Starting initializing random number generator: "
++
++		# Load and then save 512 bytes,
++		# which is the size of the entropy pool
++
++		dmesg | sha512sum > /dev/urandom
++		[ $? = 0 ] && echo "OK" || echo "FAIL"
++		;;
++	stop)
++
++		;;
++	*)
++		echo "Usage: urandom {start|stop}" >&2
++		exit 1
++		;;
++esac
+diff --git a/board/tjd/S21misc b/board/tjd/S21misc
+new file mode 100644
+index 0000000000..28c5739ffe
+--- /dev/null
++++ b/board/tjd/S21misc
+@@ -0,0 +1,36 @@
++#! /bin/sh
++
++xo_correction() {
++
++	XO_ENV_VAL=`fw_printenv -n xo_correction 2> /dev/null`
++	if [ $? -eq 0 ]; then
++
++		for dev in /sys/bus/iio/devices/*; do
++			[ `cat ${dev}/name` == "ad9361-phy" ] && DEV_NAME=`basename ${dev}`
++		done
++
++		echo ${XO_ENV_VAL} > /sys/bus/iio/devices/${DEV_NAME}/xo_correction
++	fi
++}
++
++
++case "$1" in
++	start|"")
++		echo -n "Starting miscellaneous setup: "
++		# Restore saved password and Dropbear keys
++		[[ -d /mnt/jffs2/etc ]] && cd /mnt/jffs2/etc && md5sum -s -c password.md5 && cp passwd shadow group /etc
++		[[ -d /mnt/jffs2/etc/dropbear ]] && cd /mnt/jffs2/etc/dropbear && md5sum -s -c keys.md5 && cp dropbear* /etc/dropbear/
++		[[ -d /mnt/jffs2/root/.ssh ]] && cd /mnt/jffs2/root/.ssh && md5sum -s -c keys.md5 && mkdir /root/.ssh && cp authorized_keys /root/.ssh
++		xo_correction
++		MAX_BS=`fw_printenv -n iio_max_block_size 2> /dev/null || echo 67108864`
++		echo ${MAX_BS} > /sys/module/industrialio_buffer_dma/parameters/max_block_size
++		[ $? = 0 ] && echo "OK" || echo "FAIL"
++		;;
++	stop)
++
++		;;
++	*)
++		echo "Usage: $0 {start|stop}" >&2
++		exit 1
++		;;
++esac
+diff --git a/board/tjd/S23udc b/board/tjd/S23udc
+new file mode 100644
+index 0000000000..202347f001
+--- /dev/null
++++ b/board/tjd/S23udc
+@@ -0,0 +1,175 @@
++#!/bin/sh
++
++source /etc/device_config
++
++CONFIGFS=/sys/kernel/config/usb_gadget
++GADGET=$CONFIGFS/composite_gadget
++IIOD_OPTS="-D -n $ENDPOINTS -F /dev/iio_ffs"
++UDC_HANDLE_SUSPEND=`fw_printenv -n udc_handle_suspend 2> /dev/null || echo 0`
++USB_ETH_MODE=`fw_printenv -n usb_ethernet_mode 2> /dev/null || echo rndis`
++
++if [ "$USB_ETH_MODE" == "ncm" ]
++then
++	USB_NET_FUNCTION=ncm.usb0
++elif [ "$USB_ETH_MODE" == "ecm" ]
++then
++	USB_NET_FUNCTION=ecm.usb0
++else
++	USB_NET_FUNCTION=rndis.0
++fi
++
++create_iiod_context_attributes() {
++	model=$1
++	serial=$2
++	model_variant=$3
++
++	if [ "$USBPID" == "0xb673" ]; then
++		# ADALM-PLUTO
++		for dev in /sys/bus/iio/devices/*; do
++			[ `cat ${dev}/name` == "ad9361-phy" ] && DEV_NAME=`basename ${dev}`
++		done
++
++		AD936X_TYPE=$(cat /sys/bus/iio/devices/${DEV_NAME}/of_node/compatible | sed 's/adi,//g')
++		AD936X_TYPE_CAP=$(echo $AD936X_TYPE | tr a-z A-Z)
++		MODEL=$(echo $model | sed "s/AD936[34]/$AD936X_TYPE_CAP/")
++	else
++		MODEL=$model
++	fi
++
++	echo "[Context Attributes]" > /etc/libiio.ini
++	echo "hw_model=$MODEL" >> /etc/libiio.ini
++
++	if [ "$model_variant" == "n25q256a" ]
++	then
++		echo "hw_model_variant=0" >> /etc/libiio.ini
++	else
++		echo "hw_model_variant=1" >> /etc/libiio.ini
++	fi
++
++	echo -e "hw_serial=$serial\n" >> /etc/libiio.ini
++	echo "fw_version=`grep device-fw /opt/VERSIONS | cut -d ' ' -f 2`" >> /etc/libiio.ini
++	if [ "$USBPID" == "0xb673" ]; then
++		echo ad9361-phy,xo_correction=`cat /sys/bus/iio/devices/${DEV_NAME}/xo_correction` >> /etc/libiio.ini
++		echo ad9361-phy,model=$AD936X_TYPE >> /etc/libiio.ini
++
++	elif [ "$USBPID" == "0xb672" ]; then
++		cat /opt/${CALIBFILENAME} | grep ^cal,* >> /etc/libiio.ini
++		cat /opt/${CALIBFILENAME_TEMP_LUT} | grep ^cal,* >> /etc/libiio.ini
++	fi
++}
++
++case "$1" in
++  start)
++	echo -n "Starting UDC Gadgets: "
++	mount configfs -t configfs /sys/kernel/config 2> /dev/null
++
++	mkdir -p $GADGET
++
++	model=`cat /sys/firmware/devicetree/base/model | tr / -`
++	model_variant=`dmesg | grep m25p80 | grep Kbytes | cut -d ' ' -f 3`
++
++	serial=`dmesg | grep SPI-NOR-UniqueID`
++	serial=${serial#*SPI-NOR-UniqueID }
++
++	create_iiod_context_attributes "$model" "$serial" "$model_variant"
++
++	echo $serial > /etc/serial
++	sha1=`echo $serial | sha1sum`
++
++	echo 0x0456 > $GADGET/idVendor
++	echo $USBPID > $GADGET/idProduct
++
++	mkdir -p $GADGET/strings/0x409
++	echo "Analog Devices Inc." > $GADGET/strings/0x409/manufacturer
++	echo $PRODUCT > $GADGET/strings/0x409/product
++	echo $serial > $GADGET/strings/0x409/serialnumber
++
++	mkdir -p $GADGET/functions/ffs.iio_ffs
++	mkdir -p $GADGET/functions/acm.usb0
++	mkdir -p $GADGET/functions/$USB_NET_FUNCTION
++	mkdir -p $GADGET/functions/mass_storage.0
++
++#	echo /opt/vfat.img > $GADGET/functions/mass_storage.0/lun.0/file
++	echo Y > $GADGET/functions/mass_storage.0/lun.0/removable
++
++	host_addr=`echo -n 00:E0:22; echo $sha1 | dd bs=1 count=6 2>/dev/null | hexdump -v -e '/1 ":%01c""%c"'`
++	dev_addr=`echo -n 00:05:F7; echo $sha1 | dd bs=1 count=6 skip=6 2>/dev/null | hexdump -v -e '/1 ":%01c""%c"'`
++
++	echo $host_addr > $GADGET/functions/$USB_NET_FUNCTION/host_addr
++	echo $dev_addr > $GADGET/functions/$USB_NET_FUNCTION/dev_addr
++
++	mkdir -p $GADGET/configs/c.1
++	mkdir -p $GADGET/configs/c.1/strings/0x409
++	echo "RNDIS/MSD/ACM/IIOUSBD" > $GADGET/configs/c.1/strings/0x409/configuration
++
++	# In case the M2k is powered via the Power USB, advertise low power on the DATA USB
++	if [ "$TARGET" == "m2k" ]; then
++		echo 905 > /sys/class/gpio/export
++		[ "`cat /sys/class/gpio/gpio905/value`" == "1" ] && echo 4 > $GADGET/configs/c.1/MaxPower || echo 500 > $GADGET/configs/c.1/MaxPower
++	else
++		echo 500 > $GADGET/configs/c.1/MaxPower
++	fi
++
++	ln -s $GADGET/functions/$USB_NET_FUNCTION $GADGET/configs/c.1
++	ln -s $GADGET/functions/mass_storage.0 $GADGET/configs/c.1
++	ln -s $GADGET/functions/acm.usb0 $GADGET/configs/c.1
++	ln -s $GADGET/functions/ffs.iio_ffs $GADGET/configs/c.1/ffs.iio_ffs
++
++	mkdir -p /dev/iio_ffs
++	mount iio_ffs -t functionfs /dev/iio_ffs 2> /dev/null
++
++	start-stop-daemon -S -b -q -m -p /var/run/iiod.pid -x  /usr/sbin/iiod  -- $IIOD_OPTS
++	sleep 0.2
++
++	echo ci_hdrc.0 > $GADGET/UDC
++
++	[ $? = 0 ] && echo "OK" || echo "FAIL"
++
++	if [ "$UDC_HANDLE_SUSPEND" == "1" ]; then
++		start-stop-daemon -S -b -q -m -p /var/run/udc_handle_suspend.pid -x  /sbin/udc_handle_suspend.sh
++	fi
++
++	;;
++  stop)
++	echo "Stopping UDC Gadgets"
++
++	if [ "$UDC_HANDLE_SUSPEND" == "1" ]; then
++		start-stop-daemon -K -q -p /var/run/udc_handle_suspend.pid 2>/dev/null
++	fi
++
++	echo "" > $GADGET/UDC
++	start-stop-daemon -K -q -p /var/run/iiod.pid 2>/dev/null
++
++	rm $GADGET/configs/c.1/$USB_NET_FUNCTION
++	rm $GADGET/configs/c.1/mass_storage.0
++	rm $GADGET/configs/c.1/acm.usb0
++	rm $GADGET/configs/c.1/ffs.iio_ffs
++
++	rmdir $GADGET/strings/0x409
++	rmdir $GADGET/configs/c.1/strings/0x409
++	rmdir $GADGET/configs/c.1
++
++	rmdir $GADGET/functions/ffs.iio_ffs
++	#rmdir $GADGET/functions/acm.usb0
++	rmdir $GADGET/functions/$USB_NET_FUNCTION
++	rmdir $GADGET/functions/mass_storage.0
++
++	rmdir $GADGET 2> /dev/null
++
++	;;
++  restart|reload)
++	"$0" stop
++	"$0" start
++	;;
++  *)
++	echo "Usage: $0 {start|stop|restart}"
++	exit 1
++esac
++
++exit $?
++
++
++
++
++
++
+diff --git a/board/tjd/S40network b/board/tjd/S40network
+new file mode 100644
+index 0000000000..067bbdc010
+--- /dev/null
++++ b/board/tjd/S40network
+@@ -0,0 +1,148 @@
++#!/bin/sh
++#
++# Start the network....
++#
++
++# Debian ifupdown needs the /run/network lock directory
++
++source /etc/device_config
++
++create_system_files () {
++
++	UDHCPD_CONF=/etc/udhcpd.conf
++	CONF=/opt/config.txt
++	IFAC=/etc/network/interfaces
++
++	HOSTNAME=`fw_printenv -n hostname 2> /dev/null || cat /etc/hostname`
++	echo $HOSTNAME > /etc/hostname
++
++	IPADDR=`fw_printenv -n ipaddr 2> /dev/null || echo 192.168.2.1`
++	IPADDR_HOST=`fw_printenv -n ipaddr_host 2> /dev/null || echo 192.168.2.10`
++	NETMASK=`fw_printenv -n netmask 2> /dev/null || echo 255.255.255.0`
++
++	ETH_IPADDR=`fw_printenv -n ipaddr_eth 2> /dev/null`
++	ETH_NETMASK=`fw_printenv -n netmask_eth 2> /dev/null || echo 255.255.255.0`
++
++	WLAN_SSID=`fw_printenv -n ssid_wlan 2> /dev/null`
++	WLAN_PWD=`fw_printenv -n pwd_wlan 2> /dev/null`
++	WLAN_IPADDR=`fw_printenv -n ipaddr_wlan 2> /dev/null`
++
++	XO_CORRECTION=`fw_printenv -n xo_correction 2> /dev/null`
++	UDC_HANDLE_SUSPEND=`fw_printenv -n udc_handle_suspend 2> /dev/null || echo 0`
++	USB_ETH_MODE=`fw_printenv -n usb_ethernet_mode 2> /dev/null || echo rndis`
++
++	### /etc/udhcpd.conf ###
++	echo "start $IPADDR_HOST" > $UDHCPD_CONF
++	echo "end $IPADDR_HOST" >> $UDHCPD_CONF
++	echo "interface usb0" >> $UDHCPD_CONF
++	echo "option subnet $NETMASK" >> $UDHCPD_CONF
++
++	### /etc/network/interfaces ###
++	echo -e "auto lo\n""iface lo inet loopback\n" > $IFAC
++	echo -e "auto usb0\n""iface usb0 inet static" >> $IFAC
++	echo -e "\taddress $IPADDR\n""\tnetmask $NETMASK\n" >> $IFAC
++	echo -e "auto usb1\n""iface usb1 inet dhcp\n" >> $IFAC
++
++	echo -e "auto eth0" >> $IFAC
++	if [ -n "$ETH_IPADDR" ]
++	then
++		echo -e "iface eth0 inet static" >> $IFAC
++		echo -e "\taddress $ETH_IPADDR\n""\tnetmask $ETH_NETMASK\n" >> $IFAC
++	else
++		echo -e "iface eth0 inet dhcp\n" >> $IFAC
++	fi
++
++	### /etc/wpa.conf ###
++	if [ -n "$WLAN_SSID" ]
++	then
++		if [ -n "$WLAN_PWD" ]
++		then
++			wpa_passphrase "$WLAN_SSID" "$WLAN_PWD" > /etc/wpa.conf
++		else
++			echo "network={" > /etc/wpa.conf
++			echo "    ssid=\"$WLAN_SSID\"" >> /etc/wpa.conf
++			echo "    key_mgmt=NONE" >> /etc/wpa.conf
++			echo "}" >> /etc/wpa.conf
++		fi
++
++		echo -e "auto wlan0" >> $IFAC
++
++		if [ -n "$WLAN_IPADDR" ]
++		then
++			echo -e "iface wlan0 inet static" >> $IFAC
++			echo -e "\taddress $WLAN_IPADDR\n""\tnetmask 255.255.255.0" >> $IFAC
++		else
++			echo -e "iface wlan0 inet dhcp" >> $IFAC
++		fi
++		echo -e "\twpa-conf /etc/wpa.conf\n" >> $IFAC
++	fi
++
++	### /opt/config.txt ###
++	echo "# $(cat /sys/firmware/devicetree/base/model | tr / -)"$'\r' > $CONF
++	echo "# Device Configuration File"$'\r' >> $CONF
++	echo "#   1. Open with an Editor"$'\r' >> $CONF
++	echo "#   2. Edit this file"$'\r' >> $CONF
++	echo "#   3. Save this file on the device USB drive"$'\r' >> $CONF
++	echo "#   4. Eject the device USB Drive"$'\r' >> $CONF
++	echo "# Doc: https://wiki.analog.com/university/tools/pluto/users/customizing"$'\r' >> $CONF
++	echo ""$'\r'>> $CONF
++	echo "[NETWORK]"$'\r' >> $CONF
++	echo "hostname = $HOSTNAME"$'\r' >> $CONF
++	echo "ipaddr = $IPADDR"$'\r' >> $CONF
++	echo "ipaddr_host = $IPADDR_HOST"$'\r' >> $CONF
++	echo "netmask = $NETMASK"$'\r' >> $CONF
++	echo ""$'\r'>> $CONF
++	echo "[WLAN]"$'\r' >> $CONF
++	echo "ssid_wlan = $WLAN_SSID"$'\r' >> $CONF
++	echo "pwd_wlan = $WLAN_PWD"$'\r' >> $CONF
++	echo "ipaddr_wlan = $WLAN_IPADDR"$'\r' >> $CONF
++	echo ""$'\r'>> $CONF
++	echo "[USB_ETHERNET]"$'\r' >> $CONF
++	echo "ipaddr_eth = $ETH_IPADDR"$'\r' >> $CONF
++	echo "netmask_eth = $ETH_NETMASK"$'\r' >> $CONF
++	echo ""$'\r'>> $CONF
++	echo "[SYSTEM]"$'\r' >> $CONF
++	echo "xo_correction = $XO_CORRECTION"$'\r' >> $CONF
++	echo "udc_handle_suspend = $UDC_HANDLE_SUSPEND"$'\r' >> $CONF
++	echo "# USB Communication Device Class Compatibility Mode [rndis|ncm|ecm]"$'\r' >> $CONF
++	echo "usb_ethernet_mode = $USB_ETH_MODE"$'\r' >> $CONF
++	echo ""$'\r'>> $CONF
++	echo "[ACTIONS]"$'\r' >> $CONF
++	echo "diagnostic_report = 0"$'\r' >> $CONF
++	echo "dfu = 0"$'\r' >> $CONF
++	echo "reset = 0"$'\r' >> $CONF
++	echo "calibrate = 0"$'\r' >> $CONF
++	echo ""$'\r'>> $CONF
++
++	### /www/index.html ###
++
++	sed -i -e "s/#IP#/$IPADDR/g" -e "s/#HOSTIP#/$IPADDR_HOST/g" -e "s/#NETMASK#/$NETMASK/g" -e "s/#HOSTNAME#/$HOSTNAME/g" -e "s/#SSID_WLAN#/$WLAN_SSID/g" -e "s/#IPADDR_WLAN#/$WLAN_IPADDR/g" -e "s/#IPADDR_ETH#/$ETH_IPADDR/g" -e "s/#NETMASK_ETH#/$ETH_NETMASK/g" /www/index.html
++
++	}
++
++mkdir -p /run/network
++
++case "$1" in
++  start)
++	create_system_files
++	printf "Starting network: "
++	/bin/hostname -F /etc/hostname
++	/sbin/ifup -a 2>&1 | logger
++	[ $? = 0 ] && echo "OK" || echo "FAIL"
++	;;
++  stop)
++	printf "Stopping network: "
++	/sbin/ifdown -a
++	[ $? = 0 ] && echo "OK" || echo "FAIL"
++	;;
++  restart|reload)
++	"$0" stop
++	"$0" start
++	;;
++  *)
++	echo "Usage: $0 {start|stop|restart}"
++	exit 1
++esac
++
++exit $?
++
+diff --git a/board/tjd/S41network b/board/tjd/S41network
+new file mode 100644
+index 0000000000..78433a60d7
+--- /dev/null
++++ b/board/tjd/S41network
+@@ -0,0 +1,30 @@
++#!/bin/sh
++# Server-side demuxing by default
++
++source /etc/device_config
++
++case "$1" in
++	start)
++		echo -n "Starting dhcpd Daemon & httpd Server: "
++		start-stop-daemon -S -q -p /var/run/udhcpd.pid -x /usr/sbin/udhcpd -- $UDHCPD_CONF
++		httpd -h /www
++		[ $? = 0 ] && echo "OK" || echo "FAIL"
++		;;
++
++	stop)
++		echo -n "Stopping dhcpd Daemon & httpd Server: "
++		killall -7 httpd
++		start-stop-daemon -K -q -p /var/run/udhcpd.pid 2>/dev/null
++		[ $? = 0 ] && echo "OK" || echo "FAIL"
++		;;
++
++	restart)
++		$0 stop
++		sleep 1
++		$0 start
++		;;
++
++	*)
++		echo "Usage: $0 {start|stop|restart}"
++		exit 1
++esac
+diff --git a/board/tjd/S45msd b/board/tjd/S45msd
+new file mode 100644
+index 0000000000..8b73beeb52
+--- /dev/null
++++ b/board/tjd/S45msd
+@@ -0,0 +1,75 @@
++#!/bin/sh
++# Server-side demuxing by default
++
++source /etc/device_config
++
++CONF=/opt/config.txt
++file=/sys/kernel/config/usb_gadget/composite_gadget/functions/mass_storage.0/lun.0/file
++img=/opt/vfat.img
++
++patch_html_page() {
++	LINUX=`uname -a | tr / - | tr '\n' ';' ; echo -n $(nproc) "core(s)"`
++	MODEL=`cat /etc/libiio.ini | grep hw_model= | cut -d '=' -f 2`
++	SERIAL=`cat /sys/kernel/config/usb_gadget/composite_gadget/strings/0x409/serialnumber`
++	MACHOST=`cat /sys/kernel/config/usb_gadget/composite_gadget/functions/*/host_addr`
++	MAC=`cat /sys/kernel/config/usb_gadget/composite_gadget/functions/*/dev_addr`
++	IIO=`iio_info -V 2>/dev/null | tail -1`
++	BUILD=`grep device-fw /opt/VERSIONS | cut -d ' ' -f 2`
++	FPGA=`grep hdl /opt/VERSIONS | cut -d ' ' -f 2`
++	ROOTFS=`grep buildroot /opt/VERSIONS | cut -d ' ' -f 2`
++	UBOOT=`cat /proc/cmdline | tr  "=" "\n" | grep "U-Boot"`
++	USB_ETH_MODE=`fw_printenv -n usb_ethernet_mode 2> /dev/null || echo rndis`
++	if [ "$USB_ETH_MODE" == "ncm" ]; then
++		NETWORKUSB="Communications Device Class – Network Control Model (CDC-NCM)"
++	elif [ "$USB_ETH_MODE" == "ecm" ]; then
++		NETWORKUSB="Communications Device Class – Ethernet Control Module (CDC-EMC)"
++	else
++		NETWORKUSB="Remote Network Driver Interface Specification (RNDIS)"
++	fi
++
++	sed -i -e "s/#LINUX#/$LINUX/g" -e "s/#MODEL#/$MODEL/g" -e "s/#SERIAL#/$SERIAL/g" -e "s/#MACHOST#/$MACHOST/g" -e "s/#MAC#/$MAC/g" -e "s/#IIO#/$IIO/g" -e "s/#BUILD#/$BUILD/g" -e "s/#FPGA#/$FPGA/g" -e "s/#ROOTFS#/$ROOTFS/g" -e "s/#UBOOT#/$UBOOT/g" -e "s/#NETWORKUSB#/$NETWORKUSB/g" $1
++
++	sed -i -e "s/#BUILD#/$BUILD/g" $2 /etc/motd
++}
++
++
++case "$1" in
++	start)
++		echo -n "Starting MSD Daemon: "
++		patch_html_page /www/index.html /www/img/version.js
++		losetup /dev/loop7 $img -o 512
++		mount /dev/loop7 /mnt/msd
++
++		if [ "$TARGET" == "m2k" ]; then
++			cp /opt/${CALIBFILENAME} /mnt
++			md5sum /mnt/msd/${CALIBFILENAME} > /opt/${CALIBFILENAME}.md5
++		fi
++
++		cp $CONF /mnt/msd
++		md5sum /mnt/msd/config.txt > /opt/config.md5
++
++		cp -a /www/* /mnt/msd
++		mv /mnt/msd/index.html /mnt/msd/info.html
++		umount /mnt/msd
++		echo $img > $file
++
++		start-stop-daemon -S -b -q -m -p /var/run/update.pid -x /bin/sh -- /sbin/update.sh
++		[ $? = 0 ] && echo "OK" || echo "FAIL"
++		;;
++
++	stop)
++		echo -n "Stopping MSD Daemon: "
++		start-stop-daemon -K -q -p /var/run/update.pid 2>/dev/null
++		[ $? = 0 ] && echo "OK" || echo "FAIL"
++		;;
++
++	restart)
++		$0 stop
++		sleep 1
++		$0 start
++		;;
++
++	*)
++		echo "Usage: $0 {start|stop|restart}"
++		exit 1
++esac
+diff --git a/board/tjd/S98autostart b/board/tjd/S98autostart
+new file mode 100644
+index 0000000000..9515ccc682
+--- /dev/null
++++ b/board/tjd/S98autostart
+@@ -0,0 +1,21 @@
++#!/bin/sh
++#
++# Script to check for and run user-supplied /mnt/jffs2/autorun.sh
++#
++
++case "$1" in
++  start)
++	if test -f /mnt/jffs2/autorun.sh; then
++		source /mnt/jffs2/autorun.sh
++	fi
++	;;
++  stop)
++	;;
++  restart|reload)
++	;;
++  *)
++	echo "Usage: $0 {start|stop|restart}"
++	exit 1
++esac
++
++exit $?
+diff --git a/board/tjd/automounter.sh b/board/tjd/automounter.sh
+new file mode 100644
+index 0000000000..0d093a53fc
+--- /dev/null
++++ b/board/tjd/automounter.sh
+@@ -0,0 +1,87 @@
++#!/bin/sh
++
++destdir=/media
++
++my_umount()
++{
++	if grep -qs "^/dev/$1 " /proc/mounts ; then
++		umount "${destdir}/$1";
++		echo heartbeat > /sys/class/leds/led0:green/trigger
++	fi
++
++	[ -d "${destdir}/$1" ] && rmdir "${destdir}/$1"
++}
++
++do_mount()
++{
++	local errno
++	local err
++
++	errno=0
++	for I in $(seq 5)
++	do
++		err=$(mount -t auto -o sync "/dev/$1" "${destdir}/$1" 2>&1)
++		errno=$?
++
++		# If we get a "Device or resource busy" error, retry again in a
++		# little bit, otherwise just return immediately.
++		if ! echo "${err}" | grep -q "Device or resource busy"
++		then
++			return ${errno}
++		fi
++
++		sleep .25
++	done
++
++	echo "${err}" >&2
++	return ${errno}
++}
++
++my_mount()
++{
++	mkdir -p "${destdir}/$1" || exit 1
++
++	if ! do_mount $1; then
++		# failed to mount, clean up mountpoint
++		rmdir "${destdir}/$1"
++		exit 1
++	fi
++
++	echo default-on > /sys/class/leds/led0:green/trigger
++
++	for i in ${destdir}/$1/runme??* ;do
++
++	# Ignore dangling symlinks (if any).
++	[ ! -f "$i" ] && continue
++
++	case "$i" in
++		*.sh)
++		# Source shell script for speed.
++		(
++			trap - INT QUIT TSTP
++			set start
++			. $i
++		)
++		;;
++		*)
++		# No sh extension, so fork subprocess.
++		$i start
++		;;
++	esac
++	done
++}
++
++case "${ACTION}" in
++add|"")
++	my_umount ${MDEV}
++	my_mount ${MDEV}
++	;;
++remove)
++	my_umount ${MDEV}
++	;;
++remove_all)
++	for i in ${destdir}/??*
++	do
++		my_umount $(basename $i)
++	done
++esac
+diff --git a/board/tjd/busybox-1.25.0.config b/board/tjd/busybox-1.25.0.config
+new file mode 100644
+index 0000000000..88728cc9f2
+--- /dev/null
++++ b/board/tjd/busybox-1.25.0.config
+@@ -0,0 +1,1135 @@
++#
++# Automatically generated make config: don't edit
++# Busybox version: 1.27.2
++# Mon Apr 23 16:47:13 2018
++#
++CONFIG_HAVE_DOT_CONFIG=y
++
++#
++# Busybox Settings
++#
++CONFIG_DESKTOP=y
++# CONFIG_EXTRA_COMPAT is not set
++# CONFIG_FEDORA_COMPAT is not set
++CONFIG_INCLUDE_SUSv2=y
++# CONFIG_USE_PORTABLE_CODE is not set
++CONFIG_SHOW_USAGE=y
++CONFIG_FEATURE_VERBOSE_USAGE=y
++# CONFIG_FEATURE_COMPRESS_USAGE is not set
++CONFIG_BUSYBOX=y
++CONFIG_FEATURE_INSTALLER=y
++# CONFIG_INSTALL_NO_USR is not set
++# CONFIG_PAM is not set
++CONFIG_LONG_OPTS=y
++CONFIG_FEATURE_DEVPTS=y
++CONFIG_FEATURE_CLEAN_UP=y
++CONFIG_FEATURE_UTMP=y
++CONFIG_FEATURE_WTMP=y
++CONFIG_FEATURE_PIDFILE=y
++CONFIG_PID_FILE_PATH="/var/run"
++CONFIG_FEATURE_SUID=y
++# CONFIG_FEATURE_SUID_CONFIG is not set
++# CONFIG_FEATURE_SUID_CONFIG_QUIET is not set
++# CONFIG_SELINUX is not set
++# CONFIG_FEATURE_PREFER_APPLETS is not set
++CONFIG_BUSYBOX_EXEC_PATH="/proc/self/exe"
++CONFIG_FEATURE_SYSLOG=y
++# CONFIG_FEATURE_HAVE_RPC is not set
++CONFIG_PLATFORM_LINUX=y
++
++#
++# Build Options
++#
++# CONFIG_STATIC is not set
++# CONFIG_PIE is not set
++# CONFIG_NOMMU is not set
++# CONFIG_BUILD_LIBBUSYBOX is not set
++# CONFIG_FEATURE_INDIVIDUAL is not set
++# CONFIG_FEATURE_SHARED_BUSYBOX is not set
++CONFIG_LFS=y
++CONFIG_CROSS_COMPILER_PREFIX=""
++CONFIG_SYSROOT=""
++CONFIG_EXTRA_CFLAGS=""
++CONFIG_EXTRA_LDFLAGS=""
++CONFIG_EXTRA_LDLIBS=""
++
++#
++# Installation Options ("make install" behavior)
++#
++CONFIG_INSTALL_APPLET_SYMLINKS=y
++# CONFIG_INSTALL_APPLET_HARDLINKS is not set
++# CONFIG_INSTALL_APPLET_SCRIPT_WRAPPERS is not set
++# CONFIG_INSTALL_APPLET_DONT is not set
++# CONFIG_INSTALL_SH_APPLET_SYMLINK is not set
++# CONFIG_INSTALL_SH_APPLET_HARDLINK is not set
++# CONFIG_INSTALL_SH_APPLET_SCRIPT_WRAPPER is not set
++CONFIG_PREFIX="./_install"
++
++#
++# Debugging Options
++#
++# CONFIG_DEBUG is not set
++# CONFIG_DEBUG_PESSIMIZE is not set
++# CONFIG_DEBUG_SANITIZE is not set
++# CONFIG_UNIT_TEST is not set
++# CONFIG_WERROR is not set
++CONFIG_NO_DEBUG_LIB=y
++# CONFIG_DMALLOC is not set
++# CONFIG_EFENCE is not set
++
++#
++# Busybox Library Tuning
++#
++# CONFIG_FEATURE_USE_BSS_TAIL is not set
++CONFIG_FEATURE_RTMINMAX=y
++CONFIG_FEATURE_BUFFERS_USE_MALLOC=y
++# CONFIG_FEATURE_BUFFERS_GO_ON_STACK is not set
++# CONFIG_FEATURE_BUFFERS_GO_IN_BSS is not set
++CONFIG_PASSWORD_MINLEN=6
++CONFIG_MD5_SMALL=1
++CONFIG_SHA3_SMALL=1
++# CONFIG_FEATURE_FAST_TOP is not set
++# CONFIG_FEATURE_ETC_NETWORKS is not set
++CONFIG_FEATURE_EDITING=y
++CONFIG_FEATURE_EDITING_MAX_LEN=1024
++CONFIG_FEATURE_EDITING_VI=y
++CONFIG_FEATURE_EDITING_HISTORY=999
++CONFIG_FEATURE_EDITING_SAVEHISTORY=y
++# CONFIG_FEATURE_EDITING_SAVE_ON_EXIT is not set
++CONFIG_FEATURE_REVERSE_SEARCH=y
++CONFIG_FEATURE_TAB_COMPLETION=y
++# CONFIG_FEATURE_USERNAME_COMPLETION is not set
++CONFIG_FEATURE_EDITING_FANCY_PROMPT=y
++# CONFIG_FEATURE_EDITING_ASK_TERMINAL is not set
++# CONFIG_LOCALE_SUPPORT is not set
++# CONFIG_UNICODE_SUPPORT is not set
++# CONFIG_UNICODE_USING_LOCALE is not set
++# CONFIG_FEATURE_CHECK_UNICODE_IN_ENV is not set
++CONFIG_SUBST_WCHAR=0
++CONFIG_LAST_SUPPORTED_WCHAR=0
++# CONFIG_UNICODE_COMBINING_WCHARS is not set
++# CONFIG_UNICODE_WIDE_WCHARS is not set
++# CONFIG_UNICODE_BIDI_SUPPORT is not set
++# CONFIG_UNICODE_NEUTRAL_TABLE is not set
++# CONFIG_UNICODE_PRESERVE_BROKEN is not set
++CONFIG_FEATURE_NON_POSIX_CP=y
++# CONFIG_FEATURE_VERBOSE_CP_MESSAGE is not set
++CONFIG_FEATURE_USE_SENDFILE=y
++CONFIG_FEATURE_COPYBUF_KB=4
++CONFIG_FEATURE_SKIP_ROOTFS=y
++CONFIG_MONOTONIC_SYSCALL=y
++CONFIG_IOCTL_HEX2STR_ERROR=y
++CONFIG_FEATURE_HWIB=y
++
++#
++# Applets
++#
++
++#
++# Archival Utilities
++#
++# CONFIG_FEATURE_SEAMLESS_XZ is not set
++# CONFIG_FEATURE_SEAMLESS_LZMA is not set
++# CONFIG_FEATURE_SEAMLESS_BZ2 is not set
++# CONFIG_FEATURE_SEAMLESS_GZ is not set
++# CONFIG_FEATURE_SEAMLESS_Z is not set
++CONFIG_AR=y
++# CONFIG_FEATURE_AR_LONG_FILENAMES is not set
++CONFIG_FEATURE_AR_CREATE=y
++# CONFIG_UNCOMPRESS is not set
++CONFIG_GUNZIP=y
++CONFIG_ZCAT=y
++CONFIG_FEATURE_GUNZIP_LONG_OPTIONS=y
++CONFIG_BUNZIP2=y
++CONFIG_BZCAT=y
++CONFIG_UNLZMA=y
++CONFIG_LZCAT=y
++CONFIG_LZMA=y
++# CONFIG_FEATURE_LZMA_FAST is not set
++CONFIG_UNXZ=y
++CONFIG_XZCAT=y
++CONFIG_XZ=y
++# CONFIG_BZIP2 is not set
++CONFIG_FEATURE_BZIP2_DECOMPRESS=y
++CONFIG_CPIO=y
++# CONFIG_FEATURE_CPIO_O is not set
++# CONFIG_FEATURE_CPIO_P is not set
++# CONFIG_DPKG is not set
++# CONFIG_DPKG_DEB is not set
++CONFIG_GZIP=y
++# CONFIG_FEATURE_GZIP_LONG_OPTIONS is not set
++CONFIG_GZIP_FAST=0
++# CONFIG_FEATURE_GZIP_LEVELS is not set
++CONFIG_FEATURE_GZIP_DECOMPRESS=y
++# CONFIG_LZOP is not set
++# CONFIG_UNLZOP is not set
++# CONFIG_LZOPCAT is not set
++# CONFIG_LZOP_COMPR_HIGH is not set
++# CONFIG_RPM is not set
++# CONFIG_RPM2CPIO is not set
++CONFIG_TAR=y
++CONFIG_FEATURE_TAR_LONG_OPTIONS=y
++CONFIG_FEATURE_TAR_CREATE=y
++# CONFIG_FEATURE_TAR_AUTODETECT is not set
++CONFIG_FEATURE_TAR_FROM=y
++# CONFIG_FEATURE_TAR_OLDGNU_COMPATIBILITY is not set
++# CONFIG_FEATURE_TAR_OLDSUN_COMPATIBILITY is not set
++CONFIG_FEATURE_TAR_GNU_EXTENSIONS=y
++CONFIG_FEATURE_TAR_TO_COMMAND=y
++# CONFIG_FEATURE_TAR_UNAME_GNAME is not set
++# CONFIG_FEATURE_TAR_NOPRESERVE_TIME is not set
++# CONFIG_FEATURE_TAR_SELINUX is not set
++CONFIG_UNZIP=y
++CONFIG_FEATURE_UNZIP_CDF=y
++CONFIG_FEATURE_UNZIP_BZIP2=y
++CONFIG_FEATURE_UNZIP_LZMA=y
++CONFIG_FEATURE_UNZIP_XZ=y
++
++#
++# Coreutils
++#
++CONFIG_BASENAME=y
++CONFIG_CAT=y
++CONFIG_FEATURE_CATV=y
++CONFIG_CHGRP=y
++CONFIG_CHMOD=y
++CONFIG_CHOWN=y
++# CONFIG_FEATURE_CHOWN_LONG_OPTIONS is not set
++CONFIG_CHROOT=y
++CONFIG_CKSUM=y
++# CONFIG_COMM is not set
++CONFIG_CP=y
++# CONFIG_FEATURE_CP_LONG_OPTIONS is not set
++CONFIG_CUT=y
++CONFIG_DATE=y
++CONFIG_FEATURE_DATE_ISOFMT=y
++CONFIG_FEATURE_DATE_NANO=y
++CONFIG_FEATURE_DATE_COMPAT=y
++CONFIG_DD=y
++CONFIG_FEATURE_DD_SIGNAL_HANDLING=y
++# CONFIG_FEATURE_DD_THIRD_STATUS_LINE is not set
++CONFIG_FEATURE_DD_IBS_OBS=y
++CONFIG_FEATURE_DD_STATUS=y
++CONFIG_DF=y
++# CONFIG_FEATURE_DF_FANCY is not set
++CONFIG_DIRNAME=y
++CONFIG_DOS2UNIX=y
++CONFIG_UNIX2DOS=y
++CONFIG_DU=y
++CONFIG_FEATURE_DU_DEFAULT_BLOCKSIZE_1K=y
++CONFIG_ECHO=y
++CONFIG_FEATURE_FANCY_ECHO=y
++CONFIG_ENV=y
++# CONFIG_FEATURE_ENV_LONG_OPTIONS is not set
++# CONFIG_EXPAND is not set
++# CONFIG_FEATURE_EXPAND_LONG_OPTIONS is not set
++# CONFIG_UNEXPAND is not set
++# CONFIG_FEATURE_UNEXPAND_LONG_OPTIONS is not set
++CONFIG_EXPR=y
++CONFIG_EXPR_MATH_SUPPORT_64=y
++CONFIG_FACTOR=y
++CONFIG_FALSE=y
++CONFIG_FOLD=y
++# CONFIG_FSYNC is not set
++CONFIG_HEAD=y
++CONFIG_FEATURE_FANCY_HEAD=y
++CONFIG_HOSTID=y
++CONFIG_ID=y
++# CONFIG_GROUPS is not set
++CONFIG_INSTALL=y
++CONFIG_FEATURE_INSTALL_LONG_OPTIONS=y
++CONFIG_LINK=y
++CONFIG_LN=y
++CONFIG_LOGNAME=y
++CONFIG_LS=y
++CONFIG_FEATURE_LS_FILETYPES=y
++CONFIG_FEATURE_LS_FOLLOWLINKS=y
++CONFIG_FEATURE_LS_RECURSIVE=y
++CONFIG_FEATURE_LS_WIDTH=y
++CONFIG_FEATURE_LS_SORTFILES=y
++CONFIG_FEATURE_LS_TIMESTAMPS=y
++CONFIG_FEATURE_LS_USERNAME=y
++CONFIG_FEATURE_LS_COLOR=y
++CONFIG_FEATURE_LS_COLOR_IS_DEFAULT=y
++CONFIG_MD5SUM=y
++CONFIG_SHA1SUM=y
++CONFIG_SHA256SUM=y
++CONFIG_SHA512SUM=y
++CONFIG_SHA3SUM=y
++
++#
++# Common options for md5sum, sha1sum, sha256sum, sha512sum, sha3sum
++#
++CONFIG_FEATURE_MD5_SHA1_SUM_CHECK=y
++CONFIG_MKDIR=y
++CONFIG_FEATURE_MKDIR_LONG_OPTIONS=y
++CONFIG_MKFIFO=y
++CONFIG_MKNOD=y
++CONFIG_MKTEMP=y
++CONFIG_MV=y
++CONFIG_FEATURE_MV_LONG_OPTIONS=y
++CONFIG_NICE=y
++CONFIG_NL=y
++CONFIG_NOHUP=y
++CONFIG_NPROC=y
++CONFIG_OD=y
++CONFIG_PASTE=y
++CONFIG_PRINTENV=y
++CONFIG_PRINTF=y
++CONFIG_PWD=y
++CONFIG_READLINK=y
++CONFIG_FEATURE_READLINK_FOLLOW=y
++CONFIG_REALPATH=y
++CONFIG_RM=y
++CONFIG_RMDIR=y
++# CONFIG_FEATURE_RMDIR_LONG_OPTIONS is not set
++CONFIG_SEQ=y
++CONFIG_SHRED=y
++# CONFIG_SHUF is not set
++CONFIG_SLEEP=y
++CONFIG_FEATURE_FANCY_SLEEP=y
++CONFIG_FEATURE_FLOAT_SLEEP=y
++CONFIG_SORT=y
++CONFIG_FEATURE_SORT_BIG=y
++# CONFIG_SPLIT is not set
++# CONFIG_FEATURE_SPLIT_FANCY is not set
++# CONFIG_STAT is not set
++# CONFIG_FEATURE_STAT_FORMAT is not set
++# CONFIG_FEATURE_STAT_FILESYSTEM is not set
++CONFIG_STTY=y
++# CONFIG_SUM is not set
++CONFIG_SYNC=y
++# CONFIG_FEATURE_SYNC_FANCY is not set
++# CONFIG_TAC is not set
++CONFIG_TAIL=y
++CONFIG_FEATURE_FANCY_TAIL=y
++CONFIG_TEE=y
++CONFIG_FEATURE_TEE_USE_BLOCK_IO=y
++CONFIG_TEST=y
++CONFIG_TEST1=y
++CONFIG_TEST2=y
++CONFIG_FEATURE_TEST_64=y
++# CONFIG_TIMEOUT is not set
++CONFIG_TOUCH=y
++# CONFIG_FEATURE_TOUCH_NODEREF is not set
++CONFIG_FEATURE_TOUCH_SUSV3=y
++CONFIG_TR=y
++CONFIG_FEATURE_TR_CLASSES=y
++CONFIG_FEATURE_TR_EQUIV=y
++CONFIG_TRUE=y
++CONFIG_TRUNCATE=y
++CONFIG_TTY=y
++CONFIG_UNAME=y
++CONFIG_UNAME_OSNAME="GNU/Linux"
++CONFIG_UNIQ=y
++CONFIG_UNLINK=y
++CONFIG_USLEEP=y
++CONFIG_UUDECODE=y
++# CONFIG_BASE64 is not set
++CONFIG_UUENCODE=y
++CONFIG_WC=y
++# CONFIG_FEATURE_WC_LARGE is not set
++CONFIG_WHO=y
++CONFIG_W=y
++# CONFIG_USERS is not set
++CONFIG_WHOAMI=y
++CONFIG_YES=y
++
++#
++# Common options
++#
++CONFIG_FEATURE_VERBOSE=y
++
++#
++# Common options for cp and mv
++#
++CONFIG_FEATURE_PRESERVE_HARDLINKS=y
++
++#
++# Common options for df, du, ls
++#
++CONFIG_FEATURE_HUMAN_READABLE=y
++
++#
++# Console Utilities
++#
++CONFIG_CHVT=y
++CONFIG_CLEAR=y
++CONFIG_DEALLOCVT=y
++CONFIG_DUMPKMAP=y
++# CONFIG_FGCONSOLE is not set
++# CONFIG_KBD_MODE is not set
++CONFIG_LOADFONT=y
++# CONFIG_SETFONT is not set
++# CONFIG_FEATURE_SETFONT_TEXTUAL_MAP is not set
++CONFIG_DEFAULT_SETFONT_DIR=""
++
++#
++# Common options for loadfont and setfont
++#
++CONFIG_FEATURE_LOADFONT_PSF2=y
++CONFIG_FEATURE_LOADFONT_RAW=y
++CONFIG_LOADKMAP=y
++CONFIG_OPENVT=y
++CONFIG_RESET=y
++CONFIG_RESIZE=y
++CONFIG_FEATURE_RESIZE_PRINT=y
++CONFIG_SETCONSOLE=y
++# CONFIG_FEATURE_SETCONSOLE_LONG_OPTIONS is not set
++CONFIG_SETKEYCODES=y
++CONFIG_SETLOGCONS=y
++# CONFIG_SHOWKEY is not set
++
++#
++# Debian Utilities
++#
++CONFIG_PIPE_PROGRESS=y
++CONFIG_RUN_PARTS=y
++CONFIG_FEATURE_RUN_PARTS_LONG_OPTIONS=y
++# CONFIG_FEATURE_RUN_PARTS_FANCY is not set
++CONFIG_START_STOP_DAEMON=y
++CONFIG_FEATURE_START_STOP_DAEMON_LONG_OPTIONS=y
++CONFIG_FEATURE_START_STOP_DAEMON_FANCY=y
++CONFIG_WHICH=y
++
++#
++# Editors
++#
++CONFIG_AWK=y
++# CONFIG_FEATURE_AWK_LIBM is not set
++CONFIG_FEATURE_AWK_GNU_EXTENSIONS=y
++CONFIG_CMP=y
++CONFIG_DIFF=y
++# CONFIG_FEATURE_DIFF_LONG_OPTIONS is not set
++CONFIG_FEATURE_DIFF_DIR=y
++# CONFIG_ED is not set
++CONFIG_PATCH=y
++CONFIG_SED=y
++CONFIG_VI=y
++CONFIG_FEATURE_VI_MAX_LEN=4096
++CONFIG_FEATURE_VI_8BIT=y
++CONFIG_FEATURE_VI_COLON=y
++CONFIG_FEATURE_VI_YANKMARK=y
++CONFIG_FEATURE_VI_SEARCH=y
++# CONFIG_FEATURE_VI_REGEX_SEARCH is not set
++CONFIG_FEATURE_VI_USE_SIGNALS=y
++CONFIG_FEATURE_VI_DOT_CMD=y
++CONFIG_FEATURE_VI_READONLY=y
++CONFIG_FEATURE_VI_SETOPTS=y
++CONFIG_FEATURE_VI_SET=y
++CONFIG_FEATURE_VI_WIN_RESIZE=y
++CONFIG_FEATURE_VI_ASK_TERMINAL=y
++CONFIG_FEATURE_VI_UNDO=y
++CONFIG_FEATURE_VI_UNDO_QUEUE=y
++CONFIG_FEATURE_VI_UNDO_QUEUE_MAX=256
++CONFIG_FEATURE_ALLOW_EXEC=y
++
++#
++# Finding Utilities
++#
++CONFIG_FIND=y
++CONFIG_FEATURE_FIND_PRINT0=y
++CONFIG_FEATURE_FIND_MTIME=y
++CONFIG_FEATURE_FIND_MMIN=y
++CONFIG_FEATURE_FIND_PERM=y
++CONFIG_FEATURE_FIND_TYPE=y
++CONFIG_FEATURE_FIND_XDEV=y
++CONFIG_FEATURE_FIND_MAXDEPTH=y
++CONFIG_FEATURE_FIND_NEWER=y
++# CONFIG_FEATURE_FIND_INUM is not set
++CONFIG_FEATURE_FIND_EXEC=y
++CONFIG_FEATURE_FIND_EXEC_PLUS=y
++CONFIG_FEATURE_FIND_USER=y
++CONFIG_FEATURE_FIND_GROUP=y
++CONFIG_FEATURE_FIND_NOT=y
++CONFIG_FEATURE_FIND_DEPTH=y
++CONFIG_FEATURE_FIND_PAREN=y
++CONFIG_FEATURE_FIND_SIZE=y
++CONFIG_FEATURE_FIND_PRUNE=y
++# CONFIG_FEATURE_FIND_DELETE is not set
++CONFIG_FEATURE_FIND_PATH=y
++CONFIG_FEATURE_FIND_REGEX=y
++# CONFIG_FEATURE_FIND_CONTEXT is not set
++# CONFIG_FEATURE_FIND_LINKS is not set
++CONFIG_GREP=y
++CONFIG_EGREP=y
++CONFIG_FGREP=y
++CONFIG_FEATURE_GREP_CONTEXT=y
++CONFIG_XARGS=y
++# CONFIG_FEATURE_XARGS_SUPPORT_CONFIRMATION is not set
++CONFIG_FEATURE_XARGS_SUPPORT_QUOTES=y
++CONFIG_FEATURE_XARGS_SUPPORT_TERMOPT=y
++CONFIG_FEATURE_XARGS_SUPPORT_ZERO_TERM=y
++CONFIG_FEATURE_XARGS_SUPPORT_REPL_STR=y
++
++#
++# Init Utilities
++#
++# CONFIG_BOOTCHARTD is not set
++# CONFIG_FEATURE_BOOTCHARTD_BLOATED_HEADER is not set
++# CONFIG_FEATURE_BOOTCHARTD_CONFIG_FILE is not set
++CONFIG_HALT=y
++CONFIG_POWEROFF=y
++CONFIG_REBOOT=y
++# CONFIG_FEATURE_CALL_TELINIT is not set
++CONFIG_TELINIT_PATH=""
++CONFIG_INIT=y
++CONFIG_LINUXRC=y
++CONFIG_FEATURE_USE_INITTAB=y
++CONFIG_FEATURE_KILL_REMOVED=y
++CONFIG_FEATURE_KILL_DELAY=0
++CONFIG_FEATURE_INIT_SCTTY=y
++CONFIG_FEATURE_INIT_SYSLOG=y
++CONFIG_FEATURE_INIT_QUIET=y
++# CONFIG_FEATURE_INIT_COREDUMPS is not set
++CONFIG_INIT_TERMINAL_TYPE="linux"
++CONFIG_FEATURE_INIT_MODIFY_CMDLINE=y
++
++#
++# Login/Password Management Utilities
++#
++CONFIG_FEATURE_SHADOWPASSWDS=y
++# CONFIG_USE_BB_PWD_GRP is not set
++# CONFIG_USE_BB_SHADOW is not set
++CONFIG_USE_BB_CRYPT=y
++# CONFIG_USE_BB_CRYPT_SHA is not set
++# CONFIG_ADD_SHELL is not set
++# CONFIG_REMOVE_SHELL is not set
++CONFIG_ADDGROUP=y
++# CONFIG_FEATURE_ADDGROUP_LONG_OPTIONS is not set
++# CONFIG_FEATURE_ADDUSER_TO_GROUP is not set
++CONFIG_ADDUSER=y
++# CONFIG_FEATURE_ADDUSER_LONG_OPTIONS is not set
++# CONFIG_FEATURE_CHECK_NAMES is not set
++CONFIG_LAST_ID=60000
++CONFIG_FIRST_SYSTEM_ID=100
++CONFIG_LAST_SYSTEM_ID=999
++# CONFIG_CHPASSWD is not set
++CONFIG_FEATURE_DEFAULT_PASSWD_ALGO="md5"
++# CONFIG_CRYPTPW is not set
++CONFIG_MKPASSWD=y
++CONFIG_DELUSER=y
++CONFIG_DELGROUP=y
++# CONFIG_FEATURE_DEL_USER_FROM_GROUP is not set
++CONFIG_GETTY=y
++CONFIG_LOGIN=y
++# CONFIG_LOGIN_SESSION_AS_CHILD is not set
++# CONFIG_LOGIN_SCRIPTS is not set
++CONFIG_FEATURE_NOLOGIN=y
++CONFIG_FEATURE_SECURETTY=y
++CONFIG_PASSWD=y
++CONFIG_FEATURE_PASSWD_WEAK_CHECK=y
++CONFIG_SU=y
++CONFIG_FEATURE_SU_SYSLOG=y
++CONFIG_FEATURE_SU_CHECKS_SHELLS=y
++# CONFIG_FEATURE_SU_BLANK_PW_NEEDS_SECURE_TTY is not set
++CONFIG_SULOGIN=y
++CONFIG_VLOCK=y
++
++#
++# Linux Ext2 FS Progs
++#
++CONFIG_CHATTR=y
++CONFIG_FSCK=y
++CONFIG_LSATTR=y
++# CONFIG_TUNE2FS is not set
++
++#
++# Linux Module Utilities
++#
++# CONFIG_MODPROBE_SMALL is not set
++# CONFIG_DEPMOD is not set
++CONFIG_INSMOD=y
++CONFIG_LSMOD=y
++CONFIG_FEATURE_LSMOD_PRETTY_2_6_OUTPUT=y
++# CONFIG_MODINFO is not set
++CONFIG_MODPROBE=y
++# CONFIG_FEATURE_MODPROBE_BLACKLIST is not set
++CONFIG_RMMOD=y
++
++#
++# Options common to multiple modutils
++#
++CONFIG_FEATURE_CMDLINE_MODULE_OPTIONS=y
++# CONFIG_FEATURE_MODPROBE_SMALL_CHECK_ALREADY_LOADED is not set
++# CONFIG_FEATURE_2_4_MODULES is not set
++# CONFIG_FEATURE_INSMOD_VERSION_CHECKING is not set
++# CONFIG_FEATURE_INSMOD_KSYMOOPS_SYMBOLS is not set
++# CONFIG_FEATURE_INSMOD_LOADINKMEM is not set
++# CONFIG_FEATURE_INSMOD_LOAD_MAP is not set
++# CONFIG_FEATURE_INSMOD_LOAD_MAP_FULL is not set
++CONFIG_FEATURE_CHECK_TAINTED_MODULE=y
++# CONFIG_FEATURE_INSMOD_TRY_MMAP is not set
++CONFIG_FEATURE_MODUTILS_ALIAS=y
++CONFIG_FEATURE_MODUTILS_SYMBOLS=y
++CONFIG_DEFAULT_MODULES_DIR="/lib/modules"
++CONFIG_DEFAULT_DEPMOD_FILE="modules.dep"
++
++#
++# Linux System Utilities
++#
++# CONFIG_ACPID is not set
++# CONFIG_FEATURE_ACPID_COMPAT is not set
++# CONFIG_BLKDISCARD is not set
++CONFIG_BLKID=y
++# CONFIG_FEATURE_BLKID_TYPE is not set
++# CONFIG_BLOCKDEV is not set
++# CONFIG_CAL is not set
++CONFIG_CHRT=y
++CONFIG_DMESG=y
++CONFIG_FEATURE_DMESG_PRETTY=y
++CONFIG_EJECT=y
++# CONFIG_FEATURE_EJECT_SCSI is not set
++CONFIG_FALLOCATE=y
++# CONFIG_FATATTR is not set
++CONFIG_FBSET=y
++CONFIG_FEATURE_FBSET_FANCY=y
++CONFIG_FEATURE_FBSET_READMODE=y
++CONFIG_FDFORMAT=y
++CONFIG_FDISK=y
++# CONFIG_FDISK_SUPPORT_LARGE_DISKS is not set
++CONFIG_FEATURE_FDISK_WRITABLE=y
++# CONFIG_FEATURE_AIX_LABEL is not set
++# CONFIG_FEATURE_SGI_LABEL is not set
++# CONFIG_FEATURE_SUN_LABEL is not set
++# CONFIG_FEATURE_OSF_LABEL is not set
++CONFIG_FEATURE_GPT_LABEL=y
++CONFIG_FEATURE_FDISK_ADVANCED=y
++# CONFIG_FINDFS is not set
++CONFIG_FLOCK=y
++CONFIG_FDFLUSH=y
++CONFIG_FREERAMDISK=y
++# CONFIG_FSCK_MINIX is not set
++CONFIG_FSFREEZE=y
++CONFIG_FSTRIM=y
++CONFIG_GETOPT=y
++CONFIG_FEATURE_GETOPT_LONG=y
++CONFIG_HEXDUMP=y
++# CONFIG_FEATURE_HEXDUMP_REVERSE is not set
++# CONFIG_HD is not set
++CONFIG_XXD=y
++CONFIG_HWCLOCK=y
++CONFIG_FEATURE_HWCLOCK_LONG_OPTIONS=y
++CONFIG_FEATURE_HWCLOCK_ADJTIME_FHS=y
++# CONFIG_IONICE is not set
++CONFIG_IPCRM=y
++CONFIG_IPCS=y
++CONFIG_LAST=y
++# CONFIG_FEATURE_LAST_FANCY is not set
++CONFIG_LOSETUP=y
++CONFIG_LSPCI=y
++CONFIG_LSUSB=y
++CONFIG_MDEV=y
++CONFIG_FEATURE_MDEV_CONF=y
++CONFIG_FEATURE_MDEV_RENAME=y
++# CONFIG_FEATURE_MDEV_RENAME_REGEXP is not set
++CONFIG_FEATURE_MDEV_EXEC=y
++CONFIG_FEATURE_MDEV_LOAD_FIRMWARE=y
++CONFIG_MESG=y
++CONFIG_FEATURE_MESG_ENABLE_ONLY_GROUP=y
++CONFIG_MKE2FS=y
++# CONFIG_MKFS_EXT2 is not set
++# CONFIG_MKFS_MINIX is not set
++# CONFIG_FEATURE_MINIX2 is not set
++# CONFIG_MKFS_REISER is not set
++CONFIG_MKDOSFS=y
++CONFIG_MKFS_VFAT=y
++CONFIG_MKSWAP=y
++# CONFIG_FEATURE_MKSWAP_UUID is not set
++CONFIG_MORE=y
++CONFIG_MOUNT=y
++# CONFIG_FEATURE_MOUNT_FAKE is not set
++# CONFIG_FEATURE_MOUNT_VERBOSE is not set
++# CONFIG_FEATURE_MOUNT_HELPERS is not set
++# CONFIG_FEATURE_MOUNT_LABEL is not set
++# CONFIG_FEATURE_MOUNT_NFS is not set
++CONFIG_FEATURE_MOUNT_CIFS=y
++CONFIG_FEATURE_MOUNT_FLAGS=y
++CONFIG_FEATURE_MOUNT_FSTAB=y
++CONFIG_FEATURE_MOUNT_OTHERTAB=y
++CONFIG_MOUNTPOINT=y
++# CONFIG_NSENTER is not set
++# CONFIG_FEATURE_NSENTER_LONG_OPTS is not set
++CONFIG_PIVOT_ROOT=y
++CONFIG_RDATE=y
++# CONFIG_RDEV is not set
++CONFIG_READPROFILE=y
++CONFIG_RENICE=y
++# CONFIG_REV is not set
++# CONFIG_RTCWAKE is not set
++# CONFIG_SCRIPT is not set
++# CONFIG_SCRIPTREPLAY is not set
++CONFIG_SETARCH=y
++CONFIG_LINUX32=y
++CONFIG_LINUX64=y
++CONFIG_SETPRIV=y
++CONFIG_SETSID=y
++CONFIG_SWAPON=y
++# CONFIG_FEATURE_SWAPON_DISCARD is not set
++# CONFIG_FEATURE_SWAPON_PRI is not set
++CONFIG_SWAPOFF=y
++CONFIG_SWITCH_ROOT=y
++# CONFIG_TASKSET is not set
++# CONFIG_FEATURE_TASKSET_FANCY is not set
++CONFIG_UEVENT=y
++CONFIG_UMOUNT=y
++CONFIG_FEATURE_UMOUNT_ALL=y
++# CONFIG_UNSHARE is not set
++# CONFIG_WALL is not set
++
++#
++# Common options for mount/umount
++#
++CONFIG_FEATURE_MOUNT_LOOP=y
++CONFIG_FEATURE_MOUNT_LOOP_CREATE=y
++# CONFIG_FEATURE_MTAB_SUPPORT is not set
++CONFIG_VOLUMEID=y
++
++#
++# Filesystem/Volume identification
++#
++# CONFIG_FEATURE_VOLUMEID_BCACHE is not set
++# CONFIG_FEATURE_VOLUMEID_BTRFS is not set
++# CONFIG_FEATURE_VOLUMEID_CRAMFS is not set
++CONFIG_FEATURE_VOLUMEID_EXFAT=y
++CONFIG_FEATURE_VOLUMEID_EXT=y
++CONFIG_FEATURE_VOLUMEID_F2FS=y
++CONFIG_FEATURE_VOLUMEID_FAT=y
++# CONFIG_FEATURE_VOLUMEID_HFS is not set
++# CONFIG_FEATURE_VOLUMEID_ISO9660 is not set
++# CONFIG_FEATURE_VOLUMEID_JFS is not set
++# CONFIG_FEATURE_VOLUMEID_LINUXRAID is not set
++# CONFIG_FEATURE_VOLUMEID_LINUXSWAP is not set
++# CONFIG_FEATURE_VOLUMEID_LUKS is not set
++# CONFIG_FEATURE_VOLUMEID_NILFS is not set
++# CONFIG_FEATURE_VOLUMEID_NTFS is not set
++# CONFIG_FEATURE_VOLUMEID_OCFS2 is not set
++# CONFIG_FEATURE_VOLUMEID_REISERFS is not set
++# CONFIG_FEATURE_VOLUMEID_ROMFS is not set
++# CONFIG_FEATURE_VOLUMEID_SQUASHFS is not set
++# CONFIG_FEATURE_VOLUMEID_SYSV is not set
++CONFIG_FEATURE_VOLUMEID_UBIFS=y
++# CONFIG_FEATURE_VOLUMEID_UDF is not set
++# CONFIG_FEATURE_VOLUMEID_XFS is not set
++
++#
++# Miscellaneous Utilities
++#
++# CONFIG_ADJTIMEX is not set
++# CONFIG_BBCONFIG is not set
++# CONFIG_FEATURE_COMPRESS_BBCONFIG is not set
++# CONFIG_BEEP is not set
++CONFIG_FEATURE_BEEP_FREQ=0
++CONFIG_FEATURE_BEEP_LENGTH_MS=0
++# CONFIG_CHAT is not set
++# CONFIG_FEATURE_CHAT_NOFAIL is not set
++# CONFIG_FEATURE_CHAT_TTY_HIFI is not set
++# CONFIG_FEATURE_CHAT_IMPLICIT_CR is not set
++# CONFIG_FEATURE_CHAT_SWALLOW_OPTS is not set
++# CONFIG_FEATURE_CHAT_SEND_ESCAPES is not set
++# CONFIG_FEATURE_CHAT_VAR_ABORT_LEN is not set
++# CONFIG_FEATURE_CHAT_CLR_ABORT is not set
++# CONFIG_CONSPY is not set
++CONFIG_CROND=y
++# CONFIG_FEATURE_CROND_D is not set
++# CONFIG_FEATURE_CROND_CALL_SENDMAIL is not set
++CONFIG_FEATURE_CROND_DIR="/var/spool/cron"
++CONFIG_CRONTAB=y
++CONFIG_DC=y
++# CONFIG_FEATURE_DC_LIBM is not set
++# CONFIG_DEVFSD is not set
++# CONFIG_DEVFSD_MODLOAD is not set
++# CONFIG_DEVFSD_FG_NP is not set
++# CONFIG_DEVFSD_VERBOSE is not set
++# CONFIG_FEATURE_DEVFS is not set
++CONFIG_DEVMEM=y
++# CONFIG_FBSPLASH is not set
++# CONFIG_FLASH_ERASEALL is not set
++# CONFIG_FLASH_LOCK is not set
++# CONFIG_FLASH_UNLOCK is not set
++# CONFIG_FLASHCP is not set
++CONFIG_HDPARM=y
++CONFIG_FEATURE_HDPARM_GET_IDENTITY=y
++# CONFIG_FEATURE_HDPARM_HDIO_SCAN_HWIF is not set
++# CONFIG_FEATURE_HDPARM_HDIO_UNREGISTER_HWIF is not set
++# CONFIG_FEATURE_HDPARM_HDIO_DRIVE_RESET is not set
++# CONFIG_FEATURE_HDPARM_HDIO_TRISTATE_HWIF is not set
++# CONFIG_FEATURE_HDPARM_HDIO_GETSET_DMA is not set
++CONFIG_I2CGET=y
++CONFIG_I2CSET=y
++CONFIG_I2CDUMP=y
++CONFIG_I2CDETECT=y
++# CONFIG_INOTIFYD is not set
++CONFIG_LESS=y
++CONFIG_FEATURE_LESS_MAXLINES=9999999
++CONFIG_FEATURE_LESS_BRACKETS=y
++CONFIG_FEATURE_LESS_FLAGS=y
++CONFIG_FEATURE_LESS_TRUNCATE=y
++# CONFIG_FEATURE_LESS_MARKS is not set
++CONFIG_FEATURE_LESS_REGEXP=y
++# CONFIG_FEATURE_LESS_WINCH is not set
++# CONFIG_FEATURE_LESS_ASK_TERMINAL is not set
++# CONFIG_FEATURE_LESS_DASHCMD is not set
++# CONFIG_FEATURE_LESS_LINENUMS is not set
++CONFIG_LSSCSI=y
++CONFIG_MAKEDEVS=y
++# CONFIG_FEATURE_MAKEDEVS_LEAF is not set
++CONFIG_FEATURE_MAKEDEVS_TABLE=y
++# CONFIG_MAN is not set
++CONFIG_MICROCOM=y
++CONFIG_MT=y
++# CONFIG_NANDWRITE is not set
++# CONFIG_NANDDUMP is not set
++CONFIG_PARTPROBE=y
++# CONFIG_RAIDAUTORUN is not set
++# CONFIG_READAHEAD is not set
++# CONFIG_RFKILL is not set
++CONFIG_RUNLEVEL=y
++# CONFIG_RX is not set
++CONFIG_SETSERIAL=y
++CONFIG_STRINGS=y
++CONFIG_TIME=y
++# CONFIG_TTYSIZE is not set
++# CONFIG_UBIATTACH is not set
++# CONFIG_UBIDETACH is not set
++# CONFIG_UBIMKVOL is not set
++# CONFIG_UBIRMVOL is not set
++# CONFIG_UBIRSVOL is not set
++# CONFIG_UBIUPDATEVOL is not set
++CONFIG_UBIRENAME=y
++# CONFIG_VOLNAME is not set
++CONFIG_WATCHDOG=y
++
++#
++# Networking Utilities
++#
++CONFIG_FEATURE_IPV6=y
++# CONFIG_FEATURE_UNIX_LOCAL is not set
++CONFIG_FEATURE_PREFER_IPV4_ADDRESS=y
++# CONFIG_VERBOSE_RESOLUTION_ERRORS is not set
++CONFIG_ARP=y
++CONFIG_ARPING=y
++# CONFIG_BRCTL is not set
++# CONFIG_FEATURE_BRCTL_FANCY is not set
++# CONFIG_FEATURE_BRCTL_SHOW is not set
++CONFIG_DNSD=y
++CONFIG_ETHER_WAKE=y
++# CONFIG_FTPD is not set
++# CONFIG_FEATURE_FTPD_WRITE is not set
++# CONFIG_FEATURE_FTPD_ACCEPT_BROKEN_LIST is not set
++# CONFIG_FEATURE_FTPD_AUTHENTICATION is not set
++# CONFIG_FTPGET is not set
++# CONFIG_FTPPUT is not set
++# CONFIG_FEATURE_FTPGETPUT_LONG_OPTIONS is not set
++CONFIG_HOSTNAME=y
++CONFIG_DNSDOMAINNAME=y
++CONFIG_HTTPD=y
++CONFIG_FEATURE_HTTPD_RANGES=y
++CONFIG_FEATURE_HTTPD_SETUID=y
++CONFIG_FEATURE_HTTPD_BASIC_AUTH=y
++CONFIG_FEATURE_HTTPD_AUTH_MD5=y
++CONFIG_FEATURE_HTTPD_CGI=y
++CONFIG_FEATURE_HTTPD_CONFIG_WITH_SCRIPT_INTERPR=y
++CONFIG_FEATURE_HTTPD_SET_REMOTE_PORT_TO_ENV=y
++CONFIG_FEATURE_HTTPD_ENCODE_URL_STR=y
++CONFIG_FEATURE_HTTPD_ERROR_PAGES=y
++CONFIG_FEATURE_HTTPD_PROXY=y
++CONFIG_FEATURE_HTTPD_GZIP=y
++CONFIG_IFCONFIG=y
++CONFIG_FEATURE_IFCONFIG_STATUS=y
++CONFIG_FEATURE_IFCONFIG_SLIP=y
++CONFIG_FEATURE_IFCONFIG_MEMSTART_IOADDR_IRQ=y
++CONFIG_FEATURE_IFCONFIG_HW=y
++# CONFIG_FEATURE_IFCONFIG_BROADCAST_PLUS is not set
++# CONFIG_IFENSLAVE is not set
++# CONFIG_IFPLUGD is not set
++CONFIG_IFUP=y
++CONFIG_IFDOWN=y
++CONFIG_IFUPDOWN_IFSTATE_PATH="/var/run/ifstate"
++CONFIG_FEATURE_IFUPDOWN_IP=y
++CONFIG_FEATURE_IFUPDOWN_IPV4=y
++CONFIG_FEATURE_IFUPDOWN_IPV6=y
++CONFIG_FEATURE_IFUPDOWN_MAPPING=y
++# CONFIG_FEATURE_IFUPDOWN_EXTERNAL_DHCP is not set
++CONFIG_INETD=y
++CONFIG_FEATURE_INETD_SUPPORT_BUILTIN_ECHO=y
++CONFIG_FEATURE_INETD_SUPPORT_BUILTIN_DISCARD=y
++CONFIG_FEATURE_INETD_SUPPORT_BUILTIN_TIME=y
++CONFIG_FEATURE_INETD_SUPPORT_BUILTIN_DAYTIME=y
++CONFIG_FEATURE_INETD_SUPPORT_BUILTIN_CHARGEN=y
++# CONFIG_FEATURE_INETD_RPC is not set
++CONFIG_IP=y
++CONFIG_IPADDR=y
++CONFIG_IPLINK=y
++CONFIG_IPROUTE=y
++CONFIG_IPTUNNEL=y
++CONFIG_IPRULE=y
++CONFIG_IPNEIGH=y
++CONFIG_FEATURE_IP_ADDRESS=y
++CONFIG_FEATURE_IP_LINK=y
++CONFIG_FEATURE_IP_ROUTE=y
++CONFIG_FEATURE_IP_ROUTE_DIR="/etc/iproute2"
++CONFIG_FEATURE_IP_TUNNEL=y
++CONFIG_FEATURE_IP_RULE=y
++CONFIG_FEATURE_IP_NEIGH=y
++# CONFIG_FEATURE_IP_RARE_PROTOCOLS is not set
++# CONFIG_IPCALC is not set
++# CONFIG_FEATURE_IPCALC_LONG_OPTIONS is not set
++# CONFIG_FEATURE_IPCALC_FANCY is not set
++# CONFIG_FAKEIDENTD is not set
++CONFIG_NAMEIF=y
++# CONFIG_FEATURE_NAMEIF_EXTENDED is not set
++# CONFIG_NBDCLIENT is not set
++# CONFIG_NC is not set
++# CONFIG_NC_SERVER is not set
++# CONFIG_NC_EXTRA is not set
++# CONFIG_NC_110_COMPAT is not set
++CONFIG_NETSTAT=y
++# CONFIG_FEATURE_NETSTAT_WIDE is not set
++# CONFIG_FEATURE_NETSTAT_PRG is not set
++CONFIG_NSLOOKUP=y
++# CONFIG_NTPD is not set
++# CONFIG_FEATURE_NTPD_SERVER is not set
++# CONFIG_FEATURE_NTPD_CONF is not set
++CONFIG_PING=y
++# CONFIG_PING6 is not set
++CONFIG_FEATURE_FANCY_PING=y
++# CONFIG_PSCAN is not set
++CONFIG_ROUTE=y
++# CONFIG_SLATTACH is not set
++CONFIG_SSL_CLIENT=y
++# CONFIG_TCPSVD is not set
++# CONFIG_UDPSVD is not set
++CONFIG_TELNET=y
++CONFIG_FEATURE_TELNET_TTYPE=y
++CONFIG_FEATURE_TELNET_AUTOLOGIN=y
++CONFIG_FEATURE_TELNET_WIDTH=y
++# CONFIG_TELNETD is not set
++# CONFIG_FEATURE_TELNETD_STANDALONE is not set
++# CONFIG_FEATURE_TELNETD_INETD_WAIT is not set
++CONFIG_TFTP=y
++# CONFIG_TFTPD is not set
++
++#
++# Common options for tftp/tftpd
++#
++CONFIG_FEATURE_TFTP_GET=y
++CONFIG_FEATURE_TFTP_PUT=y
++CONFIG_FEATURE_TFTP_BLOCKSIZE=y
++# CONFIG_FEATURE_TFTP_PROGRESS_BAR is not set
++# CONFIG_TFTP_DEBUG is not set
++CONFIG_TLS=y
++CONFIG_TRACEROUTE=y
++# CONFIG_TRACEROUTE6 is not set
++# CONFIG_FEATURE_TRACEROUTE_VERBOSE is not set
++# CONFIG_FEATURE_TRACEROUTE_USE_ICMP is not set
++# CONFIG_TUNCTL is not set
++# CONFIG_FEATURE_TUNCTL_UG is not set
++CONFIG_VCONFIG=y
++CONFIG_WGET=y
++CONFIG_FEATURE_WGET_LONG_OPTIONS=y
++CONFIG_FEATURE_WGET_STATUSBAR=y
++CONFIG_FEATURE_WGET_AUTHENTICATION=y
++CONFIG_FEATURE_WGET_TIMEOUT=y
++CONFIG_FEATURE_WGET_HTTPS=y
++# CONFIG_FEATURE_WGET_OPENSSL is not set
++# CONFIG_WHOIS is not set
++# CONFIG_ZCIP is not set
++# CONFIG_UDHCPC6 is not set
++# CONFIG_FEATURE_UDHCPC6_RFC3646 is not set
++# CONFIG_FEATURE_UDHCPC6_RFC4704 is not set
++# CONFIG_FEATURE_UDHCPC6_RFC4833 is not set
++CONFIG_UDHCPD=y
++CONFIG_FEATURE_UDHCPD_WRITE_LEASES_EARLY=y
++# CONFIG_FEATURE_UDHCPD_BASE_IP_ON_MAC is not set
++CONFIG_DHCPD_LEASES_FILE="/var/lib/misc/udhcpd.leases"
++CONFIG_DUMPLEASES=y
++CONFIG_DHCPRELAY=y
++CONFIG_UDHCPC=y
++CONFIG_FEATURE_UDHCPC_ARPING=y
++CONFIG_FEATURE_UDHCPC_SANITIZEOPT=y
++CONFIG_UDHCPC_DEFAULT_SCRIPT="/usr/share/udhcpc/default.script"
++# CONFIG_FEATURE_UDHCP_PORT is not set
++CONFIG_UDHCP_DEBUG=0
++# CONFIG_FEATURE_UDHCP_RFC3397 is not set
++CONFIG_FEATURE_UDHCP_8021Q=y
++CONFIG_UDHCPC_SLACK_FOR_BUGGY_SERVERS=80
++CONFIG_IFUPDOWN_UDHCPC_CMD_OPTIONS="-R -n"
++
++#
++# Print Utilities
++#
++# CONFIG_LPD is not set
++# CONFIG_LPR is not set
++# CONFIG_LPQ is not set
++
++#
++# Mail Utilities
++#
++# CONFIG_MAKEMIME is not set
++# CONFIG_POPMAILDIR is not set
++# CONFIG_FEATURE_POPMAILDIR_DELIVERY is not set
++# CONFIG_REFORMIME is not set
++# CONFIG_FEATURE_REFORMIME_COMPAT is not set
++# CONFIG_SENDMAIL is not set
++CONFIG_FEATURE_MIME_CHARSET=""
++
++#
++# Process Utilities
++#
++CONFIG_FREE=y
++CONFIG_FUSER=y
++# CONFIG_IOSTAT is not set
++CONFIG_KILL=y
++CONFIG_KILLALL=y
++CONFIG_KILLALL5=y
++CONFIG_LSOF=y
++# CONFIG_MPSTAT is not set
++# CONFIG_NMETER is not set
++# CONFIG_PGREP is not set
++# CONFIG_PKILL is not set
++CONFIG_PIDOF=y
++CONFIG_FEATURE_PIDOF_SINGLE=y
++CONFIG_FEATURE_PIDOF_OMIT=y
++# CONFIG_PMAP is not set
++# CONFIG_POWERTOP is not set
++# CONFIG_FEATURE_POWERTOP_INTERACTIVE is not set
++CONFIG_PS=y
++# CONFIG_FEATURE_PS_WIDE is not set
++# CONFIG_FEATURE_PS_LONG is not set
++# CONFIG_FEATURE_PS_TIME is not set
++# CONFIG_FEATURE_PS_UNUSUAL_SYSTEMS is not set
++# CONFIG_FEATURE_PS_ADDITIONAL_COLUMNS is not set
++# CONFIG_PSTREE is not set
++# CONFIG_PWDX is not set
++# CONFIG_SMEMCAP is not set
++CONFIG_BB_SYSCTL=y
++CONFIG_TOP=y
++CONFIG_FEATURE_TOP_INTERACTIVE=y
++CONFIG_FEATURE_TOP_CPU_USAGE_PERCENTAGE=y
++CONFIG_FEATURE_TOP_CPU_GLOBAL_PERCENTS=y
++# CONFIG_FEATURE_TOP_SMP_CPU is not set
++# CONFIG_FEATURE_TOP_DECIMALS is not set
++# CONFIG_FEATURE_TOP_SMP_PROCESS is not set
++# CONFIG_FEATURE_TOPMEM is not set
++CONFIG_UPTIME=y
++# CONFIG_FEATURE_UPTIME_UTMP_SUPPORT is not set
++CONFIG_WATCH=y
++# CONFIG_FEATURE_SHOW_THREADS is not set
++
++#
++# Runit Utilities
++#
++# CONFIG_CHPST is not set
++# CONFIG_SETUIDGID is not set
++# CONFIG_ENVUIDGID is not set
++# CONFIG_ENVDIR is not set
++# CONFIG_SOFTLIMIT is not set
++# CONFIG_RUNSV is not set
++# CONFIG_RUNSVDIR is not set
++# CONFIG_FEATURE_RUNSVDIR_LOG is not set
++# CONFIG_SV is not set
++CONFIG_SV_DEFAULT_SERVICE_DIR=""
++CONFIG_SVC=y
++# CONFIG_SVLOGD is not set
++# CONFIG_CHCON is not set
++# CONFIG_FEATURE_CHCON_LONG_OPTIONS is not set
++# CONFIG_GETENFORCE is not set
++# CONFIG_GETSEBOOL is not set
++# CONFIG_LOAD_POLICY is not set
++# CONFIG_MATCHPATHCON is not set
++# CONFIG_RUNCON is not set
++# CONFIG_FEATURE_RUNCON_LONG_OPTIONS is not set
++# CONFIG_SELINUXENABLED is not set
++# CONFIG_SESTATUS is not set
++# CONFIG_SETENFORCE is not set
++# CONFIG_SETFILES is not set
++# CONFIG_FEATURE_SETFILES_CHECK_OPTION is not set
++# CONFIG_RESTORECON is not set
++# CONFIG_SETSEBOOL is not set
++
++#
++# Shells
++#
++CONFIG_SH_IS_ASH=y
++# CONFIG_SH_IS_HUSH is not set
++# CONFIG_SH_IS_NONE is not set
++# CONFIG_BASH_IS_ASH is not set
++# CONFIG_BASH_IS_HUSH is not set
++CONFIG_BASH_IS_NONE=y
++CONFIG_ASH=y
++CONFIG_ASH_OPTIMIZE_FOR_SIZE=y
++CONFIG_ASH_INTERNAL_GLOB=y
++CONFIG_ASH_BASH_COMPAT=y
++CONFIG_ASH_JOB_CONTROL=y
++CONFIG_ASH_ALIAS=y
++CONFIG_ASH_RANDOM_SUPPORT=y
++CONFIG_ASH_EXPAND_PRMT=y
++CONFIG_ASH_IDLE_TIMEOUT=y
++# CONFIG_ASH_MAIL is not set
++CONFIG_ASH_ECHO=y
++CONFIG_ASH_PRINTF=y
++CONFIG_ASH_TEST=y
++CONFIG_ASH_HELP=y
++CONFIG_ASH_GETOPTS=y
++CONFIG_ASH_CMDCMD=y
++# CONFIG_CTTYHACK is not set
++# CONFIG_HUSH is not set
++# CONFIG_HUSH_BASH_COMPAT is not set
++# CONFIG_HUSH_BRACE_EXPANSION is not set
++# CONFIG_HUSH_INTERACTIVE is not set
++# CONFIG_HUSH_SAVEHISTORY is not set
++# CONFIG_HUSH_JOB is not set
++# CONFIG_HUSH_TICK is not set
++# CONFIG_HUSH_IF is not set
++# CONFIG_HUSH_LOOPS is not set
++# CONFIG_HUSH_CASE is not set
++# CONFIG_HUSH_FUNCTIONS is not set
++# CONFIG_HUSH_LOCAL is not set
++# CONFIG_HUSH_RANDOM_SUPPORT is not set
++# CONFIG_HUSH_MODE_X is not set
++# CONFIG_HUSH_ECHO is not set
++# CONFIG_HUSH_PRINTF is not set
++# CONFIG_HUSH_TEST is not set
++# CONFIG_HUSH_HELP is not set
++# CONFIG_HUSH_EXPORT is not set
++# CONFIG_HUSH_EXPORT_N is not set
++# CONFIG_HUSH_KILL is not set
++# CONFIG_HUSH_WAIT is not set
++# CONFIG_HUSH_TRAP is not set
++# CONFIG_HUSH_TYPE is not set
++# CONFIG_HUSH_READ is not set
++# CONFIG_HUSH_SET is not set
++# CONFIG_HUSH_UNSET is not set
++# CONFIG_HUSH_ULIMIT is not set
++# CONFIG_HUSH_UMASK is not set
++# CONFIG_HUSH_MEMLEAK is not set
++# CONFIG_MSH is not set
++
++#
++# Options common to all shells
++#
++CONFIG_FEATURE_SH_MATH=y
++CONFIG_FEATURE_SH_MATH_64=y
++CONFIG_FEATURE_SH_EXTRA_QUIET=y
++# CONFIG_FEATURE_SH_STANDALONE is not set
++# CONFIG_FEATURE_SH_NOFORK is not set
++# CONFIG_FEATURE_SH_HISTFILESIZE is not set
++
++#
++# System Logging Utilities
++#
++CONFIG_KLOGD=y
++CONFIG_FEATURE_KLOGD_KLOGCTL=y
++CONFIG_LOGGER=y
++# CONFIG_LOGREAD is not set
++# CONFIG_FEATURE_LOGREAD_REDUCED_LOCKING is not set
++CONFIG_SYSLOGD=y
++CONFIG_FEATURE_ROTATE_LOGFILE=y
++CONFIG_FEATURE_REMOTE_LOG=y
++# CONFIG_FEATURE_SYSLOGD_DUP is not set
++# CONFIG_FEATURE_SYSLOGD_CFG is not set
++CONFIG_FEATURE_SYSLOGD_READ_BUFFER_SIZE=256
++# CONFIG_FEATURE_IPC_SYSLOG is not set
++CONFIG_FEATURE_IPC_SYSLOG_BUFFER_SIZE=0
++# CONFIG_FEATURE_KMSG_SYSLOG is not set
+diff --git a/board/tjd/device_config b/board/tjd/device_config
+new file mode 100644
+index 0000000000..1159fc1a94
+--- /dev/null
++++ b/board/tjd/device_config
+@@ -0,0 +1,15 @@
++#S23udc
++PRODUCT="PlutoSDR (ADALM-PLUTO)"
++USBPID=0xb673
++ENDPOINTS=3
++
++#S40network / S41network
++UDHCPD_CONF=/etc/udhcpd.conf
++CONF=/opt/config.txt
++IFAC=/etc/network/interfaces
++
++#update.sh
++TARGET=plutosdr
++FIRMWARE=/mnt/msd/pluto.frm
++FRM_MAGIC="ITB PlutoSDR (ADALM-PLUTO)"
++
+diff --git a/board/tjd/device_format_jffs2 b/board/tjd/device_format_jffs2
+new file mode 100644
+index 0000000000..eb2e5ce7e3
+--- /dev/null
++++ b/board/tjd/device_format_jffs2
+@@ -0,0 +1,17 @@
++#!/bin/sh
++set +e
++
++while true;
++do
++	read -p "Are you sure to delete/format your mtd2 JFFS2 (/mnt/jffs2) partition? (yes/no) " answ
++	case $answ in
++		[Yy]* )
++			umount /mnt/jffs2
++			flash_erase -j /dev/mtd2 0 0
++			mount -a
++			break
++			;;
++		[Nn]* ) exit;;
++		* ) echo "Please answer yes or no.";;
++	esac
++done
+diff --git a/board/tjd/device_passwd b/board/tjd/device_passwd
+new file mode 100644
+index 0000000000..c3c50dddc4
+--- /dev/null
++++ b/board/tjd/device_passwd
+@@ -0,0 +1,11 @@
++#!/bin/sh
++set +e
++
++cat /proc/mounts | grep -q mtd2 || (echo "Filesystem not mounted use device_format_jffs2 command to setup your partition"; exit 1)
++
++passwd
++install -D /etc/passwd /etc/shadow /etc/group -t /mnt/jffs2/etc
++cd /etc
++md5sum passwd shadow group 2>/dev/null > /mnt/jffs2/etc/password.md5
++sync
++
+diff --git a/board/tjd/device_persistent_keys b/board/tjd/device_persistent_keys
+new file mode 100644
+index 0000000000..a67d3a8db2
+--- /dev/null
++++ b/board/tjd/device_persistent_keys
+@@ -0,0 +1,21 @@
++#!/bin/sh
++set +e
++
++KEYFILE=/etc/dropbear/dropbear_ecdsa_host_key
++IDFILE=/root/.ssh/authorized_keys
++
++cat /proc/mounts | grep -q mtd2 || (echo "Filesystem not mounted use device_format_jffs2 command to setup your partition"; exit 1)
++
++#dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key
++[[ ! -f ${KEYFILE} ]] && dropbearkey -t ecdsa -f ${KEYFILE}
++install -D /etc/dropbear/dropbear_* -t /mnt/jffs2/etc/dropbear
++cd /etc/dropbear
++md5sum dropbear_* /etc/dropbear/ 2>/dev/null > /mnt/jffs2/etc/dropbear/keys.md5
++
++if [ -f ${IDFILE} ]; then
++ install -D ${IDFILE} -t /mnt/jffs2/root/.ssh
++ cd /root/.ssh
++ md5sum authorized_keys 2>/dev/null > /mnt/jffs2/root/.ssh/keys.md5
++fi
++
++sync
+diff --git a/board/tjd/device_reboot b/board/tjd/device_reboot
+new file mode 100644
+index 0000000000..1134b2a240
+--- /dev/null
++++ b/board/tjd/device_reboot
+@@ -0,0 +1,32 @@
++#!/bin/sh
++
++case "$1" in
++	ram)
++		cause=7
++		;;
++	sf)
++		cause=3
++		;;
++	verbose)
++		cause=6
++		;;
++	break)
++		cause=2
++		;;
++	reset)
++		cause=0
++		;;
++
++	*)
++		echo "Usage: $0 {ram|sf|reset|verbose|break}"
++		echo "  sf     : Reboot and enter Serial Flash DFU mode"
++		echo "  ram    : Reboot and enter RAM DFU mode"
++		echo "  reset  : Reboot"
++		echo "  verbose: Reboot and start serial console Verbose"
++		echo "  break  : Reboot and HALT in u-boot"
++		exit 1
++esac
++
++echo $cause > /sys/kernel/debug/zynq_rst/code && /sbin/reboot
++
++exit 0
+diff --git a/board/tjd/dropbrear_localoptions.h b/board/tjd/dropbrear_localoptions.h
+new file mode 100644
+index 0000000000..8d1cd4ab7b
+--- /dev/null
++++ b/board/tjd/dropbrear_localoptions.h
+@@ -0,0 +1 @@
++#define DO_MOTD	1
+diff --git a/board/tjd/fw_env.config b/board/tjd/fw_env.config
+new file mode 100644
+index 0000000000..402a3409ff
+--- /dev/null
++++ b/board/tjd/fw_env.config
+@@ -0,0 +1,2 @@
++# MTD device name       Device offset   Env. size       Flash sector size
++/dev/mtd1               0x0000          0x20000         0x20000
+diff --git a/board/tjd/genimage-msd.cfg b/board/tjd/genimage-msd.cfg
+new file mode 100644
+index 0000000000..71872e8596
+--- /dev/null
++++ b/board/tjd/genimage-msd.cfg
+@@ -0,0 +1,20 @@
++image boot.vfat {
++  vfat {
++   extraargs = "-n PlutoSDR"
++    files = {"index.html", "LICENSE.html"}
++  }
++  size = 30M
++}
++
++image vfat.img {
++  hdimage {
++  }
++
++  partition boot {
++    partition-type = 0xC
++    bootable = "false"
++    image = "boot.vfat"
++  }
++}
++
++
+diff --git a/board/tjd/ifupdown.sh b/board/tjd/ifupdown.sh
+new file mode 100644
+index 0000000000..0e75ce188d
+--- /dev/null
++++ b/board/tjd/ifupdown.sh
+@@ -0,0 +1,12 @@
++#!/bin/sh
++
++case "${ACTION}" in
++add|"")
++	ifconfig ${MDEV} up
++	ifup ${MDEV}
++	echo $(ip -f inet -o addr show ${MDEV}|cut -d\  -f 7 | cut -d/ -f 1) > /opt/ipaddr-${MDEV}
++	;;
++remove)
++	ifdown ${MDEV}
++	;;
++esac
+diff --git a/board/tjd/index.html b/board/tjd/index.html
+new file mode 100644
+index 0000000000..a09ecf0b3e
+--- /dev/null
++++ b/board/tjd/index.html
+@@ -0,0 +1,372 @@
++<!doctype html>
++<html class="no-js" lang="en">
++<head>
++<meta charset="utf-8">
++<meta name="viewport" content="width=device-width, initial-scale=1">
++<meta http-equiv="x-ua-compatible" content="ie=edge">
++<title>ADALM-PLUTO On-board documentation</title>
++<meta name="description" content="ADALM-PLUTO On board docs">
++
++<link rel="apple-touch-icon" href="apple-touch-icon.png">
++<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
++<!-- Place favicon.ico in the root directory -->
++<link type="text/css" href="./img/style.css" rel="stylesheet">
++</head>
++<body>
++<!--[if lte IE 11]>
++<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
++<![endif]-->
++
++<!-- Add your site or application content here -->
++<header id="top">
++<a href="http://www.analog.com">
++<img src="img/ADI_Logo_AWP.png" alt="Analog Devices logo" />
++</a>
++<div class="anchor">
++<a href="http://#IP#/index.html" title="network version">Network Version</a> |
++<a href="https://my.analog.com/en/app/registration/hardware/ADALM-PLUTO?sn=#SERIAL#&v=#MODEL#">Register your PlutoSDR</a> |
++<a href="https://twitter.com/intent/tweet?text=Excited%20to%20try%20out%20my%20new%20@ADI_News%20%23plutosdr%20(ADALM-PLUTO%20http%3A%2F%2Fwww.analog.com%2Fplutosdr)%20Hands%20on%20Learning%20Module%20for%20Software%20Defined%20Radio%20pic.twitter.com%2F7JxgynEa8w&hashtags=matlab%2Cgnuradio%2Csdrangel%2Csdrsharp&related=twitter%3AADI_News" title="Click to Tweet">Share PlutoSDR: <img style="width: 32px;" src="./img/tw.png" alt="Twitter Logo"></a>
++</div>
++</header>
++
++<nav style="text-align: center;">
++<a class="button" href="#started">Get Started</a>
++<a class="button" href="#framework">Frameworks</a>
++<div class="dropdown">
++<span><a class="button" href="#firmware">Firmware &dArr;</a></span>
++<div class="dropdown-content">
++<p><a class="button" href="#firmware">Upgrade Firmware</a></p>
++<p><a class="button" href="#version">Version Info</a></p>
++<p><a class="button" href="#target">Custom Apps</a></p>
++<p><a class="button" href="#config">Config Settings</a></p>
++<p><a class="button" href="#wifi">Wi-Fi Settings</a></p>
++<p><a class="button" href="#wired">Wired Settings</a></p>
++</div>
++</div>
++<div class="dropdown">
++<span><a class="button" href="http://www.analog.com/sdrforengineers">Book &dArr;</a></span>
++<div class="dropdown-content">
++<p><a class="button" href="https://www.analog.com/media/en/training-seminars/design-handbooks/Software-Defined-Radio-for-Engineers-2018/SDR4Engineers.pdf">Download PDF</a></p>
++<p><a class="button" href="http://us.artechhouse.com/Software-Defined-Radio-for-Engineers-P1951.aspx">Hard Cover</a></p>
++<p><a class="button" href="https://www.amazon.com/Software-Defined-Radio-Engineers-Travis-Collins/dp/1630814571">Amazon</a></p>
++<p><a class="button" href="http://www.sdrforengineers.com">Web Site</a></p>
++<p><a class="button" href="http://www.sdrforengineers.com#tutorials">Tutorials</a></p>
++
++</div>
++</div>
++<a class="button" href="#support">Help and Support</a>
++<a class="button" href="LICENSE.html">License</a>
++<a class="button" href="#about">About Analog Devices</a>
++</nav>
++<hr>
++<section>
++<h1>Welcome to the <strong>ADALM-PLUTO</strong> Active Learning Module</h1>
++<a href="http://www.analog.com/education"><img src="./img/prof_blue.png" alt="ADI Professor" style="float:left" /></a>
++<p style="margin-bottom:0em;">Thank you for purchasing the <a href="http://www.analog.com/plutosdr">ADALM-PLUTO</a> Active Learning Module (PlutoSDR). The easy-to-use PlutoSDR helps introduce the fundamentals of software-defined radio (SDR), radio frequency (RF), and wireless communications to everyone. Designed for users at all levels and all backgrounds, the PlutoSDR can be used as:</p>
++<ul style="margin-left:8em; margin-top:0em;"><li>A learning module for instructor-led or self-directed learning to develop a foundation in real-world RF and communications in the pursuit of science, technology, or engineering degrees.</li>
++<li>A tool for practicing engineers and industry practitioners who are interested in mastering the design, implementation, and experimentation of communication systems. The PlutoSDR can be used to examine how well the communications system operates in terms of successfully transmitting or recovering intercepted signals.</li>
++<li>A tool for practicing RF engineers who use <a href="https://en.wikipedia.org/wiki/Spectrum_analyzer">spectrum analyzers</a> or <a href="https://en.wikipedia.org/wiki/Signal_generator#Vector_signal_generator">vector signal generators</a> to capture or create and analyze RF signals. The PlutoSDR with the appropriate <a href="#framework">software tool</a> is capable of analyzing or generating digitally-modulated radio signals that may use any of a large number of formats used in modern communication systems.</li>
++<li>A complete reference design (hardware, HDL, embedded software, host software) for developers interested in creating their own products based on <a href="https://www.analog.com/en/applications/technology/sdr-radioverse-pavilion-home/wideband-transceivers.html">Analog Devices Wideband Transceivers</a>.</li></ul>
++<p>Based on the <a href="http://www.analog.com/AD9363">AD9363</a>, the PlutoSDR features independent receive and transmit channels that can be operated in full duplex. The PlutoSDR can generate or acquire RF analog signals from 325 MHz to 3800 MHz at up to 61.44 MegaSamples per second (MSPS). Small enough to fit in a shirt pocket, the PlutoSDR is completely self-contained and entirely USB powered with the default firmware. PlutoSDR is enabled by libiio drivers and supports macOS®, Windows®, and Linux®, allowing students and engineers to learn and explore on a variety of host platforms.</p>
++</section>
++<hr>
++<section id="started">
++<a class="anchor" href="#top">Back to top</a>
++<h3>Getting Started</h3>
++<p>The PlutoSDR <a href="https://wiki.analog.com/plutosdr">online documentation</a> provides instruction on how to set up the software on your <a href="https://wiki.analog.com/university/tools/pluto/drivers/windows">Windows</a>, <a href="https://wiki.analog.com/university/tools/pluto/drivers/linux">Linux</a>, or <a href="https://wiki.analog.com/university/tools/pluto/drivers/osx">macOS</a> based host to use the PlutoSDR. For those who do not read instructions, do the following steps:</p>
++<ol>
++<li id="hideupgrade">Upgrade your <a href="#firmware">Firmware</a>
++<li id="hidedriver">Install the Windows <a href="https://github.com/analogdevicesinc/plutosdr-m2k-drivers-win/">driver</a> : <a id="drivertest" href="https://github.com/analogdevicesinc/plutosdr-m2k-drivers-win/releases/latest">Latest Windows Driver</a></li>
++<li>Install the <a href="https://github.com/analogdevicesinc/libiio">libiio</a> Library: <div id="hidelib" style="display:none"> OS: <select id="os-select" onchange="libiio_type()"></select> Type : <select id="type-select" onchange="libiio_ver()"></select> Version : <select id="ver-select" onchange="libiio_url()"></select></div> : <a id="libtest" href="https://github.com/analogdevicesinc/libiio/releases/latest">Latest version of the libiio</a></li>
++</ol>
++<p id="test"><strong>Test your installation:</strong></p>
++<p>Once everything above is installed, with your favorite console (Windows Linux or macOS), try these two commands (in bold below) to make sure the drivers and software is installed properly. It is expected that the serial number (specific to the PlutoSDR device) and usb uri (the three numbers after the <kbd>'usb:'</kbd> field, based on your host) will be different than the examples below.</p>
++<pre class=xterm>
++<span id="prompt0">rgetz@brain:~/$</span> <strong>iio_info -s</strong>
++Library version: 0.16 (git tag: 5cdeaaa)
++Compiled with backends: local xml ip usb serial
++Available contexts:
++	0: 0456:b673 (Analog Devices Inc. PlutoSDR (ADALM-PLUTO)), serial=100000235523730700190030090216fd23 [usb:3.15.5]
++
++<span id="prompt1">rgetz@brain:~/$</span> <strong>iio_info -u ip:192.168.2.1</strong>
++Library version: 0.16 (git tag: 5cdeaaa)
++Compiled with backends: local xml ip usb serial
++IIO context created with network backend.
++Backend version: 0.15 (git tag: v0.15  )
++Backend description string: 192.168.2.1 Linux (none) 4.9.0-10475-g2398d50 #269 SMP PREEMPT Mon Oct 15 20:18:34 CEST 2018 armv7l
++IIO context has 8 attributes:
++        hw_model: Analog Devices PlutoSDR Rev.A (Z7010-AD9363)
++        hw_model_variant: 0
++        hw_serial: 100000235523730700190030090216fd23
++....
++			2 channel-specific attributes found:
++				attr  0: scale value: 6.433105468
++				attr  1: raw value: 778
++</pre>
++<p>If the <b><kbd>'iio_info -s'</kbd></b> command cannot find the PlutoSDR on your host, you will need to do some <a href="https://wiki.analog.com/plutosdr">reading and troubleshooting</a>. If you are having issues installing the software, check out the <a href="http://www.sdrforengineers.com/#tutorials">on-line tutorials</a>. Once the software is running, you can enable PlutoSDR in your communications framework like MATLAB, by following along the <a href="http://www.sdrforengineers.com/#tutorials">on-line tutorials</a>.</p>
++</section>
++<hr>
++<section id="framework">
++<a class="anchor" href="#top">Back to top</a>
++<h3>Frameworks</h3>
++<p>Use the PlutoSDR with your favorite communications framework, visualization, or signal processing tool.</p>
++<table>
++<thead>
++<tr>
++<th>Framework / Application</th>
++<th>OS</th>
++<th>Description</th>
++</tr>
++</thead>
++<tbody>
++<tr>
++<td style="text-align:center"><a href="https://www.mathworks.com/discovery/sdr"><img src="img/mathworks_logo.png" alt="MathWorks logo"/></a></td><td><a href="https://www.mathworks.com/support/sysreq.html">Windows, Linux, macOS</a></td>
++<td>Communications Toolbox™ <a href="https://www.mathworks.com/hardware-support/adalm-pluto-radio.html">Support Package</a> for Analog Devices PlutoSDR (<a href="https://www.mathworks.com/help/supportpkg/plutoradio/getting-started-with-communications-system-toolbox-support-package-for-pluto-radio.html">doc</a>) enables you to use MATLAB® and Simulink® to prototype, verify, and test practical wireless systems. Request a <a href="https://www.mathworks.com/campaigns/products/trials.html?prodcode=CM">zero cost trial</a> and then use, study, modify, and/or distribute a variety of MATLAB and Simulink <a href="https://www.mathworks.com/examples/communications/category/plutoradio">examples</a>.</td>
++</tr>
++<tr>
++<td style="text-align:center;"><a href="https://www.gnuradio.org/"><img src="img/GNURadio_logo.png" alt="GNU Radio logo" /></a></td><td>Linux, macOS</td>
++<td>GNU Radio is a Free and Open-Source Toolkit for Software Radio, primarily supported on Linux operating systems. It has both generic IIO blocks, and <a href="https://wiki.analog.com/university/tools/pluto/gnuradio">PlutoSDR specific blocks</a></td>
++</tr>
++<tr>
++<td><a href="https://wiki.analog.com/resources/tools-software/linux-software/libiio/cmd_line">IIO Command Line Tools</a></td><td>Windows, Linux, macOS</td>
++<td><a href="https://wiki.analog.com/resources/tools-software/linux-software/libiio/iio_info">iio_info</a>,
++<a href="https://wiki.analog.com/resources/tools-software/linux-software/libiio/iio_attr">iio_attr</a>,
++<a href="https://wiki.analog.com/resources/tools-software/linux-software/libiio/iio_readdev">iio_readdev</a>,
++<a href="https://wiki.analog.com/resources/tools-software/linux-software/libiio/iio_writedev">iio_writedev</a>,
++<a href="https://wiki.analog.com/resources/tools-software/linux-software/libiio/iio_reg">iio_reg</a>
++for interacting with the PlutoSDR from your favorite shell.
++</td>
++</tr>
++<tr>
++<td><a href="https://github.com/analogdevicesinc/iio-oscilloscope/releases/latest"><img style="vertical-align:middle;" src="img/osc128.png" alt="Osc logo"><span style="vertical-align:middle;">&nbsp;IIO Oscilloscope</span></a></td><td>Windows, Linux</td>
++<td>The IIO Oscilloscope is an application, which demonstrates how to interface various IIO devices to different visualization methods on Linux and Windows</td>
++</tr>
++<tr>
++<td><a href="https://github.com/f4exb/sdrangel"><img src="img/sdrangel.png" alt="SDRAngel logo"/></a></td><td>Windows, Linux</td>
++<td><a href="https://github.com/f4exb/sdrangel/releases/latest">SDRangel</a> is an Open Source Qt5 / OpenGL 3.0+ SDR and signal analyzer frontend to various hardware. Check the <a href="https://groups.io/g/sdrangel">discussion group</a> and <a href="https://github.com/f4exb/sdrangel/wiki">wiki</a>. While SDRangel seeks to be approachable, it is targeted towards the experienced SDR user with some digital signal processing understanding.</td>
++</tr>
++<tr>
++<td><a href="https://www.rtl-sdr.com/plutosdr-quickstart-guide/"><img src="img/SDR-Sharp.png" alt="SDR Sharp logo"></a></td><td>Windows</td>
++<td><a href="https://airspy.com/download/">SDR# (SDR Sharp)</a> is a popular SDR program for the <a href="https://airspy.com/">Airspy</a>, and supports the PlutoSDR with a <a href="https://github.com/Manawyrm/sdrsharp-plutosdr/releases/latest">third party</a> plugin. A complete installation <a href="https://www.rtl-sdr.com/plutosdr-quickstart-guide/">tutorial exists</a>.</td>
++</tr>
++<tr>
++<td><a href="https://wiki.analog.com/university/tools/pluto/other">other tools</a>
++</td><td>Windows, Linux, macOS</td>
++<td>A variety of other tools and projects using the PlutoSDR</td>
++</tr>
++</tbody>
++</table>
++
++
++<p>Detailed documentation can be found at the <a href="https://wiki.analog.com/plutosdr">Main Documentation</a> page. Information on regulatory compliance and safety information can be found <a href="https://wiki.analog.com/university/tools/pluto/common/regulatory_compliance">online</a>.</p>
++</section>
++<hr>
++<section id="firmware">
++<a class="anchor" href="#top">Back to top</a>
++<h3>Firmware</h3>
++<p>The <i>ADALM-PLUTO Firmware</i> refers to the U-Boot, HDL, Linux kernel, device drivers, and user space software, which runs on the PlutoSDR. This is bundled up and given a specific version number for the PlutoSDR. For help upgrading firmware, check out the <a href="https://wiki.analog.com/university/tools/pluto/common/firmware">online documentation</a>.</p>
++<div id="versionsection" class="download">
++<p><strong>Status of the PlutoSDR firmware:</strong></p>
++<p><span id="versiontest">Need javascript to check (sorry)</span></p>
++<p><a id="plutsdr-fw-download" class="button" href="https://github.com/analogdevicesinc/plutosdr-fw/releases/latest">Check the latest version</a>
++</div>
++<br>
++<a class="anchor" href="#top">Back to top</a>
++<p id="version"><strong>Version Information:</strong></p>
++<p>The various parts of the firmware all have their own unique versions as well:</p>
++<table>
++<thead>
++<tr>
++<th>Model</th>
++<th>#MODEL#</th>
++</tr>
++</thead>
++<tbody>
++<tr>
++<td>Serial</td>
++<td>#SERIAL#</td>
++</tr>
++<tr>
++<td>Build</td>
++<td>#BUILD#</td>
++</tr>
++<tr>
++<td>Linux</td>
++<td>#LINUX#</td>
++</tr>
++<tr>
++<td>U-Boot</td>
++<td>#UBOOT#</td>
++</tr>
++<tr>
++<td>FPGA</td>
++<td>#FPGA#</td>
++</tr>
++<tr>
++<td>Root FS</td>
++<td>#ROOTFS#</td>
++</tr>
++<tr>
++<td>IIO</td>
++<td>#IIO#</td>
++</tr>
++<tr>
++<td>Network over USB</td>
++<td>#NETWORKUSB#</td>
++</tr>
++</tbody>
++</table>
++<a class="anchor" href="#top">Back to top</a>
++<p id="target"><strong>Standalone Applications:</strong></p>
++<p><a href="https://wiki.analog.com/university/tools/pluto/devs/embedded_code">Custom C/C++ applications</a> can be created/compiled on a host with a <a href="https://releases.linaro.org/components/toolchain/binaries/">Linaro GNU Compiler Collection (GCC)</a> toolchain (with the appropriate flags), transferred over and run directly on the PlutoSDR.</p>
++<table>
++<tbody>
++<tr>
++<td>GCC Compiler <a href="https://collaborate.linaro.org/display/TCWGPUB/ARM+and+AArch64+Target+Triples">Target Triple</a></td>
++<td>#GCC_TRIPLE#</td>
++</tr>
++<tr>
++<td>GCC version</td>
++<td>#GCC_VERSION#</td>
++</tr>
++<tr>
++<td>Binutils version</td>
++<td>#BIN_VERSION#</td>
++</tr>
++<tr>
++<td>SysRoot</td>
++<td><a id="sysroot" href="https://github.com/analogdevicesinc/plutosdr-fw/releases/latest">Latest SYSROOT</a></td>
++</tr>
++</tbody>
++</table>
++<a class="anchor" href="#top">Back to top</a>
++<p id="userpass"><strong>Build Settings:</strong></p>
++<p>There are many settings which are set as part of the build configuration, and can not be changed without rebuilding the firmware.</p>
++<table>
++<tbody>
++<tr>
++<td>Username:</td>
++<td>root</td>
++</tr>
++<tr>
++<td>Password:</td>
++<td>#ROOTPASSWORD#</td>
++</tr>
++</tbody>
++</table>
++<a class="anchor" href="#top">Back to top</a>
++<p id="config"><strong>Configuration Settings:</strong></p>
++<p>On the root file system, there are <a href="./config.txt">configuration settings</a> that can modify the default configuration, they currently are:</p>
++<table>
++<tbody>
++<tr>
++<td>Hostname</td>
++<td>#HOSTNAME#</td>
++</tr>
++<tr>
++<td>IP Address (PlutoSDR)</td>
++<td>#IP#</td>
++</tr>
++<tr>
++<td>IP Address (HOST)</td>
++<td>#HOSTIP#</td>
++</tr>
++<tr>
++<td>Netmask</td>
++<td>#NETMASK#</td>
++</tr>
++<tr>
++<td>MAC Address (PlutoSDR)</td>
++<td>#MAC#</td>
++</tr>
++<tr>
++<td>MAC Address (HOST)</td>
++<td>#MACHOST#</td>
++</tr>
++</tbody>
++</table>
++<a class="anchor" href="#top">Back to top</a>
++<p id="wifi">Wi-Fi <a href="./config.txt">Update</a></p>
++<table>
++<tbody>
++<tr>
++<td>SSID</td>
++<td>#SSID_WLAN#</td>
++</tr>
++<tr>
++<td>WPA-PSK Passphrase</td>
++<td>********</td>
++</tr>
++<tr>
++<td>IP Address</td>
++<td>#IPADDR_WLAN#</td>
++</tr>
++</tbody>
++</table>
++<a class="anchor" href="#top">Back to top</a>
++<p id="wired">Wired Ethernet using a USB Ethernet adapter. <a href="./config.txt">Update</a></p>
++<table>
++<tbody>
++<tr>
++<td>IP Address</td>
++<td>#IPADDR_ETH#</td>
++</tr>
++<tr>
++<td>Netmask</td>
++<td>#NETMASK_ETH#</td>
++</tr>
++</tbody>
++</table>
++
++<p>To change these settings, check the <a href="https://wiki.analog.com/university/tools/pluto/common/customizing">on-line documentation</a>.</p>
++</section>
++<hr>
++<section id="support">
++<a class="anchor" href="#top">Back to top</a>
++<h3>Help and Support</h3>
++<p>If you have any questions regarding the PlutoSDR or are experiencing any problems following the user guides, or experiments feel free to ask us a question. Questions can be asked on our <a href="http://ez.analog.com/university-program">Virtual Classroom</a>. Help and support for the PlutoSDR is provided exclusively <a href="https://wiki.analog.com/university/tools/pluto/help_support">online</a>. If you don't have an internet connection on this computer, please find one that does. </p>
++</section>
++<hr>
++<section id="social">
++<div>
++<ul class="quicklinks">
++<li><a href="http://www.analog.com/en/about-adi.html" title="About ADI">About ADI</a></li>
++<li><a href="http://www.analog.com/en/analog-dialogue.html" title="Analog Dialogue">Analog Dialogue</a></li>
++<li><a href="http://www.analog.com/en/about-adi/careers.html" title="Careers">Careers</a></li>
++<li><a href="http://www.analog.com/en/about-adi/careers/students-and-graduates/new-college-graduates.html" title="Students and Graduates">New College Graduates</a></li>
++<li><a href="http://investor.analog.com/" title="Investor Relations">Investor Relations</a></li>
++<li><a href="http://www.analog.com/en/about-adi/news-room.html" title="News Room">News Room</a></li>
++<li><a href="http://www.analog.com/en/about-adi/corporate-information/sales-distribution.html" title="Sales &amp; Distributors">Sales &amp; Distribution</a></li>
++<li><a href="https://form.analog.com/Form_Pages/corporate/parts.aspx" title="College Parts Program">College Parts Program</a></li>
++</ul>
++</div>
++<h3 id="about">About Analog Devices</h3>
++<div class="colLeft">
++<p><a href="https://www.analog.com/">Analog Devices</a> (Nasdaq: <a href="https://www.nasdaq.com/symbol/adi">ADI</a>) is a leading global high-performance analog technology company dedicated to solving the toughest engineering challenges. We enable our customers to interpret the world around us by intelligently bridging the physical and digital with unmatched technologies that sense, measure, power, connect and interpret.</p>
++</div>
++<div style="clear: both">
++<p>We offer <a href="http://www.analog.com/en/analog-dialogue.html">technical journals</a> and other <a href="http://ez.analog.com/">community resources</a> to engineers, scientists, technicians, and students looking to help and share with one another. Interested in the latest news and articles about ADI products, design tools, training and events? Choose from one of our 12 newsletters that match your product area of interest, delivered monthly or quarterly to your inbox. <a href="https://my.analog.com/en/myanalog/manage-updates/manage-newsletters.html">Sign up</a></p>
++<p>Follow Analog Devices on your favorite <a href="http://www.analog.com/social"> social media site</a>:</p>
++</div><div style="clear: both">
++<p><a href="http://ez.analog.com/welcome" title="Join Analog Devices on EngineerZone"><img src="./img/ez.png" alt="EngineerZone logo"></a>
++<a href="http://www.facebook.com/AnalogDevicesInc" title="Visit Analog Devices on Facebook"><img src="./img/fb.png" alt="FaceBook Logo"></a>
++<a href="https://twitter.com/#!/adi_news" title="Follow Analog Devices on Twitter"><img src="./img/tw.png" alt="Twitter Logo"></a>
++<a href="https://www.instagram.com/analogdevices/?hl=en" title="Follow Analog Devices on Instagram"><img src="./img/ig.png" alt="Instgram Logo"></a>
++<a href="http://plus.google.com/116502491843999760953/posts" title="Follow us on Google+"><img src="./img/gp.png" alt="Google+ Logo"></a>
++<a href="http://www.linkedin.com/company/3450" title="Join Analog Devices on LinkedIn"><img src="./img/li.png" alt="LinkedIn Logo"></a>
++<a href="http://www.youtube.com/user/AnalogDevicesInc" title="View Analog Devices on YouTube"><img src="./img/yt.png" alt="YouTube Logo"></a>
++<a href="http://www.weibo.com/analogdevices" title="Chinese language information on Sina Weibo"><img src="./img/sw.png" alt="Sina Weibo Logo"></a>
++<a href="http://i.youku.com/u/UMzA0Njk0MDI0" title="View Analog Devices on YouKu"><img src="./img/yk.png" alt="YouKu Logo"></a>
++<a href="http://www.slideshare.com/analogdevicesinc" target="_blank" title="Visit our official SlideShare channel to gain access to technical presentations"><img src="./img/ss.png" alt="SlideShare Logo"></a>
++</p>
++</div>
++</section>
++<hr>
++<footer>
++<p>&copy; 2017-2019 ANALOG DEVICES, INC. ALL RIGHTS RESERVED.</p>
++</footer>
++<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
++<script>window.jQuery || document.write('<script src="js/vendor/jquery-3.1.1.min.js"><\/script>')</script>
++<script src="./img/version.js"></script>
++</body>
++</html>
+diff --git a/board/tjd/input-event-daemon.conf b/board/tjd/input-event-daemon.conf
+new file mode 100644
+index 0000000000..96c1c9a3a1
+--- /dev/null
++++ b/board/tjd/input-event-daemon.conf
+@@ -0,0 +1,12 @@
++#
++# /etc/input-event-daemon.conf
++#
++
++[Global]
++listen = /dev/input/event0
++
++[Keys]
++BTN_0         = ACTION=remove_all /lib/mdev/automounter.sh
++
++
++
+diff --git a/board/tjd/mdev.conf b/board/tjd/mdev.conf
+new file mode 100644
+index 0000000000..09ad12fbb8
+--- /dev/null
++++ b/board/tjd/mdev.conf
+@@ -0,0 +1,7 @@
++# block devices
++sd[a-z]      root:root     660 */lib/mdev/automounter.sh
++sd[a-z][0-9]      root:root     660 */lib/mdev/automounter.sh
++# net devices
++wlan[0-9] root:root     660 */lib/mdev/ifupdown.sh
++usb[0-9] root:root     660 */lib/mdev/ifupdown.sh
++eth[0-9] root:root     660 */lib/mdev/ifupdown.sh
+diff --git a/board/tjd/motd b/board/tjd/motd
+new file mode 100644
+index 0000000000..5ab1baea86
+--- /dev/null
++++ b/board/tjd/motd
+@@ -0,0 +1,11 @@
++Welcome to:
++
++  #####       #  #####            ####   #####   #####
++    #         #  #    #          #       #    #  #    #
++    #         #  #    #           ####   #    #  #    #
++    #         #  #    #               #  #    #  #####
++    #    #    #  #    #          #    #  #    #  #   #
++    #     ####   #####  #######   ####   #####   #    #
++
++#BUILD#
++https://wiki.analog.com/university/tools/pluto
+diff --git a/board/tjd/msd/.gitignore b/board/tjd/msd/.gitignore
+new file mode 100644
+index 0000000000..ef2d66efd1
+--- /dev/null
++++ b/board/tjd/msd/.gitignore
+@@ -0,0 +1,2 @@
++LICENSE.html
++index.html
+diff --git a/board/tjd/msd/LICENSE b/board/tjd/msd/LICENSE
+new file mode 100644
+index 0000000000..d159169d10
+--- /dev/null
++++ b/board/tjd/msd/LICENSE
+@@ -0,0 +1,339 @@
++                    GNU GENERAL PUBLIC LICENSE
++                       Version 2, June 1991
++
++ Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
++ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ Everyone is permitted to copy and distribute verbatim copies
++ of this license document, but changing it is not allowed.
++
++                            Preamble
++
++  The licenses for most software are designed to take away your
++freedom to share and change it.  By contrast, the GNU General Public
++License is intended to guarantee your freedom to share and change free
++software--to make sure the software is free for all its users.  This
++General Public License applies to most of the Free Software
++Foundation's software and to any other program whose authors commit to
++using it.  (Some other Free Software Foundation software is covered by
++the GNU Lesser General Public License instead.)  You can apply it to
++your programs, too.
++
++  When we speak of free software, we are referring to freedom, not
++price.  Our General Public Licenses are designed to make sure that you
++have the freedom to distribute copies of free software (and charge for
++this service if you wish), that you receive source code or can get it
++if you want it, that you can change the software or use pieces of it
++in new free programs; and that you know you can do these things.
++
++  To protect your rights, we need to make restrictions that forbid
++anyone to deny you these rights or to ask you to surrender the rights.
++These restrictions translate to certain responsibilities for you if you
++distribute copies of the software, or if you modify it.
++
++  For example, if you distribute copies of such a program, whether
++gratis or for a fee, you must give the recipients all the rights that
++you have.  You must make sure that they, too, receive or can get the
++source code.  And you must show them these terms so they know their
++rights.
++
++  We protect your rights with two steps: (1) copyright the software, and
++(2) offer you this license which gives you legal permission to copy,
++distribute and/or modify the software.
++
++  Also, for each author's protection and ours, we want to make certain
++that everyone understands that there is no warranty for this free
++software.  If the software is modified by someone else and passed on, we
++want its recipients to know that what they have is not the original, so
++that any problems introduced by others will not reflect on the original
++authors' reputations.
++
++  Finally, any free program is threatened constantly by software
++patents.  We wish to avoid the danger that redistributors of a free
++program will individually obtain patent licenses, in effect making the
++program proprietary.  To prevent this, we have made it clear that any
++patent must be licensed for everyone's free use or not licensed at all.
++
++  The precise terms and conditions for copying, distribution and
++modification follow.
++
++                    GNU GENERAL PUBLIC LICENSE
++   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
++
++  0. This License applies to any program or other work which contains
++a notice placed by the copyright holder saying it may be distributed
++under the terms of this General Public License.  The "Program", below,
++refers to any such program or work, and a "work based on the Program"
++means either the Program or any derivative work under copyright law:
++that is to say, a work containing the Program or a portion of it,
++either verbatim or with modifications and/or translated into another
++language.  (Hereinafter, translation is included without limitation in
++the term "modification".)  Each licensee is addressed as "you".
++
++Activities other than copying, distribution and modification are not
++covered by this License; they are outside its scope.  The act of
++running the Program is not restricted, and the output from the Program
++is covered only if its contents constitute a work based on the
++Program (independent of having been made by running the Program).
++Whether that is true depends on what the Program does.
++
++  1. You may copy and distribute verbatim copies of the Program's
++source code as you receive it, in any medium, provided that you
++conspicuously and appropriately publish on each copy an appropriate
++copyright notice and disclaimer of warranty; keep intact all the
++notices that refer to this License and to the absence of any warranty;
++and give any other recipients of the Program a copy of this License
++along with the Program.
++
++You may charge a fee for the physical act of transferring a copy, and
++you may at your option offer warranty protection in exchange for a fee.
++
++  2. You may modify your copy or copies of the Program or any portion
++of it, thus forming a work based on the Program, and copy and
++distribute such modifications or work under the terms of Section 1
++above, provided that you also meet all of these conditions:
++
++    a) You must cause the modified files to carry prominent notices
++    stating that you changed the files and the date of any change.
++
++    b) You must cause any work that you distribute or publish, that in
++    whole or in part contains or is derived from the Program or any
++    part thereof, to be licensed as a whole at no charge to all third
++    parties under the terms of this License.
++
++    c) If the modified program normally reads commands interactively
++    when run, you must cause it, when started running for such
++    interactive use in the most ordinary way, to print or display an
++    announcement including an appropriate copyright notice and a
++    notice that there is no warranty (or else, saying that you provide
++    a warranty) and that users may redistribute the program under
++    these conditions, and telling the user how to view a copy of this
++    License.  (Exception: if the Program itself is interactive but
++    does not normally print such an announcement, your work based on
++    the Program is not required to print an announcement.)
++
++These requirements apply to the modified work as a whole.  If
++identifiable sections of that work are not derived from the Program,
++and can be reasonably considered independent and separate works in
++themselves, then this License, and its terms, do not apply to those
++sections when you distribute them as separate works.  But when you
++distribute the same sections as part of a whole which is a work based
++on the Program, the distribution of the whole must be on the terms of
++this License, whose permissions for other licensees extend to the
++entire whole, and thus to each and every part regardless of who wrote it.
++
++Thus, it is not the intent of this section to claim rights or contest
++your rights to work written entirely by you; rather, the intent is to
++exercise the right to control the distribution of derivative or
++collective works based on the Program.
++
++In addition, mere aggregation of another work not based on the Program
++with the Program (or with a work based on the Program) on a volume of
++a storage or distribution medium does not bring the other work under
++the scope of this License.
++
++  3. You may copy and distribute the Program (or a work based on it,
++under Section 2) in object code or executable form under the terms of
++Sections 1 and 2 above provided that you also do one of the following:
++
++    a) Accompany it with the complete corresponding machine-readable
++    source code, which must be distributed under the terms of Sections
++    1 and 2 above on a medium customarily used for software interchange; or,
++
++    b) Accompany it with a written offer, valid for at least three
++    years, to give any third party, for a charge no more than your
++    cost of physically performing source distribution, a complete
++    machine-readable copy of the corresponding source code, to be
++    distributed under the terms of Sections 1 and 2 above on a medium
++    customarily used for software interchange; or,
++
++    c) Accompany it with the information you received as to the offer
++    to distribute corresponding source code.  (This alternative is
++    allowed only for noncommercial distribution and only if you
++    received the program in object code or executable form with such
++    an offer, in accord with Subsection b above.)
++
++The source code for a work means the preferred form of the work for
++making modifications to it.  For an executable work, complete source
++code means all the source code for all modules it contains, plus any
++associated interface definition files, plus the scripts used to
++control compilation and installation of the executable.  However, as a
++special exception, the source code distributed need not include
++anything that is normally distributed (in either source or binary
++form) with the major components (compiler, kernel, and so on) of the
++operating system on which the executable runs, unless that component
++itself accompanies the executable.
++
++If distribution of executable or object code is made by offering
++access to copy from a designated place, then offering equivalent
++access to copy the source code from the same place counts as
++distribution of the source code, even though third parties are not
++compelled to copy the source along with the object code.
++
++  4. You may not copy, modify, sublicense, or distribute the Program
++except as expressly provided under this License.  Any attempt
++otherwise to copy, modify, sublicense or distribute the Program is
++void, and will automatically terminate your rights under this License.
++However, parties who have received copies, or rights, from you under
++this License will not have their licenses terminated so long as such
++parties remain in full compliance.
++
++  5. You are not required to accept this License, since you have not
++signed it.  However, nothing else grants you permission to modify or
++distribute the Program or its derivative works.  These actions are
++prohibited by law if you do not accept this License.  Therefore, by
++modifying or distributing the Program (or any work based on the
++Program), you indicate your acceptance of this License to do so, and
++all its terms and conditions for copying, distributing or modifying
++the Program or works based on it.
++
++  6. Each time you redistribute the Program (or any work based on the
++Program), the recipient automatically receives a license from the
++original licensor to copy, distribute or modify the Program subject to
++these terms and conditions.  You may not impose any further
++restrictions on the recipients' exercise of the rights granted herein.
++You are not responsible for enforcing compliance by third parties to
++this License.
++
++  7. If, as a consequence of a court judgment or allegation of patent
++infringement or for any other reason (not limited to patent issues),
++conditions are imposed on you (whether by court order, agreement or
++otherwise) that contradict the conditions of this License, they do not
++excuse you from the conditions of this License.  If you cannot
++distribute so as to satisfy simultaneously your obligations under this
++License and any other pertinent obligations, then as a consequence you
++may not distribute the Program at all.  For example, if a patent
++license would not permit royalty-free redistribution of the Program by
++all those who receive copies directly or indirectly through you, then
++the only way you could satisfy both it and this License would be to
++refrain entirely from distribution of the Program.
++
++If any portion of this section is held invalid or unenforceable under
++any particular circumstance, the balance of the section is intended to
++apply and the section as a whole is intended to apply in other
++circumstances.
++
++It is not the purpose of this section to induce you to infringe any
++patents or other property right claims or to contest validity of any
++such claims; this section has the sole purpose of protecting the
++integrity of the free software distribution system, which is
++implemented by public license practices.  Many people have made
++generous contributions to the wide range of software distributed
++through that system in reliance on consistent application of that
++system; it is up to the author/donor to decide if he or she is willing
++to distribute software through any other system and a licensee cannot
++impose that choice.
++
++This section is intended to make thoroughly clear what is believed to
++be a consequence of the rest of this License.
++
++  8. If the distribution and/or use of the Program is restricted in
++certain countries either by patents or by copyrighted interfaces, the
++original copyright holder who places the Program under this License
++may add an explicit geographical distribution limitation excluding
++those countries, so that distribution is permitted only in or among
++countries not thus excluded.  In such case, this License incorporates
++the limitation as if written in the body of this License.
++
++  9. The Free Software Foundation may publish revised and/or new versions
++of the General Public License from time to time.  Such new versions will
++be similar in spirit to the present version, but may differ in detail to
++address new problems or concerns.
++
++Each version is given a distinguishing version number.  If the Program
++specifies a version number of this License which applies to it and "any
++later version", you have the option of following the terms and conditions
++either of that version or of any later version published by the Free
++Software Foundation.  If the Program does not specify a version number of
++this License, you may choose any version ever published by the Free Software
++Foundation.
++
++  10. If you wish to incorporate parts of the Program into other free
++programs whose distribution conditions are different, write to the author
++to ask for permission.  For software which is copyrighted by the Free
++Software Foundation, write to the Free Software Foundation; we sometimes
++make exceptions for this.  Our decision will be guided by the two goals
++of preserving the free status of all derivatives of our free software and
++of promoting the sharing and reuse of software generally.
++
++                            NO WARRANTY
++
++  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
++FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
++OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
++PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
++OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
++TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
++PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
++REPAIR OR CORRECTION.
++
++  12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
++WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
++REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
++INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
++OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
++TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
++YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
++PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
++POSSIBILITY OF SUCH DAMAGES.
++
++                     END OF TERMS AND CONDITIONS
++
++            How to Apply These Terms to Your New Programs
++
++  If you develop a new program, and you want it to be of the greatest
++possible use to the public, the best way to achieve this is to make it
++free software which everyone can redistribute and change under these terms.
++
++  To do so, attach the following notices to the program.  It is safest
++to attach them to the start of each source file to most effectively
++convey the exclusion of warranty; and each file should have at least
++the "copyright" line and a pointer to where the full notice is found.
++
++    <one line to give the program's name and a brief idea of what it does.>
++    Copyright (C) <year>  <name of author>
++
++    This program is free software; you can redistribute it and/or modify
++    it under the terms of the GNU General Public License as published by
++    the Free Software Foundation; either version 2 of the License, or
++    (at your option) any later version.
++
++    This program is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++
++    You should have received a copy of the GNU General Public License along
++    with this program; if not, write to the Free Software Foundation, Inc.,
++    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++
++Also add information on how to contact you by electronic and paper mail.
++
++If the program is interactive, make it output a short notice like this
++when it starts in an interactive mode:
++
++    Gnomovision version 69, Copyright (C) year name of author
++    Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
++    This is free software, and you are welcome to redistribute it
++    under certain conditions; type `show c' for details.
++
++The hypothetical commands `show w' and `show c' should show the appropriate
++parts of the General Public License.  Of course, the commands you use may
++be called something other than `show w' and `show c'; they could even be
++mouse-clicks or menu items--whatever suits your program.
++
++You should also get your employer (if you work as a programmer) or your
++school, if any, to sign a "copyright disclaimer" for the program, if
++necessary.  Here is a sample; alter the names:
++
++  Yoyodyne, Inc., hereby disclaims all copyright interest in the program
++  `Gnomovision' (which makes passes at compilers) written by James Hacker.
++
++  <signature of Ty Coon>, 1 April 1989
++  Ty Coon, President of Vice
++
++This General Public License does not permit incorporating your program into
++proprietary programs.  If your program is a subroutine library, you may
++consider it more useful to permit linking proprietary applications with the
++library.  If this is what you want to do, use the GNU Lesser General
++Public License instead of this License.
+diff --git a/board/tjd/msd/img/ADI_Logo_AWP.png b/board/tjd/msd/img/ADI_Logo_AWP.png
+new file mode 100644
+index 0000000000..231fa10875
+Binary files /dev/null and b/board/tjd/msd/img/ADI_Logo_AWP.png differ
+diff --git a/board/tjd/msd/img/GNURadio_logo.png b/board/tjd/msd/img/GNURadio_logo.png
+new file mode 100644
+index 0000000000..e9936c07de
+Binary files /dev/null and b/board/tjd/msd/img/GNURadio_logo.png differ
+diff --git a/board/tjd/msd/img/PlutoSDR.png b/board/tjd/msd/img/PlutoSDR.png
+new file mode 100644
+index 0000000000..b3026eeff2
+Binary files /dev/null and b/board/tjd/msd/img/PlutoSDR.png differ
+diff --git a/board/tjd/msd/img/SDR-Sharp.png b/board/tjd/msd/img/SDR-Sharp.png
+new file mode 100644
+index 0000000000..e761be0a41
+Binary files /dev/null and b/board/tjd/msd/img/SDR-Sharp.png differ
+diff --git a/board/tjd/msd/img/download.png b/board/tjd/msd/img/download.png
+new file mode 100644
+index 0000000000..8f7def1499
+Binary files /dev/null and b/board/tjd/msd/img/download.png differ
+diff --git a/board/tjd/msd/img/ez.png b/board/tjd/msd/img/ez.png
+new file mode 100644
+index 0000000000..66cc22f1c5
+Binary files /dev/null and b/board/tjd/msd/img/ez.png differ
+diff --git a/board/tjd/msd/img/favicon.ico b/board/tjd/msd/img/favicon.ico
+new file mode 100644
+index 0000000000..0faa5e9911
+Binary files /dev/null and b/board/tjd/msd/img/favicon.ico differ
+diff --git a/board/tjd/msd/img/fb.png b/board/tjd/msd/img/fb.png
+new file mode 100644
+index 0000000000..d2c8b5df72
+Binary files /dev/null and b/board/tjd/msd/img/fb.png differ
+diff --git a/board/tjd/msd/img/gp.png b/board/tjd/msd/img/gp.png
+new file mode 100644
+index 0000000000..7eced6ee02
+Binary files /dev/null and b/board/tjd/msd/img/gp.png differ
+diff --git a/board/tjd/msd/img/ig.png b/board/tjd/msd/img/ig.png
+new file mode 100644
+index 0000000000..e443eedfec
+Binary files /dev/null and b/board/tjd/msd/img/ig.png differ
+diff --git a/board/tjd/msd/img/li.png b/board/tjd/msd/img/li.png
+new file mode 100644
+index 0000000000..fd12daf40f
+Binary files /dev/null and b/board/tjd/msd/img/li.png differ
+diff --git a/board/tjd/msd/img/mathworks_logo.png b/board/tjd/msd/img/mathworks_logo.png
+new file mode 100644
+index 0000000000..ba21f31ad1
+Binary files /dev/null and b/board/tjd/msd/img/mathworks_logo.png differ
+diff --git a/board/tjd/msd/img/osc128.png b/board/tjd/msd/img/osc128.png
+new file mode 100644
+index 0000000000..cc85232ddd
+Binary files /dev/null and b/board/tjd/msd/img/osc128.png differ
+diff --git a/board/tjd/msd/img/prof_blue.png b/board/tjd/msd/img/prof_blue.png
+new file mode 100644
+index 0000000000..17ecd8f132
+Binary files /dev/null and b/board/tjd/msd/img/prof_blue.png differ
+diff --git a/board/tjd/msd/img/sdrangel.png b/board/tjd/msd/img/sdrangel.png
+new file mode 100644
+index 0000000000..d29e063fdb
+Binary files /dev/null and b/board/tjd/msd/img/sdrangel.png differ
+diff --git a/board/tjd/msd/img/ss.png b/board/tjd/msd/img/ss.png
+new file mode 100644
+index 0000000000..5e7df963e9
+Binary files /dev/null and b/board/tjd/msd/img/ss.png differ
+diff --git a/board/tjd/msd/img/style.css b/board/tjd/msd/img/style.css
+new file mode 100644
+index 0000000000..f70076b7db
+--- /dev/null
++++ b/board/tjd/msd/img/style.css
+@@ -0,0 +1,164 @@
++body{
++	font-family: "Helvetica Neue", sans-serif;
++	font-size: 16px;
++	font-weight: normal;
++	line-height: 1.3em;
++	color: #636363;
++	padding: 0 20px 0;
++	max-width: 1024px;
++	margin: auto;
++}
++hr{
++	color: #ccc;
++	margin: 10px 0 20px;
++}
++h1, h3{
++	font-family: "Arial Regular", sans-serif;
++	font-weight: bold;
++	margin-bottom:0;
++}
++h1{
++	font-size: 32px;
++	color: #1e4056;
++	margin-bottom: 40px;
++}
++h3{
++	font-size: 24px;
++}
++header{
++	margin-bottom: 20px;
++}
++header img{
++	margin-top: 10px;
++	width: 175px;
++}
++nav{
++	margin-bottom: 20px;
++}
++ul{
++	padding-left: 20px;
++}
++table{
++	width: 100%;
++}
++th{
++	background-color: #33b3ca;
++	color: #fff;
++	font-weight: normal;
++	padding: 10px;
++	text-align: left;
++}
++td{
++	background-color: #f5f5f5;
++	font-size: 14px;
++	padding: 5px 10px;
++}
++th:first-of-type,
++td:first-of-type{
++	width: 25%;
++	font-weight: bold;
++}
++#versiontest{
++	color: #27B34F;
++}
++a{
++	color: #33b3ca;
++	text-decoration: none;
++}
++.button{
++	background-color: #33b3ca;
++	border-radius: 15px;
++	color: #ffffff;
++	margin: 15px 10px 15px 10px;
++	padding: 5px 15px;
++	cursor: pointer;
++}
++.dropdown {
++  position: relative;
++  text-align: left;
++  display: inline-block;
++}
++.dropdown-content {
++  display: none;
++  position: absolute;
++  background-color: #f9f9f9;
++  min-width: 200px;
++  border-radius: 15px;
++  box-shadow: 0px 8px 24px 0px rgba(0,0,0,0.2);
++  padding: 10px 10px;
++  z-index: 1;
++}
++.dropdown:hover .dropdown-content {
++  display: block;
++}
++.download{
++	background-image: url("download.png");
++	padding: 1em 1em .5em 70px;
++	margin-bottom: 1.5em;
++	min-height: 68px;
++	background-position: 10px 50%;
++	background-repeat: no-repeat;
++	color: #000;
++	overflow: hidden;
++	box-sizing: border-box;
++	background-color: #d6efc2;
++	border-radius: 1.4em;
++}
++.quicklinks{
++	float: right;
++	-webkit-column-count: 2; /* Chrome, Safari, Opera */
++	-moz-column-count: 2; /* Firefox */
++	column-count: 2;
++	-webkit-column-gap: 20px; /* Chrome, Safari, Opera */
++	-moz-column-gap: 20px; /* Firefox */
++	column-gap: 20px;
++	-webkit-column-rule: 1px solid lightblue; /* Chrome, Safari, Opera */
++	-moz-column-rule: 1px solid lightblue; /* Firefox */
++	column-rule: 1px solid lightblue;
++	list-style: none;
++	list-style-type: none;
++	list-style-image: none;
++	list-style-position: outside;
++	font-size: 12px;
++	line-height: 18px;
++	font-family: Helvetica,Arial,sans-serif;
++	margin-top: 2em;
++	margin-bottom: 0em;
++}
++.colLeft, .colRight{
++	float: left;
++}
++.colLeft{
++	width: 60%;
++}
++.colRight{
++	width: 40%;
++	text-align: center;
++}
++.anchor{
++	float: right;
++}
++.boxed {
++	box-sizing: border-box;
++	padding: 10px;
++	border: 1px solid;
++	border-color: #636363;
++	border-radius: 5px;
++}
++pre {
++    display: inline;
++    margin: 0;
++}
++.xterm {
++	color:#333;
++	display:block;
++	font-family:Monaco,Menlo,Consolas,"Courier New",monospace;
++	padding:9.5px;
++	margin:0 0 10px;
++	font-size:13px;
++	word-break:break-all;
++	word-wrap:break-word;
++	background-color:#f5f5f5;
++	border:1px solid #ccc;
++	border-radius:4px;
++}
+diff --git a/board/tjd/msd/img/sw.png b/board/tjd/msd/img/sw.png
+new file mode 100644
+index 0000000000..50aa946f03
+Binary files /dev/null and b/board/tjd/msd/img/sw.png differ
+diff --git a/board/tjd/msd/img/tw.png b/board/tjd/msd/img/tw.png
+new file mode 100644
+index 0000000000..afab2a9892
+Binary files /dev/null and b/board/tjd/msd/img/tw.png differ
+diff --git a/board/tjd/msd/img/version.js b/board/tjd/msd/img/version.js
+new file mode 100644
+index 0000000000..71f0f84063
+--- /dev/null
++++ b/board/tjd/msd/img/version.js
+@@ -0,0 +1,278 @@
++function OnTheWeb() {
++	window.location.assign("https://wiki.analog.com/university/tools/pluto");
++}
++
++function versionCompare(v1, v2) {
++	var v1parts = ("" + v1).replace(/[a-zA-Z]/g, "").replace("-", ".").split("."),
++	v2parts = ("" + v2).replace(/[a-zA-Z]/g, "").replace("-", ".").split("."),
++	minLength = Math.min(v1parts.length, v2parts.length),
++	p1, p2, i;
++	console.log(v1parts + " || " + v2parts);
++	for(i = 0; i < minLength; i++) {
++		p1 = parseInt(v1parts[i], 10);
++		p2 = parseInt(v2parts[i], 10);
++		if (isNaN(p1)){ p1 = v1parts[i]; }
++		if (isNaN(p2)){ p2 = v2parts[i]; }
++		if (p1 == p2) {
++			continue;
++		}else if (p1 > p2) {
++			return 1;
++		}else if (p1 < p2) {
++			return -1;
++		}
++		return NaN;
++	}
++	if (v1parts.length === v2parts.length) {
++		return 0;
++	}
++	return (v1parts.length < v2parts.length) ? -1 : 1;
++}
++
++var latest_libiio;
++var mac = false;
++
++function GetDriverurl() {
++	mac = navigator.platform.match(/Mac/i) ? true : false;
++	if (mac) {
++		var uAgent = navigator.userAgent.toLowerCase();
++		//uAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36".toLowerCase();
++		var test = uAgent.match(/mac os x 10_[0-9]*/);
++		if (test) {
++			mac = "darwin-" + test[0].match(/10_[0-9]*/)[0].replace("_", ".");
++		}
++		document.getElementById('prompt0').innerHTML = "adi-mm:tests analogdevices$";
++		document.getElementById('prompt1').innerHTML = "adi-mm:tests analogdevices$";
++	}
++	var win = navigator.platform.indexOf('Win') > -1 ? true : false;
++	if (win) {
++		document.getElementById('prompt0').innerHTML = "C:&#x5C;>";
++		document.getElementById('prompt1').innerHTML = "C:&#x5C;>";
++	} else
++		document.getElementById('hidedriver').style.display = "none";
++	var linux = navigator.platform.indexOf('Linux') > -1 ? true : false;
++	if (mac || win || linux)
++		document.getElementById('hidelib').style.display = "inline";
++	else {
++		if (navigator.platform.match(/(Linux|iPhone|iPod|iPad|Android)/i)) {
++			document.getElementById('libtest').innerHTML = "Sorry, we don't support " + navigator.platform + " yet. Please ask.";
++			jQuery('#libtest').attr ('href', "https://ez.analog.com/university-program");
++		} else
++			document.getElementById('libtest').innerHTML = "Unsupported host \"" + navigator.platform + "\". Please check, and report an issue";
++		return;
++	}
++
++	var i; var j;
++
++	var req = jQuery.getJSON("https://api.github.com/repos/analogdevicesinc/libiio/releases/latest");
++	req.fail(function() {
++		document.getElementById('hidelib').style.display = "none";
++		latest_libiio = null;
++	});
++	req.done(function(response) {
++		latest_libiio = response;
++		var select = document.getElementById("os-select");
++		var suffix = "";
++		var os;
++		for (i = 0; i < latest_libiio.assets.length; i++) {
++			os = latest_libiio.assets[i].name.split('-')[2];
++			suffix = os.slice(-4);
++			if (suffix == ".zip" ) {
++				os = os.slice(0, os.length-4);
++			}
++			for (j = 0; j < select.length; j++) {
++				if (os.match(select[j].value))
++					break;
++			}
++			if (j == select.length) {
++				select.options[select.options.length] = new Option(os);
++				if ((win && os == "Windows") || (mac && os == "darwin") || (linux && os == "ubuntu")) {
++					select.value = os;
++					libiio_type();
++				}
++			}
++		}
++		if (latest_libiio.hasOwnProperty('tarball_url') || latest_libiio.hasOwnProperty('zipball_url'))
++			select.options[select.options.length] = new Option("source");
++	});
++	if (win) {
++		req = jQuery.getJSON("https://api.github.com/repos/analogdevicesinc/plutosdr-m2k-drivers-win/releases/latest");
++		req.done(function(response) {
++			for (i = 0; i < response.assets.length; i++) {
++				if (response.assets[i].content_type == "application/x-msdownload") {
++					jQuery('#drivertest').attr ('href', response.assets[i].browser_download_url);
++					document.getElementById('drivertest').innerHTML = response.name;
++				}
++			}
++		});
++	} else if (mac) {
++		document.getElementById('hidedriver').style.display = "none";
++	} else {
++		document.getElementById('hidedriver').style.display = "none";
++	}
++}
++
++function libiio_type() {
++	var select = document.getElementById("type-select");
++	var os = document.getElementById("os-select").value;
++	select.onchange = null;
++	var i;
++	var j;
++	for (i = select.options.length - 1 ; i >= 0 ; i--) {
++		select.remove(i);
++	}
++	var suffix = "";
++	for (i = 0; i < latest_libiio.assets.length; i++) {
++		if (latest_libiio.assets[i].browser_download_url.match(os)) {
++			suffix = latest_libiio.assets[i].browser_download_url.slice(-4);
++			if (suffix == "r.gz" ) {
++				suffix = ".tar.gz";
++			}
++			for (j = 0; j < select.length; j++) {
++				if (suffix.match(select[j].value))
++					break;
++				}
++				if (j == select.length) {
++					select.options[select.options.length] = new Option(suffix);
++					if (os.match('centos') && suffix.match('.rpm')) {
++						select.value = suffix;
++					}
++			}
++		}
++	}
++	if (os.match('source')) {
++		if (latest_libiio.hasOwnProperty('tarball_url'))
++			select.options[select.options.length] = new Option('.tar');
++		if (latest_libiio.hasOwnProperty('zipball_url'))
++			select.options[select.options.length] = new Option('.zip');
++	}
++	select.onchange = libiio_ver;
++	libiio_ver();
++}
++
++function libiio_ver() {
++	var select = document.getElementById("ver-select");
++	var os = document.getElementById("os-select").value;
++	var suffix = document.getElementById("type-select").value;
++	select.onchange = null;
++	var i;
++	for (i = select.options.length - 1 ; i >= 0 ; i--) {
++		select.remove(i);
++	}
++	for (i = 0; i < latest_libiio.assets.length; i++) {
++		if (latest_libiio.assets[i].browser_download_url.match(os) && latest_libiio.assets[i].browser_download_url.match(suffix)) {
++			var file = latest_libiio.assets[i].name.replace(/libiio-[0-9]*\.[0-9]*.[a-z0-9]*-/, '');
++			file = file.slice(0, file.length - suffix.length);
++			select.options[select.options.length] = new Option(file);
++			if (mac && (file.match(mac) ||
++					file.match(/darwin-10.[0-9]*/) < mac)) {
++				select.value = file;
++				console.log('hit');
++			}
++		}
++	}
++	if (os.match('source')) {
++		select.options[select.options.length] = new Option(latest_libiio.tag_name);
++	}
++	select.onchange = libiio_url;
++	libiio_url();
++}
++
++function libiio_url() {
++	var os = document.getElementById("os-select").value;
++	var suffix = document.getElementById("type-select").value;
++	var ver = document.getElementById("ver-select").value;
++	var i, url;
++	for (i = 0; i < latest_libiio.assets.length; i++) {
++		url = latest_libiio.assets[i].browser_download_url;
++		if (url.match(ver) && url.match(os) && url.match(suffix)) {
++			jQuery('#libtest').attr ('href', url);
++			document.getElementById('libtest').innerHTML = latest_libiio.assets[i].name;
++		}
++	}
++	if (os.match('source')) {
++		if (suffix.match('.tar')) {
++			document.getElementById('libtest').innerHTML = "Source code (tar)";
++			jQuery('#libtest').attr ('href', latest_libiio.tarball_url);
++		}
++		if (suffix.match('.zip')) {
++			document.getElementById('libtest').innerHTML = "Source code (zip)";
++			jQuery('#libtest').attr ('href', latest_libiio.zipball_url);
++		}
++
++	}
++}
++
++function CheckFrmVersion() {
++	GetDriverurl();
++	var req = jQuery.getJSON("https://api.github.com/repos/analogdevicesinc/plutosdr-fw/releases");
++	req.fail(function() {
++		document.getElementById('versiontest').innerHTML = "Can't check right now, try manually";
++		document.getElementById('sysroot').innerHTML = "Latest SysRoot";
++	});
++	req.done(function(response) {
++		var VerOnGithub = response[0].name;
++		var VerLocal = "#BUILD#";
++		if (VerLocal.match(/BUILD/)) {
++			document.getElementById('versiontest').innerHTML = "Seems not to be deployed";
++			document.getElementById('sysroot').innerHTML = "Unknown SysRoot";
++			jQuery('#sysroot').removeAttr('href');
++		} else {
++			var res = versionCompare(VerLocal, VerOnGithub);
++			var message;
++			var sysroot_message;
++			var j;
++			var k;
++			var sysroot_url = null;
++			for (j = 0; j < response.length; j++) {
++				if (response[j].name.match(VerLocal+"$")) {
++					for (k = 0; k < response[j].assets.length; k++) {
++						if (response[j].assets[k].name.match(/sysroot/i)) {
++							sysroot_url = response[j].assets[k].browser_download_url;
++							break;
++						}
++					}
++					break;
++				}
++			}
++			if (res < 0) {
++				message = "Newer version available online (Version " + VerOnGithub + " )";
++				if (sysroot_url)
++					sysroot_message = "Old Sysroot for firmware " + VerLocal +
++						" (please upgrade firmware to " + VerOnGithub + ")";
++				else
++					sysroot_message = "No Sysroot for firmware " + VerLocal +
++						" (please upgrade firmware to " + VerOnGithub + ")";
++				document.getElementById('versionsection').className = "download";
++			} else  if (res > 0) {
++				message = "Wow! Your Pluto Firmware Version " + VerLocal +
++						" is newer than (" + VerOnGithub + ") on Github.";
++				sysroot_message = "Firmware " + VerLocal + " doesn't have pre-built SYSROOT";
++				jQuery('#sysroot').removeAttr('href');
++				document.getElementById('versionsection').className = "";
++				document.getElementById('plutsdr-fw-download').style.visibility = "hidden";
++				document.getElementById('hideupgrade').style.display = "none";
++			} else if (res == 0) {
++				message = "Pluto is using the same version as latest release!";
++				sysroot_message = "SYSROOT for firmware version " + VerOnGithub;
++				document.getElementById('versionsection').className = "";
++				document.getElementById('plutsdr-fw-download').style.visibility = "hidden";
++				document.getElementById('hideupgrade').style.display = "none";
++			} else {
++				message = "Failure in comparing version, latest upstream is " + VerOnGithub;
++				sysroot_message = "SYSROOT for firmware version " + VerOnGithub;
++				document.getElementById('versionsection').className = "";
++			}
++			document.getElementById('versiontest').innerHTML = message;
++			document.getElementById('plutsdr-fw-download').innerHTML = "Download version " + VerOnGithub;
++			jQuery('#plutsdr-fw-download').attr ('href', response[0].assets[0].browser_download_url);
++
++			document.getElementById('sysroot').innerHTML = sysroot_message;
++			if(sysroot_url)
++				jQuery('#sysroot').attr ('href', sysroot_url);
++			else
++				jQuery('#sysroot').removeAttr('href');
++		}
++	});
++}
++
++window.onload = CheckFrmVersion;
+diff --git a/board/tjd/msd/img/yk.png b/board/tjd/msd/img/yk.png
+new file mode 100644
+index 0000000000..bcb5cf5d62
+Binary files /dev/null and b/board/tjd/msd/img/yk.png differ
+diff --git a/board/tjd/msd/img/yt.png b/board/tjd/msd/img/yt.png
+new file mode 100644
+index 0000000000..566a3bba68
+Binary files /dev/null and b/board/tjd/msd/img/yt.png differ
+diff --git a/board/tjd/post-build.sh b/board/tjd/post-build.sh
+new file mode 100755
+index 0000000000..03021a4918
+--- /dev/null
++++ b/board/tjd/post-build.sh
+@@ -0,0 +1,93 @@
++#!/bin/sh
++# args from BR2_ROOTFS_POST_SCRIPT_ARGS
++# $2    board name
++. ${BR2_CONFIG}
++set -e
++
++INSTALL=install
++
++# Add a console on tty1
++grep -qE '^ttyGS0::' ${TARGET_DIR}/etc/inittab || \
++sed -i '/GENERIC_SERIAL/a\
++ttyGS0::respawn:/sbin/getty -L ttyGS0 0 vt100 # USB console' ${TARGET_DIR}/etc/inittab
++
++grep -qE '^::sysinit:/bin/mount -t debugfs' ${TARGET_DIR}/etc/inittab || \
++sed -i '/hostname/a\
++::sysinit:/bin/mount -t debugfs none /sys/kernel/debug/' ${TARGET_DIR}/etc/inittab
++
++sed -i -e '/::sysinit:\/bin\/hostname -F \/etc\/hostname/d' ${TARGET_DIR}/etc/inittab
++
++grep -q mtd2 ${TARGET_DIR}/etc/fstab || echo "mtd2 /mnt/jffs2 jffs2 rw,noatime 0 0" >> ${TARGET_DIR}/etc/fstab
++
++BOARD_DIR="$(dirname $0)"
++BOARD_NAME="$(basename ${BOARD_DIR})"
++GENIMAGE_CFG="${BOARD_DIR}/genimage-msd.cfg"
++GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
++GCC_VERSION=$(${BR2_TOOLCHAIN_EXTERNAL_PREFIX}-gcc --version | head -1 | sed 's/.*(\(.*\))/\1/')
++BIN_VERSION=$(${BR2_TOOLCHAIN_EXTERNAL_PREFIX}-as --version | head -1 | sed 's/.*(\(.*\))/\1/')
++GCC_TRIPLE=$(${BR2_TOOLCHAIN_EXTERNAL_PREFIX}-gcc -v -c  2>&1 | sed 's/ /\n/g' | grep -e "--target" | awk -F= '{print $2}')
++if [ "$BR2_TARGET_GENERIC_ROOT_PASSWD" = "analog" ] ; then
++	ROOTPASSWD=$BR2_TARGET_GENERIC_ROOT_PASSWD;
++else
++	ROOTPASSWD="********"
++fi
++
++sed -e "s/#GCC_TRIPLE#/$GCC_TRIPLE/g" -e "s/#GCC_VERSION#/$GCC_VERSION/g" -e "s/#BIN_VERSION#/$BIN_VERSION/g" ${BOARD_DIR}/index.html -e "s/#ROOTPASSWORD#/$ROOTPASSWD/g" > ${BOARD_DIR}/msd/index.html
++
++rm -rf "${GENIMAGE_TMP}"
++
++genimage                           \
++	--rootpath "${TARGET_DIR}"     \
++	--tmppath "${GENIMAGE_TMP}"    \
++	--inputpath "${BOARD_DIR}/msd"  \
++	--outputpath "${TARGET_DIR}/opt/" \
++	--config "${GENIMAGE_CFG}"
++
++rm -f ${TARGET_DIR}/opt/boot.vfat
++rm -f ${TARGET_DIR}/etc/init.d/S99iiod
++rm -Rf ${TARGET_DIR}/etc/dropbear
++
++mkdir -p ${TARGET_DIR}/www/img
++mkdir -p ${TARGET_DIR}/etc/wpa_supplicant/
++mkdir -p ${TARGET_DIR}/mnt/jffs2
++mkdir -p ${TARGET_DIR}/mnt/msd
++mkdir -p ${TARGET_DIR}/etc/dropbear
++
++${INSTALL} -D -m 0755 ${BOARD_DIR}/update.sh ${TARGET_DIR}/sbin/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/update_from_github.sh ${TARGET_DIR}/sbin/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/update_frm.sh ${TARGET_DIR}/sbin/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/udc_handle_suspend.sh ${TARGET_DIR}/sbin/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/S10mdev ${TARGET_DIR}/etc/init.d/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/S15watchdog ${TARGET_DIR}/etc/init.d/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/S20urandom ${TARGET_DIR}/etc/init.d/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/S21misc ${TARGET_DIR}/etc/init.d/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/S23udc ${TARGET_DIR}/etc/init.d/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/S40network ${TARGET_DIR}/etc/init.d/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/S41network ${TARGET_DIR}/etc/init.d/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/S45msd ${TARGET_DIR}/etc/init.d/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/S98autostart ${TARGET_DIR}/etc/init.d/
++${INSTALL} -D -m 0644 ${BOARD_DIR}/fw_env.config ${TARGET_DIR}/etc/
++${INSTALL} -D -m 0644 ${BOARD_DIR}/VERSIONS ${TARGET_DIR}/opt/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/device_reboot ${TARGET_DIR}/usr/sbin/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/device_passwd ${TARGET_DIR}/usr/sbin/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/device_persistent_keys ${TARGET_DIR}/usr/sbin/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/device_format_jffs2 ${TARGET_DIR}/usr/sbin/
++${INSTALL} -D -m 0644 ${BOARD_DIR}/motd ${TARGET_DIR}/etc/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/test_ensm_pinctrl.sh ${TARGET_DIR}/usr/sbin/
++${INSTALL} -D -m 0644 ${BOARD_DIR}/device_config ${TARGET_DIR}/etc/
++${INSTALL} -D -m 0644 ${BOARD_DIR}/mdev.conf ${TARGET_DIR}/etc/
++${INSTALL} -D -m 0755 ${BOARD_DIR}/automounter.sh ${TARGET_DIR}/lib/mdev/automounter.sh
++${INSTALL} -D -m 0755 ${BOARD_DIR}/ifupdown.sh ${TARGET_DIR}/lib/mdev/ifupdown.sh
++${INSTALL} -D -m 0644 ${BOARD_DIR}/input-event-daemon.conf ${TARGET_DIR}/etc/
++
++${INSTALL} -D -m 0644 ${BOARD_DIR}/msd/img/* ${TARGET_DIR}/www/img/
++${INSTALL} -D -m 0644 ${BOARD_DIR}/msd/*.html ${TARGET_DIR}/www/
++
++${INSTALL} -D -m 0755 ${BOARD_DIR}/wpa_supplicant/* ${TARGET_DIR}/etc/wpa_supplicant/
++
++ln -sf ../../wpa_supplicant/ifupdown.sh ${TARGET_DIR}/etc/network/if-up.d/wpasupplicant
++ln -sf ../../wpa_supplicant/ifupdown.sh ${TARGET_DIR}/etc/network/if-down.d/wpasupplicant
++ln -sf ../../wpa_supplicant/ifupdown.sh ${TARGET_DIR}/etc/network/if-pre-up.d/wpasupplicant
++ln -sf ../../wpa_supplicant/ifupdown.sh ${TARGET_DIR}/etc/network/if-post-down.d/wpasupplicant
++
++ln -sf device_reboot ${TARGET_DIR}/usr/sbin/pluto_reboot
+diff --git a/board/tjd/test_ensm_pinctrl.sh b/board/tjd/test_ensm_pinctrl.sh
+new file mode 100755
+index 0000000000..963b22ee46
+--- /dev/null
++++ b/board/tjd/test_ensm_pinctrl.sh
+@@ -0,0 +1,130 @@
++#!/bin/sh
++
++find_zynq_base_gpio () {
++	for i in /sys/class/gpio/gpiochip*; do
++		if [ "zynq_gpio" = `cat $i/label` ]; then
++			echo $i | sed 's/^[^0-9]\+//'
++			break
++		fi
++	done
++	return -1
++}
++
++fdd_pin_control_test () {
++	echo Running FDD Pin Control Test
++	while true; do
++			echo high > $ENABLE # RX&TX ON
++
++			sleep 1
++
++			echo low > $ENABLE # RX&TX OFF
++
++			sleep 1
++
++		done
++}
++
++fdd_independant_mode_pin_control_test () {
++	echo Running FDD Independant Pin Control Test
++	while true; do
++			echo high > $ENABLE # RX ON
++			echo low > $TXNRX # TX OFF
++
++			sleep 1
++
++			echo high > $TXNRX #TX ON
++
++			sleep 1
++
++		done
++}
++
++tdd_pin_control_test () {
++
++	echo Running TDD Pin Control Test
++	while true; do
++
++		# RX
++		echo low > $ENABLE
++		echo low > $TXNRX
++		echo low > $TXNRX # add some extra delay required for VCO cal in single synthesizer mode.
++		echo high > $ENABLE
++
++		sleep 1
++
++		# TX
++		echo low > $ENABLE
++		echo high > $TXNRX
++		echo high > $TXNRX # add some extra delay required for VCO cal in single synthesizer mode.
++		echo high > $ENABLE
++
++		sleep 1
++	done
++}
++
++if [ `id -u` != "0" ]
++then
++   echo "This script must be run as root" 1>&2
++   exit 1
++fi
++
++for i in $(find -L /sys/bus/iio/devices -maxdepth 2 -name name)
++do
++  dev_name=$(cat $i)
++  if [ "$dev_name" = "ad9361-phy" ]; then
++     phy_path=$(echo $i | sed 's:/name$::')
++     ensm_modes=$(cat $phy_path/ensm_mode_available)
++     break
++  fi
++done
++
++if [ "$dev_name" != "ad9361-phy" ]; then
++ echo "This test if for FMCOMMS2/3/4 and pluto only"
++ exit
++fi
++
++GPIO_BASE=$(find_zynq_base_gpio)
++
++cd /sys/class/gpio
++
++if [ $GPIO_BASE -ge 0 ]
++then
++  GPIO_ENABLE=`expr $GPIO_BASE + 69`
++  GPIO_TXNRX=`expr $GPIO_BASE + 70`
++  #Export the CTRL_IN GPIOs
++  echo $GPIO_ENABLE > export 2> /dev/null
++  echo $GPIO_TXNRX > export 2> /dev/null
++else
++  echo ERROR: Wrong board?
++  exit
++fi
++
++ENABLE=gpio${GPIO_ENABLE}/direction
++TXNRX=gpio${GPIO_TXNRX}/direction
++
++echo low > $ENABLE
++echo low > $TXNRX
++
++echo Press CTRL-C to exit
++
++case "$ensm_modes" in
++  *fdd*)
++    echo "Type: 0 for FDD Pin Control Mode"
++    echo "Type: 1 for FDD Independant Pin Control Mode"
++
++    read mode
++
++    if [ $mode = "1" ]; then
++	echo pinctrl_fdd_indep > $phy_path/ensm_mode #Enable Pincontrol Mode
++	fdd_independant_mode_pin_control_test
++    else
++	echo pinctrl > $phy_path/ensm_mode #Enable Pincontrol Mode
++	fdd_pin_control_test
++    fi
++
++    ;;
++  *rx*)
++    echo pinctrl > $phy_path/ensm_mode #Enable Pincontrol Mode
++    tdd_pin_control_test
++    ;;
++esac
+diff --git a/board/tjd/udc_handle_suspend.sh b/board/tjd/udc_handle_suspend.sh
+new file mode 100644
+index 0000000000..785482e2b1
+--- /dev/null
++++ b/board/tjd/udc_handle_suspend.sh
+@@ -0,0 +1,34 @@
++#!/bin/sh
++
++source /etc/device_config
++
++DEV_NAME=
++
++for dev in /sys/bus/iio/devices/*; do
++	[ `cat ${dev}/name` == "ad9361-phy" ] && DEV_NAME=`basename ${dev}`
++done
++
++prev_ensm_mode=`cat /sys/bus/iio/devices/${DEV_NAME}/ensm_mode`
++
++while [ 1 ]
++do
++
++state=`/sbin/poll_sysfs /sys/class/udc/ci_hdrc.0/state`
++case "$state" in
++	suspended)
++		prev_ensm_mode=`cat /sys/bus/iio/devices/${DEV_NAME}/ensm_mode`
++		echo sleep > /sys/bus/iio/devices/${DEV_NAME}/ensm_mode
++		echo none > /sys/class/leds/led0:green/trigger
++		echo "UDC: $state: $prev_ensm_mode -> sleep" | logger
++		;;
++	*)
++		current_ensm_mode=`cat /sys/bus/iio/devices/${DEV_NAME}/ensm_mode`
++		echo heartbeat > /sys/class/leds/led0:green/trigger
++		if [ "$current_ensm_mode" != "$prev_ensm_mode" ]
++		then
++		  echo $prev_ensm_mode > /sys/bus/iio/devices/${DEV_NAME}/ensm_mode
++		fi
++		echo "UDC: $state: $current_ensm_mode -> $prev_ensm_mode" | logger
++		;;
++esac
++done
+diff --git a/board/tjd/update.sh b/board/tjd/update.sh
+new file mode 100644
+index 0000000000..4a4bac416c
+--- /dev/null
++++ b/board/tjd/update.sh
+@@ -0,0 +1,278 @@
++#!/bin/sh
++
++source /etc/device_config
++
++file=/sys/kernel/config/usb_gadget/composite_gadget/functions/mass_storage.0/lun.0/file
++bootimage=/mnt/msd/boot.frm
++conf=/mnt/msd/config.txt
++img=/opt/vfat.img
++
++ini_parser() {
++ FILE=$1
++ SECTION=$2
++ eval `sed -e 's/[[:space:]]*\=[[:space:]]*/=/g' \
++    -e 's/[#;\`].*$//' \
++    -e 's/[[:space:]]*$//' \
++    -e 's/^[[:space:]]*//' \
++    -e "s/^\(.*\)=\([^\"']*\)$/\1=\"\2\"/" \
++   < $FILE \
++    | sed -n -e "/^\[$SECTION\]/,/^\s*\[/{/^[^;].*\=.*/p;}"`
++}
++
++reset() {
++	echo "REBOOT/RESET using Watchdog timeout"
++	flash_indication_off
++	sync
++	device_reboot reset
++	sleep 10
++}
++
++dfu() {
++	echo "Entering DFU mode using SW Reset"
++	flash_indication_off
++	sync
++	device_reboot sf
++}
++
++flash_indication_on() {
++	echo timer > /sys/class/leds/led0:green/trigger
++	echo 40 > /sys/class/leds/led0:green/delay_off
++	echo 40 > /sys/class/leds/led0:green/delay_on
++}
++
++flash_indication_off() {
++	echo heartbeat > /sys/class/leds/led0:green/trigger
++}
++
++make_diagnostic_report () {
++	FILE=$1
++	cat  /opt/VERSIONS /etc/os-release /var/log/messages /proc/cpuinfo /proc/interrupts /proc/iomem /proc/meminfo /proc/cmdline /sys/kernel/debug/clk/clk_summary > ${FILE}
++	grep -r "" /sys/kernel/debug/regmap/ >> ${FILE} 2>&1
++	iio_info >> ${FILE} 2>&1
++	ifconfig -a >> ${FILE} 2>&1
++	mount >> ${FILE} 2>&1
++	top -b -n1  >> ${FILE} 2>&1
++	fw_printenv >> ${FILE} 2>&1
++	unix2dos ${FILE}
++}
++
++calibrate () {
++	/usr/sbin/ad936x_ref_cal -e $1 ad9361-phy
++	if [ $? -eq 0 ]; then
++
++		for dev in /sys/bus/iio/devices/*; do
++			[ `cat ${dev}/name` == "ad9361-phy" ] && DEV_NAME=`basename ${dev}`
++		done
++		NEW_XO=`cat /sys/bus/iio/devices/${DEV_NAME}/xo_correction`
++		flash_indication_on
++		fw_setenv xo_correction $NEW_XO
++		flash_indication_off
++
++		sed -i -e "s/^xo_correction .*$/xo_correction = $NEW_XO/" -e "s/^calibrate .*$/calibrate = 0/" $conf
++	else
++		sed -i -e "s/^calibrate .*$/calibrate = 0/" $conf
++	fi
++}
++
++process_ini() {
++	FILE=$1
++
++	ini_parser $FILE "NETWORK"
++	ini_parser $FILE "WLAN"
++	ini_parser $FILE "SYSTEM"
++	ini_parser $FILE "USB_ETHERNET"
++
++	rm -f /mnt/msd/SUCCESS_ENV_UPDATE /mnt/msd/FAILED_INVALID_UBOOT_ENV /mnt/msd/CAL_STATUS
++
++
++	fw_printenv qspiboot
++	if [ $? -eq 0 ]; then
++		flash_indication_on
++		echo "hostname $hostname" > /opt/fw_set.tmp
++		echo "ipaddr $ipaddr" >> /opt/fw_set.tmp
++		echo "ipaddr_host $ipaddr_host" >> /opt/fw_set.tmp
++		echo "netmask $netmask" >> /opt/fw_set.tmp
++		echo "ssid_wlan $ssid_wlan" >> /opt/fw_set.tmp
++		echo "ipaddr_wlan $ipaddr_wlan" >> /opt/fw_set.tmp
++		echo "pwd_wlan $pwd_wlan" >> /opt/fw_set.tmp
++		echo "xo_correction $xo_correction" >> /opt/fw_set.tmp
++		echo "udc_handle_suspend $udc_handle_suspend" >> /opt/fw_set.tmp
++		echo "usb_ethernet_mode $usb_ethernet_mode" >> /opt/fw_set.tmp
++		echo "ipaddr_eth $ipaddr_eth" >> /opt/fw_set.tmp
++		echo "netmask_eth $netmask_eth" >> /opt/fw_set.tmp
++		fw_setenv -s /opt/fw_set.tmp
++		rm /opt/fw_set.tmp
++		flash_indication_off
++		touch /mnt/msd/SUCCESS_ENV_UPDATE
++	else
++		touch /mnt/msd/FAILED_INVALID_UBOOT_ENV
++	fi
++
++	ini_parser $FILE "ACTIONS"
++
++	if [ "$reset" == "1" ]
++	then
++		reset
++	fi
++
++	if [ "$dfu" == "1" ]
++	then
++		dfu
++	fi
++
++	if [ "$diagnostic_report" == "1" ]
++	then
++		make_diagnostic_report /mnt/msd/diagnostic_report
++	fi
++
++	if [ "$calibrate" -gt "70000000" ]
++	then
++		calibrate $calibrate > /mnt/msd/CAL_STATUS
++	fi
++
++	echo here_1: > /mnt/msd/status
++
++	if [ "$revert_passwd" == "1" ]
++	then
++		echo here $revert_passwd >> /mnt/msd/status
++		rm -f /mnt/jffs2/etc/passwd /mnt/jffs2/etc/group /mnt/jffs2/etc/password.md5 /mnt/jffs2/etc/shadow 2>&1 >> /mnt/msd/status
++		echo here_2: >> /mnt/msd/status
++	fi
++
++	md5sum $FILE > /opt/config.md5
++}
++
++handle_boot_frm () {
++	FILE="$1"
++	rm -f /mnt/msd/BOOT_SUCCESS /mnt/msd/BOOT_FAILED /mnt/msd/FAILED_MTD_PARTITION_ERROR /mnt/msd/FAILED_BOOT_CHSUM_ERROR
++	head -3 /proc/mtd | sed 's/00010000/00001000/g' > /opt/mtd
++
++	md5=`tail -c 33 ${FILE}`
++	head -c -33 ${FILE} > /opt/boot_and_env_and_mtdinfo.bin
++
++	tail -c 1024 /opt/boot_and_env_and_mtdinfo.bin | head -3 > /opt/mtd-info.txt
++	head -c -1024 /opt/boot_and_env_and_mtdinfo.bin > /opt/boot_and_env.bin
++
++	tail -c 131072 /opt/boot_and_env.bin > /opt/u-boot-env.bin
++	head -c -131072 /opt/boot_and_env.bin > /opt/boot.bin
++
++	frm=`md5sum /opt/boot_and_env_and_mtdinfo.bin | cut -d ' ' -f 1`
++
++	if [ "$frm" = "$md5" ]
++	then
++		diff -w /opt/mtd /opt/mtd-info.txt
++		if [ $? -eq 0 ]; then
++			flash_indication_on
++			dd if=/opt/boot.bin of=/dev/mtdblock0 bs=64k && dd if=/opt/u-boot-env.bin of=/dev/mtdblock1 bs=64k && do_reset=1 && touch /mnt/msd/BOOT_SUCCESS || touch /mnt/msd/BOOT_FAILED
++			flash_indication_off
++		else
++			cat /opt/mtd /opt/mtd-info.txt > /mnt/msd/FAILED_MTD_PARTITION_ERROR
++			do_reset=0
++		fi
++	else
++		echo $md5 $frm >  /mnt/msd/FAILED_BOOT_CHSUM_ERROR
++		do_reset=0
++	fi
++
++	rm -f ${FILE} /opt/boot_and_env_and_mtdinfo.bin /opt/mtd-info.txt /opt/boot_and_env.bin /opt/u-boot-env.bin /opt/boot.bin /opt/mtd
++}
++
++
++
++handle_frimware_frm () {
++	FILE="$1"
++	MAGIC="$2"
++	rm -f /mnt/msd/SUCCESS /mnt/msd/FAILED /mnt/msd/FAILED_FIRMWARE_CHSUM_ERROR
++	md5=`tail -c 33 ${FILE}`
++	head -c -33 ${FILE} > /opt/firmware.frm
++	FRM_SIZE=`cat /opt/firmware.frm | wc -c | xargs printf "%X\n"`
++	frm=`md5sum /opt/firmware.frm | cut -d ' ' -f 1`
++	if [ "$frm" = "$md5" ]
++	then
++		flash_indication_on
++		grep -q "${MAGIC}"  /opt/firmware.frm && dd if=/opt/firmware.frm of=/dev/mtdblock3 bs=64k && fw_setenv fit_size ${FRM_SIZE} && do_reset=1 && touch /mnt/msd/SUCCESS || touch /mnt/msd/FAILED
++		flash_indication_off
++	else
++		echo $frm $md5 > /mnt/msd/FAILED_FIRMWARE_CHSUM_ERROR
++		do_reset=0
++	fi
++
++	rm -f ${FILE} /opt/firmware.frm
++	sync
++}
++
++while [ 1 ]
++do
++ if [[ -r ${file} ]]
++  then
++    lun=`cat $file`
++    if [ ${#lun} -eq 0 ]
++    then
++	do_reset=0
++	losetup /dev/loop7 $img -o 512
++	mkdir -p /mnt/msd
++	mount /dev/loop7 /mnt/msd
++
++	if [[ -s /mnt/msd/$TARGET-fw-*.zip ]]
++	then
++		mv /mnt/msd/$TARGET-fw-*.zip /opt/
++		unzip -o /opt/$TARGET-fw-*.zip *.frm -d /mnt/msd
++		rm /opt/$TARGET-fw-*.zip
++	fi
++
++	if [[ -s ${FIRMWARE} ]]
++	then
++		handle_frimware_frm "${FIRMWARE}" "${FRM_MAGIC}"
++	fi
++
++	if [[ -s ${bootimage} ]]
++	then
++		handle_boot_frm "${bootimage}"
++	fi
++
++	md5sum -c /opt/config.md5 || process_ini $conf
++
++	if [ "$TARGET" == "m2k" ]; then
++		if [[ -s /mnt/msd/${CALIBFILENAME} ]]; then
++			md5sum -c /opt/${CALIBFILENAME}.md5
++			if [ $? -ne 0 ]; then
++				cp  /mnt/msd/${CALIBFILENAME} /mnt/jffs2/${CALIBFILENAME} && do_reset=1
++			fi
++
++		else
++			rm /mnt/jffs2/${CALIBFILENAME} && do_reset=1
++		fi
++
++		if [[ -s /mnt/msd/${CALIBFILENAME_FACTORY} ]]; then
++			if [[ ! -s /mnt/jffs2/${CALIBFILENAME_FACTORY} ]]; then
++				cp /mnt/msd/${CALIBFILENAME_FACTORY} /mnt/jffs2/${CALIBFILENAME_FACTORY}
++					do_reset=1
++			fi
++		fi
++
++		if [[ -s /mnt/msd/${CALIBFILENAME_TEMP_LUT} ]]; then
++			cp /mnt/msd/${CALIBFILENAME_TEMP_LUT} /mnt/jffs2/${CALIBFILENAME_TEMP_LUT}
++			do_reset=1
++		fi
++	fi
++
++	if [[ $do_reset = 1 ]]
++	then
++		reset
++	fi
++
++	cp /opt/ipaddr-* /mnt/msd 2>/dev/null
++
++	umount /mnt/msd
++	#losetup -d /dev/loop7
++	echo $img > $file
++	flash_indication_off
++	sleep 1
++    fi
++fi
++
++sleep 1
++
++done
++
++exit 1
+diff --git a/board/tjd/update_frm.sh b/board/tjd/update_frm.sh
+new file mode 100644
+index 0000000000..d0b42f139f
+--- /dev/null
++++ b/board/tjd/update_frm.sh
+@@ -0,0 +1,49 @@
++#!/bin/sh
++
++#set -x
++
++source /etc/device_config
++
++FRM_FILE="$1"
++
++flash_indication_on() {
++	echo timer > /sys/class/leds/led0:green/trigger
++	echo 40 > /sys/class/leds/led0:green/delay_off
++	echo 40 > /sys/class/leds/led0:green/delay_on
++}
++
++flash_indication_off() {
++	echo heartbeat > /sys/class/leds/led0:green/trigger
++}
++
++handle_frimware_frm () {
++	FILE="$1"
++	MAGIC="$2"
++	md5=`tail -c 33 ${FILE}`
++	head -c -33 ${FILE} > /opt/firmware.frm
++	FRM_SIZE=`cat /opt/firmware.frm | wc -c | xargs printf "%X\n"`
++	frm=`md5sum /opt/firmware.frm | cut -d ' ' -f 1`
++	if [ "$frm" = "$md5" ]
++	then
++		flash_indication_on
++		grep -q "${MAGIC}" /opt/firmware.frm && dd if=/opt/firmware.frm of=/dev/mtdblock3 bs=64k && fw_setenv fit_size ${FRM_SIZE} && echo "Done" || echo "Failed"
++		flash_indication_off
++		rm -f /opt/firmware.frm
++		sync
++		exit 0
++	else
++		rm -f /opt/firmware.frm
++		echo Failed Checksum error: $frm $md5
++		exit 1
++	fi
++}
++
++
++
++if [[ -f ${FRM_FILE} ]] && [[ ${FRM_FILE: -4} == ".frm" ]] && [[ -s ${FRM_FILE} ]]
++then
++	handle_frimware_frm "${FRM_FILE}" "${FRM_MAGIC}"
++else
++	echo "Failed"
++	exit 1
++fi
+diff --git a/board/tjd/update_from_github.sh b/board/tjd/update_from_github.sh
+new file mode 100644
+index 0000000000..0149e1e188
+--- /dev/null
++++ b/board/tjd/update_from_github.sh
+@@ -0,0 +1,58 @@
++#!/bin/sh
++
++cd /root
++rm -f /root/latest /root/*.zip /root/*.frm
++
++# get the location of the latest release
++wget https://api.github.com/repos/analogdevicesinc/plutosdr-fw/releases/latest
++if [ "$?" -ne "0" ] ; then
++	echo "Error talking to github - is this pluto on the internet?"
++	exit
++fi
++if [ ! -f "latest" ] ; then
++	echo "downloaded file missing"
++	exit
++fi
++# get the FIRMWARE file name
++FIRMWARE=$(grep "name.*plutosdr-fw-" latest | cut -d : -f 2,3 | tr -d \", | sed 's/^ //g')
++if [ -z "${FIRMWARE}" ] ; then
++	echo "Error parsing download file name - please report a bug"
++	exit
++fi
++# get the FIRMWARE URL
++URL=$(grep "browser_download_url.*plutosdr-fw-" latest | cut -d : -f 2,3 | awk '{print $1}' | tr -d \")
++if [ -z "${URL}" ] ; then
++	echo "Error parsing download url - please report a bug"
++	exit
++fi
++# get the URL
++wget ${URL}
++if [ "$?" -ne "0" ] ; then
++	echo "Error talking to github - is this pluto on the internet?"
++	exit
++fi
++if [ ! -f "${FIRMWARE}" ] ; then
++	echo "Can not find downloaded file - report a bug"
++	exit
++fi
++# find the frm inside the zip file
++FILE=$(unzip -l "${FIRMWARE}" | grep frm | sort -nr | head -1 | awk '{print $NF}')
++if [ -z "${FILE}" ] ; then
++	echo "not sure which file to extract - report a bug"
++	exit
++fi
++# upzip it
++unzip ${FIRMWARE} ${FILE}
++if [ "$?" -ne "0" ] ; then
++	echo "Error unzipping ${FILE} from ${FIRMWARE}"
++	exit
++fi
++if [ ! -f ${FILE} ] ; then
++	echo "Can not file file to write to flash"
++	exit
++fi
++
++# write to flash
++update_frm.sh /root/${FILE}
++
++echo "Reboot your system to run the new firmware"
+diff --git a/board/tjd/wpa_supplicant/action_wpa.sh b/board/tjd/wpa_supplicant/action_wpa.sh
+new file mode 100644
+index 0000000000..bb4c7c10af
+--- /dev/null
++++ b/board/tjd/wpa_supplicant/action_wpa.sh
+@@ -0,0 +1,50 @@
++#!/bin/sh
++
++# Action script to enable/disable wpa-roam interfaces in reaction to
++# ifplugd events.
++#
++# Copyright: Copyright (c) 2008-2010, Kel Modderman <kel@otaku42.de>
++# License:   GPL-2
++#
++
++PATH=/sbin:/usr/sbin:/bin:/usr/bin
++
++if [ ! -x /sbin/wpa_action ]; then
++	exit 0
++fi
++
++# ifplugd(8) - <iface> <action>
++#
++# If an ifplugd managed interface is brought up, disconnect any
++# wpa-roam managed interfaces so that only one "roaming" interface
++# remains active on the system.
++
++IFPLUGD_IFACE="${1}"
++
++case "${2}" in
++	up)
++		COMMAND=disconnect
++		;;
++	down)
++		COMMAND=reconnect
++		;;
++	*)
++		echo "$0: unknown arguments: ${@}" >&2
++		exit 1
++		;;
++esac
++
++for CTRL in /run/wpa_supplicant/*; do
++	[ -S "${CTRL}" ] || continue
++
++	IFACE="${CTRL#/run/wpa_supplicant/}"
++
++	# skip if ifplugd is managing this interface
++	if [ "${IFPLUGD_IFACE}" = "${IFACE}" ]; then
++		continue
++	fi
++
++	if wpa_action "${IFACE}" check; then
++		wpa_cli -i "${IFACE}" "${COMMAND}"
++	fi
++done
+diff --git a/board/tjd/wpa_supplicant/functions.sh b/board/tjd/wpa_supplicant/functions.sh
+new file mode 100644
+index 0000000000..bf01819f17
+--- /dev/null
++++ b/board/tjd/wpa_supplicant/functions.sh
+@@ -0,0 +1,1006 @@
++#!/bin/sh
++
++#####################################################################
++## Purpose
++# This file contains common shell functions used by scripts of the
++# wpasupplicant package to allow ifupdown to manage wpa_supplicant.
++# It also contains some functions used by wpa_action(8) that allow
++# ifupdown to be managed by wpa_cli(8) action events.
++#
++# This file is provided by the wpasupplicant package.
++
++#####################################################################
++# Copyright (C) 2006 - 2009 Debian/Ubuntu wpasupplicant Maintainers
++# <pkg-wpa-devel@lists.alioth.debian.org>
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License
++# as published by the Free Software Foundation; either version 2
++# of the License, or (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# On Debian GNU/Linux systems, the text of the GPL license,
++# version 2, can be found in /usr/share/common-licenses/GPL-2.
++
++#####################################################################
++## global variables
++# wpa_supplicant variables
++WPA_SUP_BIN="/usr/sbin/wpa_supplicant"
++WPA_SUP_PNAME="wpa_supplicant"
++WPA_SUP_PIDFILE="/run/wpa_supplicant.${WPA_IFACE}.pid"
++WPA_SUP_OMIT_DIR="/run/sendsigs.omit.d"
++WPA_SUP_OMIT_PIDFILE="${WPA_SUP_OMIT_DIR}/wpasupplicant.wpa_supplicant.${WPA_IFACE}.pid"
++
++# wpa_cli variables
++WPA_CLI_BIN="/usr/sbin/wpa_cli"
++WPA_CLI_PNAME="wpa_cli"
++WPA_CLI_PIDFILE="/run/wpa_action.${WPA_IFACE}.pid"
++WPA_CLI_TIMESTAMP="/run/wpa_action.${WPA_IFACE}.timestamp"
++WPA_CLI_IFUPDOWN="/run/wpa_action.${WPA_IFACE}.ifupdown"
++
++# default ctrl_interface socket directory
++if [ -z "$WPA_CTRL_DIR" ]; then
++	WPA_CTRL_DIR="/run/wpa_supplicant"
++fi
++
++# verbosity variables
++if [ -n "$IF_WPA_VERBOSITY" ] || [ "$VERBOSITY" = "1" ]; then
++	TO_NULL="/dev/stdout"
++	DAEMON_VERBOSITY="--verbose"
++else
++	TO_NULL="/dev/null"
++	DAEMON_VERBOSITY="--quiet"
++fi
++
++#####################################################################
++## wpa_cli wrapper
++# Path to common ctrl_interface socket and iface supplied.
++# NB: WPA_CTRL_DIR cannot be used for interactive commands, it is
++# set only in the environment that wpa_cli provides when processing
++# action events.
++#
++wpa_cli () {
++	"$WPA_CLI_BIN" -p "$WPA_CTRL_DIR" -i "$WPA_IFACE" "$@"
++
++	return "$?"
++}
++
++#####################################################################
++## verbose and stderr message wrapper
++# Ensures a standard and easily identifiable message is printed by
++# scripts using this function library.
++#
++# log		Log a message to syslog when called non-interactively
++#		by wpa_action
++#
++# verbose	To stdout when IF_WPA_VERBOSITY or VERBOSITY is true
++#
++# action	Same as verbose but without newline
++#		Useful for allowing wpa_cli commands to echo result
++#		value of 'OK' or 'FAILED'
++#
++# stderr	Echo warning or error messages to stderr
++#
++# NB: when called by wpa_action, there is no redirection (verbose)
++#
++wpa_msg () {
++	if [ "$1" = "log" ]; then
++		shift
++		case "$WPA_ACTION" in
++			"CONNECTED"|"DISCONNECTED")
++				[ -x /usr/bin/logger ] || return
++				if [ "$#" -gt 0 ]; then
++					logger -t "wpa_action" "$@"
++				else
++					logger -t "wpa_action"
++				fi
++				;;
++			*)
++				[ "$#" -gt 0 ] && echo "wpa_action: $@"
++				;;
++		esac
++		return
++	fi
++
++	case "$1" in
++		"verbose")
++			shift
++			echo "$WPA_SUP_PNAME: $@" >$TO_NULL
++			;;
++		"action")
++			shift
++			echo -n "$WPA_SUP_PNAME: $@ -- " >$TO_NULL
++			;;
++		"stderr")
++			shift
++			echo "$WPA_SUP_PNAME: $@" >/dev/stderr
++			;;
++		*)
++			;;
++	esac
++}
++
++#####################################################################
++## validate daemon pid files
++# Test daemon process ID files via start-stop-daemon with a signal 0
++# given the exec binary and pidfile location.
++#
++# $1	daemon
++# $2	pidfile
++#
++# Returns true when pidfile exists, the process ID exists _and_ was
++# created by the exec binary.
++#
++# If the test fails, but the pidfile exists, it is stale
++#
++test_daemon_pidfile () {
++	local DAEMON
++	local PIDFILE
++
++	if [ -n "$1" ]; then
++		DAEMON="$1"
++	fi
++
++	if [ -f "$2" ]; then
++		PIDFILE="$2"
++	fi
++
++	if [ -n "$DAEMON" ] && [ -f "$PIDFILE" ]; then
++		if start-stop-daemon --stop --quiet --signal 0 \
++			--exec "$DAEMON" --pidfile "$PIDFILE"; then
++			return 0
++		else
++			rm -f "$PIDFILE"
++			return 1
++		fi
++	else
++		return 1
++	fi
++}
++
++# validate wpa_supplicant pidfile
++test_wpa_supplicant () {
++	test_daemon_pidfile "$WPA_SUP_BIN" "$WPA_SUP_PIDFILE"
++}
++
++# validate wpa_cli pidfile
++test_wpa_cli () {
++	test_daemon_pidfile "$WPA_CLI_BIN" "$WPA_CLI_PIDFILE"
++}
++
++#####################################################################
++## daemonize wpa_supplicant
++# Start wpa_supplicant via start-stop-dameon with all required
++# options. Will start if environment variable WPA_SUP_CONF is present
++#
++# Default options:
++# -B	dameonize/background process
++# -D	driver backend ('wext' if none given)
++# -P	process ID file
++# -C	path to ctrl_interface socket directory
++# -s    log to syslog
++#
++# Conditional options:
++# -c	configuration file
++# -W	wait for wpa_cli to attach to ctrl_interface socket
++# -b	bridge interface name
++# -f	path to log file
++#
++init_wpa_supplicant () {
++	[ -n "$WPA_SUP_CONF" ] || return 0
++
++	local WPA_SUP_OPTIONS
++	WPA_SUP_OPTIONS="-B -P $WPA_SUP_PIDFILE -i $WPA_IFACE"
++
++	if [ -n "$WPA_ACTION_SCRIPT" ]; then
++		if [ -x "$WPA_ACTION_SCRIPT" ]; then
++			WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -W"
++			wpa_msg verbose "wait for wpa_cli to attach"
++		else
++			wpa_msg stderr "action script \"$WPA_ACTION_SCRIPT\" not executable"
++			return 1
++		fi
++	fi
++
++	if [ -n "$IF_WPA_BRIDGE" ]; then
++		WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -b $IF_WPA_BRIDGE"
++		wpa_msg verbose "wpa-bridge $IF_WPA_BRIDGE"
++	fi
++
++	if [ -n "$IF_WPA_DRIVER" ]; then
++		wpa_msg verbose "wpa-driver $IF_WPA_DRIVER"
++		case "$IF_WPA_DRIVER" in
++			hostap|ipw|madwifi|ndiswrapper)
++				WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -D nl80211,wext"
++				wpa_msg stderr "\"$IF_WPA_DRIVER\" wpa-driver is unsupported"
++				wpa_msg stderr "using \"nl80211,wext\" wpa-driver instead ..."
++				;;
++			*)
++				WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -D $IF_WPA_DRIVER"
++				;;
++		esac
++	else
++		WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -D nl80211,wext"
++		wpa_msg verbose "wpa-driver nl80211,wext (default)"
++	fi
++
++	if [ -n "$IF_WPA_DEBUG_LEVEL" ]; then
++		case "$IF_WPA_DEBUG_LEVEL" in
++			3)
++				WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -t -ddd"
++				;;
++			2)
++				WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -t -dd"
++				;;
++			1)
++				WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -t -d"
++				;;
++			0)
++				# wpa_supplicant default verbosity
++				;;
++			-1)
++				WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -q"
++				;;
++			-2)
++				WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -qq"
++				;;
++		esac
++		wpa_msg verbose "using debug level: $IF_WPA_DEBUG_LEVEL"
++	fi
++
++	if [ -n "$IF_WPA_LOGFILE" ]; then
++		# custom log file
++		WPA_SUP_OPTIONS="$WPA_SUP_OPTIONS -f $IF_WPA_LOGFILE"
++		WPA_SUP_LOGFILE="$IF_WPA_LOGFILE"
++		wpa_msg verbose "logging to $IF_WPA_LOGFILE"
++	fi
++
++	wpa_msg verbose "$WPA_SUP_BIN $WPA_SUP_OPTIONS $WPA_SUP_CONF"
++
++	start-stop-daemon --start --oknodo $DAEMON_VERBOSITY \
++		--name $WPA_SUP_PNAME --startas $WPA_SUP_BIN --pidfile $WPA_SUP_PIDFILE \
++		-- $WPA_SUP_OPTIONS $WPA_SUP_CONF
++
++	if [ "$?" -ne 0 ]; then
++		wpa_msg stderr "$WPA_SUP_BIN daemon failed to start"
++		return 1
++	fi
++
++	local WPA_PIDFILE_WAIT
++	local MAX_WPA_PIDFILE_WAIT
++	WPA_PIDFILE_WAIT="0"
++	MAX_WPA_PIDFILE_WAIT="5"
++	until [ -s "$WPA_SUP_PIDFILE" ]; do
++		if [ "$WPA_PIDFILE_WAIT" -ge "$MAX_WPA_PIDFILE_WAIT" ]; then
++			wpa_msg stderr "timed out waiting for creation of $WPA_SUP_PIDFILE"
++			return 1
++		else
++			wpa_msg verbose "waiting for \"$WPA_SUP_PIDFILE\": " \
++				"$WPA_PIDFILE_WAIT (max. $MAX_WPA_PIDFILE_WAIT)"
++		fi
++
++		WPA_PIDFILE_WAIT=$(($WPA_PIDFILE_WAIT + 1))
++		sleep 1
++	done
++	if [ -d "${WPA_SUP_OMIT_DIR}" ]; then
++		wpa_msg verbose "creating sendsigs omission pidfile: $WPA_SUP_OMIT_PIDFILE"
++		cat "$WPA_SUP_PIDFILE" > "$WPA_SUP_OMIT_PIDFILE"
++	fi
++
++	local WPA_SOCKET_WAIT
++	local MAX_WPA_SOCKET_WAIT
++	WPA_SOCKET_WAIT="0"
++	MAX_WPA_SOCKET_WAIT="5"
++	until [ -S "$WPA_CTRL_DIR/$WPA_IFACE" ]; do
++		if [ "$WPA_SOCKET_WAIT" -ge "$MAX_WPA_SOCKET_WAIT" ]; then
++			wpa_msg stderr "ctrl_interface socket not found at $WPA_CTRL_DIR/$WPA_IFACE"
++			return 1
++		else
++			wpa_msg verbose "waiting for \"$WPA_CTRL_DIR/$WPA_IFACE\": " \
++				"$WPA_SOCKET_WAIT (max. $MAX_WPA_SOCKET_WAIT)"
++		fi
++
++		WPA_SOCKET_WAIT=$(($WPA_SOCKET_WAIT + 1))
++		sleep 1
++	done
++
++	wpa_msg verbose "ctrl_interface socket located at $WPA_CTRL_DIR/$WPA_IFACE"
++}
++
++#####################################################################
++## stop wpa_supplicant process
++# Kill wpa_supplicant via start-stop-daemon, given the location of
++# the pidfile or ctrl_interface socket path and interface name
++#
++kill_wpa_supplicant () {
++	test_wpa_supplicant || return 0
++
++	wpa_msg verbose "terminating $WPA_SUP_PNAME daemon via pidfile $WPA_SUP_PIDFILE"
++
++	start-stop-daemon --stop --oknodo $DAEMON_VERBOSITY \
++		--exec $WPA_SUP_BIN --pidfile $WPA_SUP_PIDFILE
++
++	if [ -f "$WPA_SUP_PIDFILE" ]; then
++		rm -f "$WPA_SUP_PIDFILE"
++	fi
++
++	if [ -f "$WPA_SUP_OMIT_PIDFILE" ]; then
++		wpa_msg verbose "removing $WPA_SUP_OMIT_PIDFILE"
++		rm -f "$WPA_SUP_OMIT_PIDFILE"
++	fi
++}
++
++#####################################################################
++## reload wpa_supplicant process
++# Sending a HUP signal causes wpa_supplicant to reparse its
++# configuration file
++#
++reload_wpa_supplicant () {
++	if test_wpa_supplicant; then
++		wpa_msg verbose "reloading wpa_supplicant configuration file via HUP signal"
++		start-stop-daemon --stop --signal HUP \
++			--name "$WPA_SUP_PNAME" --pidfile "$WPA_SUP_PIDFILE"
++	else
++		wpa_msg verbose "cannot $WPA_ACTION, $WPA_SUP_PIDFILE does not exist"
++	fi
++}
++
++#####################################################################
++## daemonize wpa_cli and action script
++# If environment variable WPA_ACTION_SCRIPT is present, wpa_cli will
++# be spawned via start-stop-daemon
++#
++# Required options:
++# -a	action script => wpa_action
++# -P	process ID file
++# -B	background process
++#
++init_wpa_cli () {
++	[ -n "$WPA_ACTION_SCRIPT" ] || return 0
++
++	local WPA_CLI_OPTIONS
++	WPA_CLI_OPTIONS="-B -P $WPA_CLI_PIDFILE -i $WPA_IFACE"
++
++	wpa_msg verbose "$WPA_CLI_BIN $WPA_CLI_OPTIONS -p $WPA_CTRL_DIR -a $WPA_ACTION_SCRIPT"
++
++	start-stop-daemon --start --oknodo $DAEMON_VERBOSITY \
++		--name $WPA_CLI_PNAME --startas $WPA_CLI_BIN --pidfile $WPA_CLI_PIDFILE \
++		-- $WPA_CLI_OPTIONS -p $WPA_CTRL_DIR -a $WPA_ACTION_SCRIPT
++
++	if [ "$?" -ne 0 ]; then
++		wpa_msg stderr "$WPA_CLI_BIN daemon failed to start"
++		return 1
++	fi
++}
++
++#####################################################################
++## stop wpa_cli process
++# Kill wpa_cli via start-stop-daemon, given the location of the
++# pidfile
++#
++kill_wpa_cli () {
++	test_wpa_cli || return 0
++
++	wpa_msg verbose "terminating $WPA_CLI_PNAME daemon via pidfile $WPA_CLI_PIDFILE"
++
++	start-stop-daemon --stop --oknodo $DAEMON_VERBOSITY \
++		--exec $WPA_CLI_BIN --pidfile $WPA_CLI_PIDFILE
++
++	if [ -f "$WPA_CLI_PIDFILE" ]; then
++		rm -f "$WPA_CLI_PIDFILE"
++	fi
++
++	if [ -f "$WPA_CLI_TIMESTAMP" ]; then
++		rm -f "$WPA_CLI_TIMESTAMP"
++	fi
++
++	if [ -L "$WPA_CLI_IFUPDOWN" ]; then
++		rm -f "$WPA_CLI_IFUPDOWN"
++	fi
++}
++
++#####################################################################
++## higher level wpa_cli wrapper for variable and set_network commands
++# wpa_cli_do <value> <type> <variable> [set_network variable] <desc>
++#
++# $1	envorinment variable
++# $2	data type of variable {raw|ascii}
++# $3	wpa_cli variable, if $3 is set_network, shift and take
++#	set_network subvariable
++# $4	wpa-* string as it would appear in interfaces file, enhances
++#	verbose messages
++#
++wpa_cli_do () {
++	if [ -z "$1" ]; then
++		return 0
++	fi
++
++	local WPACLISET_VALUE
++	local WPACLISET_VARIABLE
++	local WPACLISET_DESC
++
++	case "$2" in
++		ascii)
++			# Double quote
++			WPACLISET_VALUE="\"$1\""
++			;;
++		raw|*)
++			# Provide raw value
++			WPACLISET_VALUE="$1"
++			;;
++	esac
++
++	case "$3" in
++		set_network)
++			if [ -z "$WPA_ID" ]; then
++				return 1
++			fi
++			shift
++			WPACLISET_VARIABLE="set_network $WPA_ID $3"
++			;;
++		*)
++			WPACLISET_VARIABLE="$3"
++			;;
++	esac
++
++	case "$4" in
++		*-psk|*-passphrase|*-passwd*|*-password*|*-wep-key*)
++			WPACLISET_DESC="$4 *****"
++			;;
++		*)
++			WPACLISET_DESC="$4 $WPACLISET_VALUE"
++			;;
++	esac
++
++	wpa_msg action "$WPACLISET_DESC"
++
++	wpa_cli $WPACLISET_VARIABLE "$WPACLISET_VALUE" >$TO_NULL
++
++	if [ "$?" -ne 0 ]; then
++		wpa_msg stderr "$WPACLISET_DESC failed!"
++	fi
++}
++
++#####################################################################
++## check value data type in plaintext or hex
++# returns 0 if input consists of hexadecimal digits only, 1 otherwise
++#
++ishex () {
++	if [ -z "$1" ]; then
++		return 0
++	fi
++
++	case "$1" in
++		*[!0-9a-fA-F]*)
++			# plaintext
++			return 1
++			;;
++		*)
++			# hexadecimal
++			return 0
++			;;
++	esac
++}
++
++#####################################################################
++## sanity check and set psk|passphrase
++# Warn about strange psk|passphrase values
++#
++# $1	psk or passphrase value
++#
++# If psk is surrounded by quotes strip them.
++#
++# If psk contains all hexadecimal characters and string length is 64:
++#	is 256bit hexadecimal
++# else:
++# 	is plaintext
++#
++# plaintext passphrases must be 8 - 63 characters in length
++# 256-bit hexadecimal key must be 64 characters in length
++#
++wpa_key_check_and_set () {
++	if [ "$#" -ne 3 ]; then
++		return 0
++	fi
++
++	local KEY
++	local KEY_LEN
++	local KEY_TYPE
++	local ENC_TYPE
++
++	case "$1" in
++		'"'*'"')
++			# Strip surrounding quotation marks
++			KEY=$(echo -n "$1" | sed 's/^"//;s/"$//')
++			;;
++		*)
++			KEY="$1"
++			;;
++	esac
++
++	KEY_LEN="${#KEY}"
++
++	case "$2" in
++		wep_key*)
++			ENC_TYPE="WEP"
++			;;
++		psk)
++			ENC_TYPE="WPA"
++			;;
++		*)
++			return 0
++			;;
++	esac
++
++	if [ "$ENC_TYPE" = "WEP" ]; then
++		if ishex "$KEY"; then
++			case "$KEY_LEN" in
++				10|26|32|58)
++					# 64/128/152/256-bit WEP
++					KEY_TYPE="raw"
++					;;
++				*)
++					KEY_TYPE="ascii"
++					;;
++			esac
++		else
++			KEY_TYPE="ascii"
++		fi
++
++		if [ "$KEY_TYPE" = "ascii" ]; then
++			if [ "$KEY_LEN" -lt "5" ]; then
++				wpa_msg stderr "WARNING: plaintext or ascii WEP key has $KEY_LEN characters,"
++				wpa_msg stderr "it must have at least 5 to be valid."
++			fi
++		fi
++	elif [ "$ENC_TYPE" = "WPA" ]; then
++		if ishex "$KEY"; then
++			case "$KEY_LEN" in
++				64)
++					# 256-bit WPA
++					KEY_TYPE="raw"
++					;;
++				*)
++					KEY_TYPE="ascii"
++					;;
++			esac
++		else
++			KEY_TYPE="ascii"
++		fi
++
++		if [ "$KEY_TYPE" = "ascii" ]; then
++			if [ "$KEY_LEN" -lt "8" ] || [ "$KEY_LEN" -gt "63" ]; then
++				wpa_msg stderr "WARNING: plaintext or ascii WPA key has $KEY_LEN characters,"
++				wpa_msg stderr "it must have between 8 and 63 to be valid."
++				wpa_msg stderr "If the WPA key is a 256-bit hexadecimal key, it must have"
++				wpa_msg stderr "exactly 64 characters."
++			fi
++		fi
++	fi
++
++	wpa_cli_do "$KEY" "$KEY_TYPE" set_network "$2" "$3"
++}
++
++#####################################################################
++## formulate a usable configuration from interfaces(5) wpa- lines
++# A series of wpa_cli commands corresponding to environment variables
++# created as a result of wpa- lines in an interfaces stanza.
++#
++# NB: no-act when roaming daemon is used (to avoid prematurely
++# attaching to ctrl_interface socket)
++#
++conf_wpa_supplicant () {
++	if [ -n "$WPA_ACTION_SCRIPT" ]; then
++		return 0
++	fi
++
++	if [ "$IF_WPA_DRIVER" = "wired" ]; then
++		IF_WPA_AP_SCAN="0"
++		wpa_msg verbose "forcing ap_scan=0 (required for wired IEEE8021X auth)"
++	fi
++
++	if [ -n "$IF_WPA_ESSID" ]; then
++		# #403316, be similar to wireless tools
++		IF_WPA_SSID="$IF_WPA_ESSID"
++	fi
++
++	wpa_cli_do "$IF_WPA_AP_SCAN" raw \
++		ap_scan wpa-ap-scan
++
++	wpa_cli_do "$IF_WPA_PREAUTHENTICATE" raw \
++		preauthenticate wpa-preauthenticate
++
++	if [ -n "$IF_WPA_SSID" ] || [ "$IF_WPA_DRIVER" = "wired" ] || \
++		[ -n "$IF_WPA_KEY_MGMT" ]; then
++
++		case "$IF_WPA_SSID" in
++			'"'*'"')
++				IF_WPA_SSID=$(echo -n "$IF_WPA_SSID" | sed 's/^"//;s/"$//')
++				;;
++			*)
++				;;
++		esac
++
++		WPA_ID=$(wpa_cli add_network)
++
++		wpa_msg verbose "configuring network block -- $WPA_ID"
++
++		wpa_cli_do "$IF_WPA_SSID" ascii \
++			set_network ssid wpa-ssid
++
++		wpa_cli_do "$IF_WPA_PRIORITY" raw \
++			set_network priority wpa-priority
++
++		wpa_cli_do "$IF_WPA_BSSID" raw \
++			set_network bssid wpa-bssid
++
++		if [ -s "$IF_WPA_PSK_FILE" ]; then
++			IF_WPA_PSK=$(cat "$IF_WPA_PSK_FILE")
++		fi
++
++		# remain compat with wpa-passphrase-file
++		if [ -s "$IF_WPA_PASSPHRASE_FILE" ]; then
++			IF_WPA_PSK=$(cat "$IF_WPA_PASSPHRASE_FILE")
++		fi
++
++		# remain compat with wpa-passphrase
++		if [ -n "$IF_WPA_PASSPHRASE" ]; then
++			IF_WPA_PSK="$IF_WPA_PASSPHRASE"
++		fi
++
++		if [ -n "$IF_WPA_PSK" ]; then
++			wpa_key_check_and_set "$IF_WPA_PSK" \
++				psk wpa-psk
++		fi
++
++		wpa_cli_do "$IF_WPA_PAIRWISE" raw \
++			set_network pairwise wpa-pairwise
++
++		wpa_cli_do "$IF_WPA_GROUP" raw \
++			set_network group wpa-group
++
++		wpa_cli_do "$IF_WPA_MODE" raw \
++			set_network mode wpa-mode
++
++		wpa_cli_do "$IF_WPA_FREQUENCY" raw \
++			set_network frequency wpa-frequency
++
++		wpa_cli_do "$IF_WPA_SCAN_FREQ" raw \
++			set_network scan_freq wpa-scan-freq
++
++		wpa_cli_do "$IF_WPA_FREQ_LIST" raw \
++			set_network freq_list wpa-freq-list
++
++		wpa_cli_do "$IF_WPA_KEY_MGMT" raw \
++			set_network key_mgmt wpa-key-mgmt
++
++		wpa_cli_do "$IF_WPA_PROTO" raw \
++			set_network proto wpa-proto
++
++		wpa_cli_do "$IF_WPA_AUTH_ALG" raw \
++			set_network auth_alg wpa-auth-alg
++
++		wpa_cli_do "$IF_WPA_SCAN_SSID" raw \
++			set_network scan_ssid wpa-scan-ssid
++
++		wpa_cli_do "$IF_WPA_IDENTITY" ascii \
++			set_network identity wpa-identity
++
++		wpa_cli_do "$IF_WPA_ANONYMOUS_IDENTITY" ascii \
++			set_network anonymous_identity wpa-anonymous-identity
++
++		wpa_cli_do "$IF_WPA_EAP" raw \
++			set_network eap wpa-eap
++
++		wpa_cli_do "$IF_WPA_EAPPSK" raw \
++			set_network eappsk wpa-eappsk
++
++		wpa_cli_do "$IF_WPA_NAI" ascii \
++			set_network nai wpa-nai
++
++		wpa_cli_do "$IF_WPA_PASSWORD" ascii \
++			set_network password wpa-password
++
++		wpa_cli_do "$IF_WPA_CA_CERT" ascii \
++			set_network ca_cert wpa-ca-cert
++
++		wpa_cli_do "$IF_WPA_CA_PATH" ascii \
++			set_network ca_path wpa-ca-path
++
++		wpa_cli_do "$IF_WPA_CLIENT_CERT" ascii \
++			set_network client_cert wpa-client-cert
++
++		wpa_cli_do "$IF_WPA_PRIVATE_KEY" ascii \
++			set_network private_key wpa-private-key
++
++		wpa_cli_do "$IF_WPA_PRIVATE_KEY_PASSWD" ascii \
++			set_network private_key_passwd wpa-private-key-passwd
++
++		wpa_cli_do "$IF_WPA_DH_FILE" ascii \
++			set_network dh_file wpa-dh-file
++
++		wpa_cli_do "$IF_WPA_SUBJECT_MATCH" ascii \
++			set_network subject_match wpa-subject-match
++
++		wpa_cli_do "$IF_WPA_ALTSUBJECT_MATCH" ascii \
++			set_network altsubject_match wpa-altsubject-match
++
++		wpa_cli_do "$IF_WPA_CA_CERT2" ascii \
++			set_network ca_cert2 wpa-ca-cert2
++
++		wpa_cli_do "$IF_WPA_CA_PATH2" ascii \
++			set_network ca_path2 wpa-ca-path2
++
++		wpa_cli_do "$IF_WPA_CLIENT_CERT2" ascii \
++			set_network client_cert2 wpa-client-cert2
++
++		wpa_cli_do "$IF_WPA_PRIVATE_KEY2" ascii \
++			set_network private_key2 wpa-private-key2
++
++		wpa_cli_do "$IF_WPA_PRIVATE_KEY_PASSWD2" ascii \
++			set_network private_key_passwd2 wpa-private-key-passwd2
++
++		wpa_cli_do "$IF_WPA_DH_FILE2" ascii \
++			set_network dh_file2 wpa-dh-file2
++
++		wpa_cli_do "$IF_WPA_SUBJECT_MATCH2" ascii \
++			set_network subject_match2 wpa-subject-match2
++
++		wpa_cli_do "$IF_WPA_ALTSUBJECT_MATCH2" ascii \
++			set_network altsubject_match2 wpa-altsubject-match2
++
++		wpa_cli_do "$IF_WPA_EAP_METHODS" raw \
++			set_network eap_methods wpa-eap-methods
++
++		wpa_cli_do "$IF_WPA_PHASE1" ascii \
++			set_network phase1 wpa-phase1
++
++		wpa_cli_do "$IF_WPA_PHASE2" ascii \
++			set_network phase2 wpa-phase2
++
++		wpa_cli_do "$IF_WPA_PCSC" raw \
++			set_network pcsc wpa-pcsc
++
++		wpa_cli_do "$IF_WPA_PIN" ascii \
++			set_network pin wpa-pin
++
++		wpa_cli_do "$IF_WPA_ENGINE" raw \
++			set_network engine wpa-engine
++
++		wpa_cli_do "$IF_WPA_ENGINE_ID" ascii \
++			set_network engine_id wpa-engine-id
++
++		wpa_cli_do "$IF_WPA_KEY_ID" ascii \
++			set_network key_id wpa-key-id
++
++		wpa_cli_do "$IF_WPA_EAPOL_FLAGS" raw \
++			set_network eapol_flags wpa-eapol-flags
++
++		if [ -n "$IF_WPA_WEP_KEY0" ]; then
++			wpa_key_check_and_set "$IF_WPA_WEP_KEY0" \
++				wep_key0 wpa-wep-key0
++		fi
++
++		if [ -n "$IF_WPA_WEP_KEY1" ]; then
++			wpa_key_check_and_set "$IF_WPA_WEP_KEY1" \
++				wep_key1 wpa-wep-key1
++		fi
++
++		if [ -n "$IF_WPA_WEP_KEY2" ]; then
++			wpa_key_check_and_set "$IF_WPA_WEP_KEY2" \
++				wep_key2 wpa-wep-key2
++		fi
++
++		if [ -n "$IF_WPA_WEP_KEY3" ]; then
++			wpa_key_check_and_set "$IF_WPA_WEP_KEY3" \
++				wep_key3 wpa-wep-key3
++		fi
++
++		wpa_cli_do "$IF_WPA_WEP_TX_KEYIDX" raw \
++			set_network wep_tx_keyidx wpa-wep-tx-keyidx
++
++		wpa_cli_do "$IF_WPA_PROACTIVE_KEY_CACHING" raw \
++			set_network proactive_key_caching wpa-proactive-key-caching
++
++		wpa_cli_do "$IF_WPA_PAC_FILE" ascii \
++			set_network pac_file wpa-pac-file
++
++		wpa_cli_do "$IF_WPA_PEERKEY" raw \
++			set_network peerkey wpa-peerkey
++
++		wpa_cli_do "$IF_FRAGMENT_SIZE" raw \
++			set_network fragment_size wpa-fragment-size
++
++		wpa_cli_do "$IF_WPA_ID_STR" ascii \
++			set_network id_str wpa-id-str
++
++		wpa_cli_do "$WPA_ID" raw \
++			enable_network "enabling network block"
++	fi
++}
++
++#####################################################################
++## Log wpa_cli environment variables
++wpa_log_env () {
++	wpa_msg log "WPA_IFACE=$WPA_IFACE WPA_ACTION=$WPA_ACTION"
++	wpa_msg log "WPA_ID=$WPA_ID WPA_ID_STR=$WPA_ID_STR WPA_CTRL_DIR=$WPA_CTRL_DIR"
++}
++
++#####################################################################
++## hysteresis checking
++# Networking tools such as dhcp clients used with ifupdown can
++# synthesize artificial ACTION events, particularly just after a
++# DISCONNECTED/CONNECTED events are experienced in quick succession.
++# This can lead to infinite event loops, and in extreme cases has the
++# potential to cause system instability.
++#
++wpa_hysteresis_event () {
++	echo "$(date +%s)" > "$WPA_CLI_TIMESTAMP" 2>/dev/null
++}
++
++wpa_hysteresis_check () {
++	if [ -f "$WPA_CLI_TIMESTAMP" ]; then
++		local TIME
++		local TIMESTAMP
++		local TIMEWAIT
++		TIME=$(date +%s)
++		# current time minus 4 second event buffer
++		TIMEWAIT=$(($TIME-4))
++		# get time of last event
++		TIMESTAMP=$(cat $WPA_CLI_TIMESTAMP)
++		# compare values, allowing new action to be processed
++		# only if last action was more than 4 seconds ago
++		if [ "$TIMEWAIT" -le "$TIMESTAMP" ]; then
++			wpa_msg log "$WPA_ACTION event blocked by hysteresis check"
++			return 1
++		fi
++	fi
++
++	return 0
++}
++
++#####################################################################
++## ifupdown locking functions
++# A collection of rudimentary locking functions to lock ifup/ifdown
++# actions.
++#
++
++ifupdown_lock () {
++	ln -s lock "$WPA_CLI_IFUPDOWN"
++}
++
++ifupdown_locked () {
++	[ -L "$WPA_CLI_IFUPDOWN" ] && return 0
++
++	return 1
++}
++
++ifupdown_unlock () {
++	rm -f "$WPA_CLI_IFUPDOWN"
++}
++
++#####################################################################
++## apply mapping logic and ifup logical interface
++# Apply mapping logic via id_str or external mapping script, check
++# state of IFACE with respect to ifupdown and ifup logical interaface
++#
++ifup () {
++	local INTERFACES_FILE
++	local IFSTATE_FILE
++	local IFUP_RETVAL
++	local WPA_LOGICAL_IFACE
++
++	if [ -e /etc/network/interfaces ]; then
++		INTERFACES_FILE="/etc/network/interfaces"
++	else
++		wpa_msg log "/etc/network/interfaces does not exist, $WPA_IFACE will not be configured"
++		return 1
++	fi
++
++	if [ -e /etc/network/run/ifstate ]; then
++		# debian's ifupdown
++		IFSTATE_FILE="/etc/network/run/ifstate"
++	elif [ -e /run/network/ifstate ]; then
++		# ubuntu's
++		IFSTATE_FILE="/run/network/ifstate"
++	else
++		unset IFSTATE_FILE
++	fi
++
++	if [ -z "$IF_WPA_MAPPING_SCRIPT_PRIORITY" ] && [ -n "$WPA_ID_STR" ]; then
++		WPA_LOGICAL_IFACE="$WPA_ID_STR"
++	fi
++
++	if [ -z "$WPA_LOGICAL_IFACE" ] && [ -n "$IF_WPA_MAPPING_SCRIPT" ]; then
++		local WPA_MAP_STDIN
++
++		WPA_MAP_STDIN=$(set | sed -n 's/^\(IF_WPA_MAP[0-9]*\)=.*/echo \$\1/p')
++
++		if [ -n "$WPA_MAP_STDIN" ]; then
++			WPA_LOGICAL_IFACE=$(eval "$WPA_MAP_STDIN" | "$IF_WPA_MAPPING_SCRIPT" "$WPA_IFACE")
++		else
++			WPA_LOGICAL_IFACE=$("$IF_WPA_MAPPING_SCRIPT" "$WPA_IFACE")
++		fi
++
++		if [ -n "$WPA_LOGICAL_IFACE" ]; then
++			wpa_msg log "mapping script result: $WPA_LOGICAL_IFACE"
++		else
++			wpa_msg log "mapping script failed."
++		fi
++	fi
++
++	if [ -z "$WPA_LOGICAL_IFACE" ]; then
++		if [ -n "$IF_WPA_ROAM_DEFAULT_IFACE" ]; then
++			WPA_LOGICAL_IFACE="$IF_WPA_ROAM_DEFAULT_IFACE"
++		else
++			WPA_LOGICAL_IFACE="default"
++		fi
++	fi
++
++	if [ -n "$WPA_LOGICAL_IFACE" ]; then
++		if egrep -q "^iface[[:space:]]+${WPA_LOGICAL_IFACE}[[:space:]]+inet" "$INTERFACES_FILE"; then
++			: # logical network is defined
++		else
++			wpa_msg log "network settings not defined for $WPA_LOGICAL_IFACE in $INTERFACES_FILE"
++			WPA_LOGICAL_IFACE="default"
++		fi
++
++		wpa_msg log "ifup $WPA_IFACE=$WPA_LOGICAL_IFACE"
++
++		ifupdown_lock
++
++		if [ -n "$IFSTATE_FILE" ] && grep -q "^$WPA_IFACE=$WPA_IFACE" "$IFSTATE_FILE"; then
++			# Force settings over the unconfigured "master" IFACE
++			/sbin/ifup -v --force "$WPA_IFACE=$WPA_LOGICAL_IFACE"
++		else
++			/sbin/ifup -v "$WPA_IFACE=$WPA_LOGICAL_IFACE"
++		fi
++		IFUP_RETVAL="$?"
++
++		ifupdown_unlock
++	fi
++
++	if [ -d "${WPA_SUP_OMIT_DIR}" ]; then
++		wpa_msg log "creating sendsigs omission pidfile: $WPA_SUP_OMIT_PIDFILE"
++		cat "$WPA_SUP_PIDFILE" > "$WPA_SUP_OMIT_PIDFILE"
++	fi
++
++	return "$IFUP_RETVAL"
++}
++
++#####################################################################
++## ifdown IFACE
++# Check IFACE state and ifdown as requested.
++#
++ifdown () {
++	wpa_msg log "ifdown $WPA_IFACE"
++
++	ifupdown_lock
++
++	/sbin/ifdown -v "$WPA_IFACE"
++
++	ifupdown_unlock
++
++	wpa_msg log "removing sendsigs omission pidfile: $WPA_SUP_OMIT_PIDFILE"
++	rm -f "$WPA_SUP_OMIT_PIDFILE"
++}
++
++#####################################################################
++## keep IFACE scanning
++# After ifdown, the IFACE may be left "down", and inhibits
++# wpa_supplicant's ability to continue roaming.
++#
++# NB: use iproute if present, flushing the IFACE first
++#
++if_post_down_up () {
++	if [ -x /bin/ip ]; then
++		ip addr flush dev "$WPA_IFACE" 2>/dev/null
++		ip link set "$WPA_IFACE" up
++	else
++		ifconfig "$WPA_IFACE" up
++	fi
++}
+diff --git a/board/tjd/wpa_supplicant/ifupdown.sh b/board/tjd/wpa_supplicant/ifupdown.sh
+new file mode 100644
+index 0000000000..2c5b0608ce
+--- /dev/null
++++ b/board/tjd/wpa_supplicant/ifupdown.sh
+@@ -0,0 +1,172 @@
++#!/bin/sh
++
++#####################################################################
++## Purpose
++# This file is executed by ifupdown in pre-up, post-up, pre-down and
++# post-down phases of network interface configuration. It allows
++# ifup(8), and ifdown(8) to manage wpa_supplicant(8) and wpa_cli(8)
++# processes running in daemon mode.
++#
++# /etc/wpa_supplicant/functions.sh is sourced by this file.
++#
++# This file is provided by the wpasupplicant package.
++
++#####################################################################
++# Copyright (C) 2006 - 2009 Debian/Ubuntu wpasupplicant Maintainers 
++# <pkg-wpa-devel@lists.alioth.debian.org>
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License
++# as published by the Free Software Foundation; either version 2
++# of the License, or (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# On Debian GNU/Linux systems, the text of the GPL license,
++# version 2, can be found in /usr/share/common-licenses/GPL-2.
++
++if [ -n "$IF_WPA_MAINT_DEBUG" ]; then
++	set -x
++fi
++
++# quit if we're called for the loopback
++if [ "$IFACE" = lo ]; then
++	exit 0
++fi
++
++# allow wpa_supplicant interface to be specified via wpa-iface
++# useful for starting wpa_supplicant on one interface of a bridge
++if [ -n "$IF_WPA_IFACE" ]; then
++	WPA_IFACE="$IF_WPA_IFACE"
++else
++	WPA_IFACE="$IFACE"
++fi
++
++# source functions
++if [ -f /etc/wpa_supplicant/functions.sh ]; then
++	. /etc/wpa_supplicant/functions.sh
++else
++	exit 0
++fi
++
++# quit if executables are not installed
++if [ ! -x "$WPA_SUP_BIN" ] || [ ! -x "$WPA_CLI_BIN" ]; then
++	exit 0
++fi
++
++do_start () {
++	if test_wpa_cli; then
++		# if wpa_action is active for this IFACE, do nothing
++		ifupdown_locked && exit 0
++
++		# if the administrator is calling ifup, say something useful
++		if [ "$PHASE" = "pre-up" ]; then
++			wpa_msg stderr "wpa_action is managing ifup/ifdown state of $WPA_IFACE"
++			wpa_msg stderr "execute \`ifdown --force $WPA_IFACE' to stop wpa_action"
++		fi
++		exit 1
++	elif ! set | grep -q "^IF_WPA"; then
++		# no wpa- option defined for IFACE, do nothing
++		exit 0
++	fi
++
++	# ensure stale ifupdown_lock marker is purged
++	ifupdown_unlock
++
++	# preliminary sanity checks for roaming daemon
++	if [ -n "$IF_WPA_ROAM" ]; then
++		if [ "$METHOD" != "manual" ]; then
++			wpa_msg stderr "wpa-roam can only be used with the \"manual\" inet METHOD"
++			exit 1
++		fi
++		if [ -n "$IF_WPA_MAPPING_SCRIPT" ]; then
++			if ! type "$IF_WPA_MAPPING_SCRIPT" >/dev/null; then
++				wpa_msg stderr "wpa-mapping-script \"$IF_WPA_MAPPING_SCRIPT\" is not valid"
++				exit 1
++			fi
++		fi
++		if [ -n "$IF_WPA_MAPPING_SCRIPT_PRIORITY" ] && [ -z "$IF_WPA_MAPPING_SCRIPT" ]; then
++			wpa_msg stderr "\"wpa-mapping-script-priority 1\" is invalid without a wpa-mapping-script"
++			exit 1
++		fi
++		IF_WPA_CONF="$IF_WPA_ROAM"
++		WPA_ACTION_SCRIPT="/sbin/wpa_action"
++	fi
++
++	# master function; determines if ifupdown.sh should do something or not
++	if [ -n "$IF_WPA_CONF" ] && [ "$IF_WPA_CONF" != "managed" ]; then
++		if [ ! -s "$IF_WPA_CONF" ]; then
++			wpa_msg stderr "cannot read contents of $IF_WPA_CONF"
++			exit 1
++		fi	
++		WPA_SUP_CONF_CTRL_DIR=$(sed -n -e 's/[[:space:]]*#.*//g' -e 's/[[:space:]]\+.*$//g' \
++			-e 's/^ctrl_interface=\(DIR=\)\?\(.*\)/\2/p' "$IF_WPA_CONF")
++		if [ -n "$WPA_SUP_CONF_CTRL_DIR" ]; then
++			WPA_CTRL_DIR="$WPA_SUP_CONF_CTRL_DIR"
++			WPA_SUP_CONF="-c $IF_WPA_CONF"
++		else
++			# specify the default ctrl_interface since none was defined in
++			# the given IF_WPA_CONF
++			WPA_SUP_CONF="-c $IF_WPA_CONF -C $WPA_CTRL_DIR"
++		fi
++	else
++		# specify the default ctrl_interface
++		WPA_SUP_CONF="-C $WPA_CTRL_DIR"
++	fi
++}
++
++do_stop () {
++	if test_wpa_cli; then
++		# if wpa_action is active for this IFACE and calling ifdown,
++		# do nothing
++		ifupdown_locked && exit 0
++	elif test_wpa_supplicant; then
++		# wpa_supplicant process exists for this IFACE, but wpa_cli
++		# process does not. Allow stop mode to kill this process.
++		:
++	else
++		exit 0
++	fi
++}
++
++case "$MODE" in 
++	start)
++		do_start
++		case "$PHASE" in
++			pre-up)
++				kill_wpa_supplicant
++				init_wpa_supplicant	|| exit 1
++				conf_wpa_supplicant 	|| { kill_wpa_supplicant; exit 1; }
++				;;
++			post-up)
++				init_wpa_cli 		|| { kill_wpa_supplicant; exit 1; }
++				;;
++		esac
++		;;
++
++	stop)
++		do_stop
++		case "$PHASE" in
++			pre-down)
++				kill_wpa_cli
++				;;
++			post-down)
++				kill_wpa_supplicant
++				;;
++			*)
++				wpa_msg stderr "unknown phase: \"$PHASE\""
++				exit 1
++				;;
++		esac
++		;;
++	
++	*)
++		wpa_msg stderr "unknown mode: \"$MODE\""
++		exit 1
++		;;
++esac
++
++exit 0
+diff --git a/configs/zynq_tjd_defconfig b/configs/zynq_tjd_defconfig
+new file mode 100644
+index 0000000000..d54b3505bd
+--- /dev/null
++++ b/configs/zynq_tjd_defconfig
+@@ -0,0 +1,64 @@
++BR2_arm=y
++BR2_cortex_a9=y
++BR2_ARM_ENABLE_NEON=y
++BR2_ARM_ENABLE_VFP=y
++BR2_ARM_FPU_NEON=y
++BR2_TOOLCHAIN_EXTERNAL=y
++BR2_TOOLCHAIN_EXTERNAL_LINARO_ARM=y
++BR2_OPTIMIZE_2=y
++BR2_TARGET_GENERIC_HOSTNAME="pluto"
++BR2_TARGET_GENERIC_ISSUE="Welcome to tjd_sdr"
++BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_MDEV=y
++BR2_TARGET_GENERIC_ROOT_PASSWD="analog"
++BR2_TARGET_GENERIC_GETTY_PORT="ttyPS0"
++BR2_ROOTFS_POST_BUILD_SCRIPT="board/tjd/post-build.sh"
++BR2_PACKAGE_ZSTD=y
++BR2_PACKAGE_MTD=y
++# BR2_PACKAGE_MTD_NANDDUMP is not set
++# BR2_PACKAGE_MTD_NANDTEST is not set
++# BR2_PACKAGE_MTD_NANDWRITE is not set
++# BR2_PACKAGE_MTD_UBIATTACH is not set
++# BR2_PACKAGE_MTD_UBICRC32 is not set
++# BR2_PACKAGE_MTD_UBIDETACH is not set
++# BR2_PACKAGE_MTD_UBIFORMAT is not set
++# BR2_PACKAGE_MTD_UBIMKVOL is not set
++# BR2_PACKAGE_MTD_UBINFO is not set
++# BR2_PACKAGE_MTD_UBINIZE is not set
++# BR2_PACKAGE_MTD_UBIRENAME is not set
++# BR2_PACKAGE_MTD_UBIRMVOL is not set
++# BR2_PACKAGE_MTD_UBIRSVOL is not set
++# BR2_PACKAGE_MTD_UBIUPDATEVOL is not set
++# BR2_PACKAGE_MTD_UBIBLOCK is not set
++BR2_PACKAGE_LINUX_FIRMWARE=y
++BR2_PACKAGE_LINUX_FIRMWARE_RALINK_RT61=y
++BR2_PACKAGE_LINUX_FIRMWARE_RALINK_RT73=y
++BR2_PACKAGE_LINUX_FIRMWARE_RALINK_RT2XX=y
++BR2_PACKAGE_LINUX_FIRMWARE_RTL_81XX=y
++BR2_PACKAGE_LINUX_FIRMWARE_RTL_87XX=y
++BR2_PACKAGE_LINUX_FIRMWARE_RTL_88XX=y
++BR2_PACKAGE_INPUT_EVENT_DAEMON=y
++BR2_PACKAGE_UBOOT_TOOLS=y
++BR2_PACKAGE_ZLIB=y
++BR2_PACKAGE_LIBAD9361_IIO=y
++BR2_PACKAGE_LIBGPIOD=y
++BR2_PACKAGE_LIBGPIOD_TOOLS=y
++BR2_PACKAGE_LIBIIO_IIOD_USBD=y
++BR2_PACKAGE_LIBIIO_TESTS=y
++BR2_PACKAGE_LIBINI=y
++BR2_PACKAGE_AVAHI=y
++BR2_PACKAGE_AVAHI_DAEMON=y
++BR2_PACKAGE_AVAHI_LIBDNSSD_COMPATIBILITY=y
++BR2_PACKAGE_DROPBEAR=y
++BR2_PACKAGE_DROPBEAR_LOCALOPTIONS_FILE="board/tjd/dropbrear_localoptions.h"
++BR2_PACKAGE_IW=y
++BR2_PACKAGE_WPA_SUPPLICANT=y
++BR2_PACKAGE_WPA_SUPPLICANT_CLI=y
++BR2_PACKAGE_WPA_SUPPLICANT_PASSPHRASE=y
++BR2_PACKAGE_POLL_SYSFS=y
++BR2_PACKAGE_AD936X_REF_CAL=y
++BR2_TARGET_ROOTFS_CPIO=y
++BR2_TARGET_ROOTFS_CPIO_GZIP=y
++BR2_TARGET_ROOTFS_CPIO_UIMAGE=y
++BR2_PACKAGE_HOST_DOSFSTOOLS=y
++BR2_PACKAGE_HOST_GENIMAGE=y
++BR2_PACKAGE_HOST_MTOOLS=y

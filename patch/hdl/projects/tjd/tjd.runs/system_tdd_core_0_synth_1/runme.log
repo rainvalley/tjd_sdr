@@ -1,0 +1,377 @@
+
+*** Running vivado
+    with args -log system_tdd_core_0.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source system_tdd_core_0.tcl
+
+
+****** Vivado v2022.2 (64-bit)
+  **** SW Build 3671981 on Fri Oct 14 04:59:54 MDT 2022
+  **** IP Build 3669848 on Fri Oct 14 08:30:02 MDT 2022
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+source system_tdd_core_0.tcl -notrace
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/raincorn/pluto/plutosdr-fw/hdl/library'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/tools/Xilinx/Vivado/2022.2/data/ip'.
+INFO: [IP_Flow 19-6924] IPCACHE: Running cache check for IP inst: system_tdd_core_0
+Command: synth_design -top system_tdd_core_0 -part xc7z010clg400-1 -incremental_mode off -mode out_of_context
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010'
+INFO: [Device 21-403] Loading part xc7z010clg400-1
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 7960
+INFO: [Synth 8-11241] undeclared symbol 'REGCCE', assumed default net type 'wire' [/tools/Xilinx/Vivado/2022.2/data/verilog/src/unimacro/BRAM_SINGLE_MACRO.v:2170]
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:04 ; elapsed = 00:00:04 . Memory (MB): peak = 1948.293 ; gain = 371.770 ; free physical = 7930 ; free virtual = 13866
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1224.197; parent = 1071.144; children = 153.054
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 2934.996; parent = 1954.234; children = 980.762
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'system_tdd_core_0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/synth/system_tdd_core_0.sv:53]
+INFO: [Synth 8-6157] synthesizing module 'axi_tdd' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd.sv:38]
+INFO: [Synth 8-6157] synthesizing module 'axi_tdd_channel' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_channel.sv:37]
+INFO: [Synth 8-6155] done synthesizing module 'axi_tdd_channel' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_channel.sv:37]
+INFO: [Synth 8-6157] synthesizing module 'axi_tdd_channel__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_channel.sv:37]
+INFO: [Synth 8-6155] done synthesizing module 'axi_tdd_channel__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_channel.sv:37]
+INFO: [Synth 8-6157] synthesizing module 'axi_tdd_regmap' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:37]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:279]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:280]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:279]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:280]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:279]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:280]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:202]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:203]
+WARNING: [Synth 8-693] zero replication count - replication ignored [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:204]
+INFO: [Synth 8-6157] synthesizing module 'sync_bits' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/util_cdc/sync_bits.v:46]
+INFO: [Synth 8-6155] done synthesizing module 'sync_bits' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/util_cdc/sync_bits.v:46]
+INFO: [Synth 8-6157] synthesizing module 'sync_event' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/util_cdc/sync_event.v:38]
+INFO: [Synth 8-6157] synthesizing module 'sync_bits__parameterized0' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/util_cdc/sync_bits.v:46]
+INFO: [Synth 8-6155] done synthesizing module 'sync_bits__parameterized0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/util_cdc/sync_bits.v:46]
+INFO: [Synth 8-6155] done synthesizing module 'sync_event' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/util_cdc/sync_event.v:38]
+INFO: [Synth 8-6157] synthesizing module 'sync_bits__parameterized1' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/util_cdc/sync_bits.v:46]
+INFO: [Synth 8-6155] done synthesizing module 'sync_bits__parameterized1' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/util_cdc/sync_bits.v:46]
+INFO: [Synth 8-6157] synthesizing module 'sync_data' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/util_cdc/sync_data.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'sync_data' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/util_cdc/sync_data.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'axi_tdd_regmap' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_regmap.sv:37]
+INFO: [Synth 8-6157] synthesizing module 'axi_tdd_counter' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_counter.sv:37]
+INFO: [Synth 8-6155] done synthesizing module 'axi_tdd_counter' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_counter.sv:37]
+INFO: [Synth 8-6157] synthesizing module 'axi_tdd_sync_gen' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_sync_gen.sv:37]
+INFO: [Synth 8-6155] done synthesizing module 'axi_tdd_sync_gen' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd_sync_gen.sv:37]
+INFO: [Synth 8-6157] synthesizing module 'up_axi' [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_axi.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'up_axi' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/common/up_axi.v:38]
+INFO: [Synth 8-6155] done synthesizing module 'axi_tdd' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ipshared/3c1a/axi_tdd.sv:38]
+INFO: [Synth 8-6155] done synthesizing module 'system_tdd_core_0' (0#1) [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/synth/system_tdd_core_0.sv:53]
+WARNING: [Synth 8-7129] Port up_axi_awaddr[1] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_awaddr[0] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_wstrb[3] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_wstrb[2] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_wstrb[1] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_wstrb[0] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_araddr[1] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port up_axi_araddr[0] in module up_axi is either unconnected or has no load
+WARNING: [Synth 8-7129] Port tdd_sync_int in module axi_tdd_sync_gen is either unconnected or has no load
+WARNING: [Synth 8-7129] Port asy_tdd_sync_period[-1] in module axi_tdd_sync_gen is either unconnected or has no load
+WARNING: [Synth 8-7129] Port asy_tdd_sync_period[0] in module axi_tdd_sync_gen is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awprot[2] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awprot[1] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awprot[0] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[2] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[1] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[0] in module axi_tdd is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 2026.199 ; gain = 449.676 ; free physical = 8129 ; free virtual = 14066
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1224.197; parent = 1071.144; children = 153.056
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3006.965; parent = 2026.203; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 2044.012 ; gain = 467.488 ; free physical = 8135 ; free virtual = 14067
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1224.197; parent = 1071.144; children = 153.056
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3024.777; parent = 2044.016; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 2044.012 ; gain = 467.488 ; free physical = 8133 ; free virtual = 14065
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1224.197; parent = 1071.144; children = 153.056
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3024.777; parent = 2044.016; children = 980.762
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2044.012 ; gain = 0.000 ; free physical = 8125 ; free virtual = 14056
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_tdd_core_0_synth_1/dont_touch.xdc]
+Finished Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_tdd_core_0_synth_1/dont_touch.xdc]
+Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc] for cell 'inst'
+Finished Parsing XDC File [/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc] for cell 'inst'
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2186.793 ; gain = 0.000 ; free physical = 9165 ; free virtual = 15097
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00.04 ; elapsed = 00:00:00.02 . Memory (MB): peak = 2186.793 ; gain = 0.000 ; free physical = 9165 ; free virtual = 15096
+INFO: [Designutils 20-5008] Incremental synthesis strategy off
+INFO: [Synth 8-11241] undeclared symbol 'REGCCE', assumed default net type 'wire' [/tools/Xilinx/Vivado/2022.2/data/verilog/src/unimacro/BRAM_SINGLE_MACRO.v:2170]
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 9200 ; free virtual = 15132
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1268.045; parent = 1100.764; children = 167.281
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z010clg400-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 9228 ; free virtual = 15160
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1268.045; parent = 1100.764; children = 167.281
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+Applied set_property KEEP_HIERARCHY = SOFT for inst. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_tdd_core_0_synth_1/dont_touch.xdc, line 9).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_ch_en_sync/cdc_sync_stage1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_ch_en_sync/cdc_sync_stage1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_ch_en_sync/cdc_sync_stage1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_control_sync/cdc_sync_stage1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_control_sync/cdc_sync_stage1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_control_sync/cdc_sync_stage1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_control_sync/cdc_sync_stage1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_cstate_sync/i_sync_in/\cdc_sync_stage1_reg[0] . (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_cstate_sync/i_sync_out/\cdc_sync_stage1_reg[0] . (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_soft_sync/i_sync_in/\cdc_sync_stage1_reg[0] . (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_soft_sync/i_sync_out/\cdc_sync_stage1_reg[0] . (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_ch_en_sync/cdc_sync_stage2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_ch_en_sync/cdc_sync_stage2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_ch_en_sync/cdc_sync_stage2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_control_sync/cdc_sync_stage2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_control_sync/cdc_sync_stage2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_control_sync/cdc_sync_stage2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_control_sync/cdc_sync_stage2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_cstate_sync/i_sync_in/\cdc_sync_stage2_reg[0] . (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_cstate_sync/i_sync_out/\cdc_sync_stage2_reg[0] . (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_soft_sync/i_sync_in/\cdc_sync_stage2_reg[0] . (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_regmap/i_tdd_soft_sync/i_sync_out/\cdc_sync_stage2_reg[0] . (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 2).
+Applied set_property ASYNC_REG = true for inst/i_sync_gen/tdd_sync_m1_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 6).
+Applied set_property ASYNC_REG = true for inst/i_sync_gen/tdd_sync_m2_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 6).
+Applied set_property ASYNC_REG = true for inst/i_sync_gen/tdd_sync_m3_reg. (constraint file  /home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.gen/sources_1/bd/system/ip/system_tdd_core_0/system_tdd_core_0_constr.xdc, line 6).
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 9245 ; free virtual = 15177
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1268.045; parent = 1100.764; children = 180.388
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'tdd_cstate_reg' in module 'axi_tdd_counter'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                    IDLE |                               00 |                               00
+                   ARMED |                               01 |                               01
+                 WAITING |                               10 |                               10
+                 RUNNING |                               11 |                               11
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'tdd_cstate_reg' using encoding 'sequential' in module 'axi_tdd_counter'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:12 ; elapsed = 00:00:14 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 9270 ; free virtual = 15203
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1268.045; parent = 1100.764; children = 180.998
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   32 Bit       Adders := 3     
+	   2 Input    5 Bit       Adders := 2     
++---XORs : 
+	   2 Input      1 Bit         XORs := 2     
++---Registers : 
+	               32 Bit    Registers := 24    
+	                8 Bit    Registers := 2     
+	                5 Bit    Registers := 2     
+	                4 Bit    Registers := 2     
+	                3 Bit    Registers := 4     
+	                2 Bit    Registers := 2     
+	                1 Bit    Registers := 54    
++---Muxes : 
+	   2 Input   32 Bit        Muxes := 4     
+	   2 Input    5 Bit        Muxes := 4     
+	   4 Input    2 Bit        Muxes := 1     
+	   2 Input    2 Bit        Muxes := 6     
+	   3 Input    1 Bit        Muxes := 3     
+	   2 Input    1 Bit        Muxes := 36    
+	   4 Input    1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 80 (col length:40)
+BRAMs: 120 (col length: RAMB18 40 RAMB36 20)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+WARNING: [Synth 8-7129] Port s_axi_awaddr[1] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awaddr[0] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awprot[2] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awprot[1] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awprot[0] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_wstrb[3] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_wstrb[2] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_wstrb[1] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_wstrb[0] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_araddr[1] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_araddr[0] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[2] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[1] in module axi_tdd is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[0] in module axi_tdd is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:15 ; elapsed = 00:00:18 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 9582 ; free virtual = 15521
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1280.380; parent = 1100.764; children = 182.739
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:18 ; elapsed = 00:00:21 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10352 ; free virtual = 16291
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1486.720; parent = 1281.797; children = 204.923
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:18 ; elapsed = 00:00:21 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10346 ; free virtual = 16285
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1487.142; parent = 1282.219; children = 204.923
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:19 ; elapsed = 00:00:22 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10325 ; free virtual = 16263
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1487.142; parent = 1282.219; children = 204.923
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:22 ; elapsed = 00:00:25 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10032 ; free virtual = 15971
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1487.142; parent = 1282.219; children = 204.923
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:22 ; elapsed = 00:00:25 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10149 ; free virtual = 16087
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1487.142; parent = 1282.219; children = 204.923
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:22 ; elapsed = 00:00:25 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10147 ; free virtual = 16085
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1487.142; parent = 1282.219; children = 204.923
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:22 ; elapsed = 00:00:25 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10139 ; free virtual = 16078
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1487.142; parent = 1282.219; children = 204.923
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:22 ; elapsed = 00:00:25 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10137 ; free virtual = 16075
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1487.142; parent = 1282.219; children = 204.923
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:22 ; elapsed = 00:00:26 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10135 ; free virtual = 16074
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1487.142; parent = 1282.219; children = 204.923
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-------+------+
+|      |Cell   |Count |
++------+-------+------+
+|1     |CARRY4 |    56|
+|2     |LUT1   |    97|
+|3     |LUT2   |    12|
+|4     |LUT3   |    53|
+|5     |LUT4   |    56|
+|6     |LUT5   |    20|
+|7     |LUT6   |   273|
+|8     |FDRE   |   899|
+|9     |FDSE   |     4|
++------+-------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:22 ; elapsed = 00:00:26 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10133 ; free virtual = 16071
+Synthesis current peak Physical Memory [PSS] (MB): peak = 1487.142; parent = 1282.219; children = 204.923
+Synthesis current peak Virtual Memory [VSS] (MB): peak = 3135.543; parent = 2154.781; children = 980.762
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 15 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:21 ; elapsed = 00:00:24 . Memory (MB): peak = 2186.793 ; gain = 467.488 ; free physical = 10178 ; free virtual = 16117
+Synthesis Optimization Complete : Time (s): cpu = 00:00:22 ; elapsed = 00:00:26 . Memory (MB): peak = 2186.793 ; gain = 610.270 ; free physical = 10176 ; free virtual = 16115
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.02 . Memory (MB): peak = 2186.793 ; gain = 0.000 ; free physical = 10281 ; free virtual = 16220
+INFO: [Netlist 29-17] Analyzing 56 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2186.793 ; gain = 0.000 ; free physical = 10208 ; free virtual = 16146
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Synth Design complete, checksum: 8ad7289f
+INFO: [Common 17-83] Releasing license: Synthesis
+49 Infos, 41 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:29 ; elapsed = 00:00:31 . Memory (MB): peak = 2186.793 ; gain = 861.488 ; free physical = 10415 ; free virtual = 16354
+INFO: [Common 17-1381] The checkpoint '/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_tdd_core_0_synth_1/system_tdd_core_0.dcp' has been generated.
+INFO: [Coretcl 2-1648] Added synthesis output to IP cache for IP system_tdd_core_0, cache-ID = 66b2ab41638d53e6
+INFO: [Coretcl 2-1174] Renamed 16 cell refs.
+INFO: [Common 17-1381] The checkpoint '/home/raincorn/pluto/plutosdr-fw/hdl/projects/tjd/tjd.runs/system_tdd_core_0_synth_1/system_tdd_core_0.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file system_tdd_core_0_utilization_synth.rpt -pb system_tdd_core_0_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Wed Feb  7 20:11:34 2024...

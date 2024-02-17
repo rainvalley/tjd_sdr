@@ -1,0 +1,10 @@
+vhdl xil_defaultlib  \
+"../../../bd/system/ip/system_fir_interpolation_0_0/sim/system_fir_interpolation_0_0.vhd" \
+"../../../bd/system/ip/system_fir_interpolation_1_0/sim/system_fir_interpolation_1_0.vhd" \
+"../../../bd/system/ip/system_fir_decimation_0_0/sim/system_fir_decimation_0_0.vhd" \
+"../../../bd/system/ip/system_fir_decimation_1_0/sim/system_fir_decimation_1_0.vhd" \
+"../../../bd/system/ip/system_axi_iic_main_0/sim/system_axi_iic_main_0.vhd" \
+"../../../bd/system/ip/system_axi_spi_0/sim/system_axi_spi_0.vhd" \
+"../../../bd/system/ip/system_sys_rstgen_0/sim/system_sys_rstgen_0.vhd" \
+
+nosort
